@@ -8,7 +8,7 @@
 
   var API = 'https://api.leviathannews.xyz/api/v1';
   var WS_URL = 'wss://api.leviathannews.xyz/ws/news/';
-  var SKILL_CMD = 'curl -s https://api.leviathannews.xyz/SKILL.md';
+  var SKILL_CMD = 'curl -s https://leviathannews.xyz/SKILL.md';
 
   /* Fixture path is resolved relative to the including page (prototypes/variant-*.html) */
   var FIX = 'shared/fixtures';
