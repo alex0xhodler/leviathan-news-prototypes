@@ -77,7 +77,11 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* Custom thin scrollbars */
+    /* Custom thin scrollbars (WebKit + Firefox standard) */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--lvx-navy-700) transparent;
+    }
     ::-webkit-scrollbar {
       width: 4px;
       height: 4px;
@@ -119,12 +123,14 @@
     }
 
     .ticker-cell-left {
-      flex: 0 0 auto;
+      flex: 0 0 220px;
+      width: 220px;
+      box-sizing: border-box;
       height: 100%;
       display: flex;
       align-items: center;
       gap: 14px;
-      padding: 0 16px;
+      padding: 0 14px;
       background: var(--bg-rail);
       border-right: 1px solid var(--border-hairline);
       font-family: var(--font-mono);
@@ -140,56 +146,24 @@
       display: flex;
       align-items: center;
       gap: 7px;
-      background: var(--brand-lime-dim);
-      border: 1px solid color-mix(in oklch, var(--lvx-lime) 35%, transparent);
-      padding: 3px 8px;
+      padding: 0;
       border-radius: 4px;
-      box-shadow: 0 0 10px color-mix(in oklch, var(--lvx-lime) 12%, transparent);
     }
 
     .brand-tag-title {
       font-family: var(--font-brand-display);
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
+      text-shadow: 0 0 12px color-mix(in oklch, var(--lvx-lime) 35%, transparent);
     }
 
     .brand-octopus-glyph {
       flex-shrink: 0;
       display: inline-block;
       stroke: var(--brand-lime);
-    }
-
-    .brand-square-bullet {
-      width: 6px;
-      height: 6px;
-      background: var(--brand-lime);
-      box-shadow: 0 0 6px var(--brand-lime);
-      border-radius: 2px;
-      display: inline-block;
-      line-height: 0;
-      font-size: 0;
-      flex-shrink: 0;
-    }
-
-    .radar-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--neon-green);
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    .radar-dot::after {
-      content: '';
-      position: absolute;
-      inset: -3px;
-      border-radius: 50%;
-      border: 1px solid var(--neon-green);
-      animation: radarPulse 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-      opacity: 0.8;
+      filter: drop-shadow(0 0 5px color-mix(in oklch, var(--lvx-lime) 45%, transparent));
     }
 
     @keyframes radarPulse {
@@ -337,19 +311,8 @@
       color: #d9d9d9;
     }
 
-    .clock-utc {
-      font-family: var(--font-mono);
-      font-variant-numeric: tabular-nums;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: 0.04em;
-    }
-    .clock-tz {
-      color: var(--text-dim);
-      font-size: 9.5px;
-      font-weight: 400;
-      margin-left: 3px;
+    .pulse-metrics-right .pulse-val {
+      color: var(--brand-lime);
     }
 
     /* ============================================================
@@ -380,6 +343,7 @@
     .rail-section {
       padding: 0;
       border: 0;
+      flex: none;
     }
 
     .rail-header {
@@ -407,18 +371,18 @@
     /* Search/Filter Box */
     .filter-input-wrap {
       position: relative;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
     .filter-input {
       width: 100%;
       height: 32px;
       background: var(--bg-well);
       border: 1px solid var(--border-hairline);
-      border-radius: var(--r-sm);
+      border-radius: 4px;
       color: var(--text-primary);
       font-family: var(--font-mono);
       font-size: 11px;
-      padding: 0 28px 0 8px;
+      padding: 0 28px 0 10px;
       outline: none;
       transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
     }
@@ -450,7 +414,7 @@
     .wire-list {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 6px;
     }
     .wire-btn {
       display: flex;
@@ -503,13 +467,13 @@
     .narrative-list {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
     .narrative-item {
       display: flex;
       flex-direction: column;
-      gap: 5px;
-      padding: 7px 10px;
+      gap: 6px;
+      padding: 8px 10px;
       border-radius: var(--r-sm);
       background: var(--bg-well);
       border: 1px solid var(--border-hairline);
@@ -580,10 +544,10 @@
       border: 1px solid var(--border-hairline);
       box-shadow: 0 0 16px color-mix(in oklch, var(--lvx-lime) 8%, transparent);
       border-radius: var(--r-sm);
-      padding: 10px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       min-width: 0;
     }
     .uplink-label {
@@ -1467,8 +1431,134 @@
       .ticker-cell-left {
         padding: 0 8px;
       }
-      .pulse-metrics {
+    }
+
+    /* ===== MOBILE (≤720px): compact strip, header, and feed rows ===== */
+    @media (max-width: 720px) {
+      .ticker-strip {
+        height: 40px;
+      }
+      .brand-tag {
+        border: none;
+        background: transparent;
+        padding: 0;
+        gap: 6px;
+      }
+      .brand-tag-title {
+        font-size: 12px;
+      }
+      .ticker-cell-right {
+        gap: 8px;
+        padding: 0 8px;
+      }
+      .pulse-metrics-right {
+        gap: 8px;
+        font-size: 10px;
+      }
+      .ws-status-txt {
         display: none;
+      }
+      .snapshot-badge {
+        font-size: 9px;
+        padding: 2px 5px;
+      }
+
+      /* Feed header: single-line title + compact count + scrollable tabs */
+      .center-header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        column-gap: 10px;
+        row-gap: 6px;
+        padding: 8px 12px;
+      }
+      .feed-meta-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        grid-column: 1;
+      }
+      .feed-name-txt {
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+      }
+      .feed-count-chip {
+        font-size: 9px;
+        padding: 2px 6px;
+        white-space: nowrap;
+        flex: none;
+      }
+      .sort-tabs {
+        grid-column: 2;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        max-width: 46vw;
+      }
+      .sort-tabs::-webkit-scrollbar {
+        display: none;
+      }
+      .sort-tab {
+        font-size: 10px;
+        padding: 4px 8px;
+        flex: none;
+      }
+
+      /* Feed rows: tighten meta/chips */
+      .article-row {
+        padding-left: 0;
+      }
+      .row-summary {
+        gap: 8px;
+      }
+      .row-rank {
+        font-size: 11px;
+        min-width: 22px;
+      }
+      .row-headline {
+        font-size: 15px;
+      }
+      .row-meta-chips {
+        flex-wrap: nowrap;
+        overflow: hidden;
+        gap: 6px;
+        mask-image: linear-gradient(to right, #000 78%, transparent);
+        -webkit-mask-image: linear-gradient(to right, #000 78%, transparent);
+      }
+      .tag-chip {
+        font-size: 9.5px;
+        padding: 2px 6px;
+        flex: none;
+      }
+      .source-chip {
+        font-size: 10px;
+        flex: none;
+        max-width: 34vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .time-chip {
+        flex: none;
+      }
+      .species-badge {
+        font-size: 9.5px;
+        padding: 2px 6px;
+        flex: none;
+      }
+      .row-vote-cluster {
+        gap: 8px;
+      }
+      .vote-weight-pill {
+        font-size: 12px;
+        min-width: 44px;
+      }
+      .yap-bubble {
+        font-size: 10px;
       }
     }
   </style>
@@ -1483,18 +1573,11 @@
       <!-- Left-fixed cell: Platform pulse -->
       <div class="ticker-cell-left">
         <span class="brand-tag">
-          <span class="brand-square-bullet" aria-hidden="true"></span>
-          <svg class="brand-octopus-glyph" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--brand-lime)" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <svg class="brand-octopus-glyph" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--brand-lime)" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <circle cx="12" cy="8" r="5"/><path d="M8 12c-1 3-2 5-4 7M11 13c-.3 3-.5 5-1 8M14 13c.5 3 1 5 2 8M16 12c1.2 2.8 2.2 4.8 4 6.5"/>
           </svg>
-          <span class="radar-dot" title="Live stream active"></span>
           <span class="brand-tag-title">LVX://TERM</span>
         </span>
-        <div class="pulse-metrics mono" aria-label="Platform article velocity">
-          <span>1H:<span class="pulse-val" id="pulse-1h">0</span></span>
-          <span>6H:<span class="pulse-val" id="pulse-6h">9</span></span>
-          <span>24H:<span class="pulse-val" id="pulse-24h">27</span></span>
-        </div>
       </div>
 
       <!-- Center auto-scrolling marquee of trending topics -->
@@ -1505,8 +1588,13 @@
         </div>
       </div>
 
-      <!-- Right-fixed cell: UTC clock, Snapshot state, WS dot -->
+      <!-- Right-fixed cell: platform pulse, snapshot state, WS dot -->
       <div class="ticker-cell-right">
+        <div class="pulse-metrics pulse-metrics-right" id="pulse-metrics-right" aria-label="Platform pulse: items posted">
+          <span>1H:<span class="pulse-val" id="pulse-1h-r">–</span></span>
+          <span>6H:<span class="pulse-val" id="pulse-6h-r">–</span></span>
+          <span>24H:<span class="pulse-val" id="pulse-24h-r">–</span></span>
+        </div>
         <span class="snapshot-badge" id="stale-badge" style="display: none;" title="Using local fixture snapshot">
           STALE
         </span>
@@ -1514,7 +1602,6 @@
           <span class="ws-dot" id="ws-status-dot"></span>
           <span class="ws-status-txt mono" id="ws-status-txt">LIVE</span>
         </div>
-        <div class="clock-utc mono" id="utc-clock">00:00:00 <span class="clock-tz">UTC</span></div>
       </div>
 
     </header>
@@ -1563,6 +1650,7 @@
               <span class="wire-count" id="count-tsunami"></span>
             </button>
           </nav>
+        </section>
 
         <!-- Trending Narratives Section -->
         <section class="rail-section">
@@ -1776,15 +1864,14 @@
       var postersList = document.getElementById('posters-list');
       var yappersList = document.getElementById('yappers-list');
       var wireLogEl = document.getElementById('live-wire-log');
-      var utcClockEl = document.getElementById('utc-clock');
       var wsDot = document.getElementById('ws-status-dot');
       var wsTxt = document.getElementById('ws-status-txt');
       var staleBadge = document.getElementById('stale-badge');
 
-      // Pulse elements
-      var p1h = document.getElementById('pulse-1h');
-      var p6h = document.getElementById('pulse-6h');
-      var p24h = document.getElementById('pulse-24h');
+      // Pulse elements (right cell of top strip)
+      var p1h = document.getElementById('pulse-1h-r');
+      var p6h = document.getElementById('pulse-6h-r');
+      var p24h = document.getElementById('pulse-24h-r');
 
       // Skill copy button
       var btnCopySkill = document.getElementById('btn-copy-skill');
@@ -1802,16 +1889,6 @@
         });
       }
 
-      // UTC Clock ticker
-      function updateClock() {
-        var now = new Date();
-        var h = String(now.getUTCHours()).padStart(2, '0');
-        var m = String(now.getUTCMinutes()).padStart(2, '0');
-        var s = String(now.getUTCSeconds()).padStart(2, '0');
-        utcClockEl.innerHTML = h + ':' + m + ':' + s + ' <span class="clock-tz">UTC</span>';
-      }
-      setInterval(updateClock, 1000);
-      updateClock();
       // Species badge renderer
       function renderSpeciesBadge(user) {
         var meta = Leviathan.accountMeta(user);
@@ -2448,8 +2525,8 @@
         var headline = evt.headline || evt.slug || 'New intel item published';
         addWireLog(type.toUpperCase(), headline);
 
-        // Flash radar dot in header
-        var radar = document.querySelector('.radar-dot');
+        // Flash WS status dot on live event
+        var radar = document.getElementById('ws-status-dot');
         if (radar) {
           radar.style.boxShadow = '0 0 14px var(--brand-lime)';
           setTimeout(function () { radar.style.boxShadow = ''; }, 1200);
