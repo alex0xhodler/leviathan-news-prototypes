@@ -21,8 +21,8 @@
       --bg-surface-hover: var(--lvx-navy-700);/* subtle hover */
       --bg-well: color-mix(in oklch, var(--lvx-navy) 20%, #000000); /* inset wells / black mix */
 
-      --border-hairline: color-mix(in oklch, #ffffff 12%, transparent); /* borders: white 10-16% alpha */
-      --border-subtle: color-mix(in oklch, #ffffff 8%, transparent);
+      --border-hairline: color-mix(in oklch, #ffffff 10%, transparent); /* borders: white 10% alpha */
+      --border-subtle: color-mix(in oklch, #ffffff 6%, transparent);
       --border-lime-dim: var(--lvx-lime-dim);  /* lime at 14% alpha */
       --border-lime-bright: var(--lvx-lime);   /* brand primary lime #c1ff72 */
       --border-cyan-dim: var(--lvx-lime-dim);  /* alias fallback */
@@ -96,7 +96,7 @@
     /* Main Terminal Layout Grid */
     .terminal-shell {
       display: grid;
-      grid-template-rows: 40px 1fr;
+      grid-template-rows: 44px 1fr;
       height: 100vh;
       width: 100vw;
       overflow: hidden;
@@ -104,15 +104,15 @@
     }
 
     /* ============================================================
-       ROW 0: 40px TICKER STRIP
+       ROW 0: 44px TICKER STRIP
        ============================================================ */
     .ticker-strip {
-      height: 40px;
+      height: 44px;
       display: flex;
       align-items: center;
       background: var(--bg-rail);
       border-bottom: 1px solid var(--border-lime-dim);
-      box-shadow: 0 1px 0 0 color-mix(in oklch, var(--lvx-lime) 8%, transparent);
+      box-shadow: 0 1px 0 0 color-mix(in oklch, var(--lvx-lime) 10%, transparent);
       z-index: 50;
       user-select: none;
       overflow: hidden;
@@ -123,15 +123,15 @@
       height: 100%;
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 0 12px;
+      gap: 14px;
+      padding: 0 16px;
       background: var(--bg-rail);
       border-right: 1px solid var(--border-hairline);
       font-family: var(--font-mono);
       font-size: 11px;
       z-index: 2;
+      white-space: nowrap;
     }
-
     .brand-tag {
       font-family: var(--font-brand-display);
       font-weight: 700;
@@ -200,12 +200,15 @@
     .pulse-metrics {
       color: var(--text-dim);
       display: flex;
-      gap: 8px;
+      align-items: center;
+      gap: 12px;
       font-variant-numeric: tabular-nums;
+      font-size: 11px;
     }
     .pulse-val {
       color: var(--text-primary);
       font-weight: 600;
+      margin-left: 2px;
     }
 
     /* Marquee Center */
@@ -223,6 +226,7 @@
     .ticker-track {
       display: inline-flex;
       align-items: center;
+      gap: 28px;
       white-space: nowrap;
       animation: sweepIn 0.8s var(--ease-expo) 1, tickerMarquee 45s linear infinite;
       animation-delay: 0s, 0.8s;
@@ -248,30 +252,26 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 0 16px;
+      padding: 0;
       color: var(--text-secondary);
     }
     .ticker-item .tag-name {
-      color: var(--text-primary);
+      color: #e6e6e6;
       font-weight: 500;
       text-transform: uppercase;
     }
     .ticker-item .tag-count {
       color: var(--text-dim);
+      font-size: 10.5px;
     }
     .ticker-item .tag-velocity {
       font-weight: 700;
       color: var(--brand-lime);
+      font-family: var(--font-mono);
     }
     .ticker-item .tag-velocity.hot {
-      color: var(--brand-lime-ink);
-      background: var(--brand-lime);
-      padding: 1px 4px;
-      border-radius: 2px;
-    }
-    .ticker-sep {
-      color: color-mix(in oklch, #ffffff 15%, transparent);
-      margin: 0 4px;
+      color: var(--brand-lime);
+      text-shadow: 0 0 8px var(--brand-lime-dim);
     }
 
     /* Right fixed cell */
@@ -280,59 +280,76 @@
       height: 100%;
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 0 14px;
+      gap: 14px;
+      padding: 0 16px;
       background: var(--bg-rail);
       border-left: 1px solid var(--border-hairline);
       font-family: var(--font-mono);
       font-size: 11px;
       z-index: 2;
+      white-space: nowrap;
     }
 
     .snapshot-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      background: color-mix(in oklch, #d9d9d9 12%, transparent);
+      background: transparent;
       border: 1px solid color-mix(in oklch, #d9d9d9 35%, transparent);
       color: #d9d9d9;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 2px;
+      font-size: 9.5px;
       font-weight: 600;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.2;
     }
 
     .ws-indicator {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: var(--text-dim);
     }
     .ws-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
       background: color-mix(in oklch, #d9d9d9 35%, transparent);
+      flex-shrink: 0;
     }
     .ws-dot.live {
       background: var(--brand-lime);
       box-shadow: 0 0 6px var(--brand-lime);
     }
-    .ws-dot.live + span,
-    .ws-dot.live ~ span {
-      color: var(--brand-lime);
+    .ws-status-txt {
+      font-family: var(--font-mono);
+      font-size: 10px;
       font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--brand-lime);
     }
     .ws-dot.connecting, .ws-dot.reconnecting {
       background: #d9d9d9;
       box-shadow: 0 0 6px color-mix(in oklch, #d9d9d9 40%, transparent);
     }
+    .ws-dot.connecting ~ .ws-status-txt,
+    .ws-dot.reconnecting ~ .ws-status-txt {
+      color: #d9d9d9;
+    }
 
     .clock-utc {
-      color: var(--brand-lime);
-      font-weight: 700;
-      letter-spacing: 0.05em;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: 0.04em;
+    }
+    .clock-tz {
+      color: var(--text-dim);
+      font-size: 9.5px;
+      font-weight: 400;
+      margin-left: 3px;
     }
 
     /* ============================================================
@@ -340,11 +357,10 @@
        ============================================================ */
     .terminal-body {
       display: grid;
-      grid-template-columns: 220px 1fr 300px;
-      height: calc(100vh - 40px);
+      grid-template-columns: 220px 1fr 320px;
+      height: calc(100vh - 44px);
       overflow: hidden;
     }
-
     /* ============================================================
        LEFT RAIL (220px): WIRE FEEDS & UPLINK
        ============================================================ */
@@ -356,30 +372,36 @@
       height: 100%;
       overflow-y: auto;
       overflow-x: hidden;
-      padding-bottom: 72px; /* clearance for showcase dock */
+      padding: 16px 14px 72px 14px;
+      gap: 20px;
       user-select: none;
     }
 
     .rail-section {
-      padding: 12px 10px;
-      border-bottom: 1px solid var(--border-hairline);
+      padding: 0;
+      border: 0;
     }
 
     .rail-header {
       font-family: var(--font-brand-body);
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.08em;
-      color: var(--text-dim);
+      letter-spacing: 0.18em;
+      color: var(--lvx-gray);
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-hairline);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .rail-header .count-badge {
-      color: var(--brand-lime);
-      font-weight: 600;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
     }
 
     /* Search/Filter Box */
@@ -389,19 +411,20 @@
     }
     .filter-input {
       width: 100%;
+      height: 32px;
       background: var(--bg-well);
       border: 1px solid var(--border-hairline);
       border-radius: var(--r-sm);
       color: var(--text-primary);
       font-family: var(--font-mono);
       font-size: 11px;
-      padding: 8px 28px 8px 8px;
+      padding: 0 28px 0 8px;
       outline: none;
       transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
     }
     .filter-input:focus {
       border-color: var(--brand-lime);
-      box-shadow: 0 0 8px var(--brand-lime-dim);
+      box-shadow: 0 0 10px color-mix(in oklch, var(--lvx-lime) 30%, transparent);
     }
     .filter-input::placeholder {
       color: var(--text-dim);
@@ -414,9 +437,10 @@
       transform: translateY(-50%);
       font-family: var(--font-mono);
       font-size: 10px;
+      line-height: 1;
       color: var(--brand-lime);
       background: var(--brand-lime-dim);
-      padding: 1px 4px;
+      padding: 2px 4px;
       border-radius: 3px;
       border: 1px solid color-mix(in oklch, var(--lvx-lime) 25%, transparent);
       pointer-events: none;
@@ -426,13 +450,14 @@
     .wire-list {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
     }
     .wire-btn {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: 44px;
+      height: 36px;
+      min-height: 36px;
       padding: 0 10px;
       border-radius: var(--r-sm);
       background: transparent;
@@ -461,14 +486,13 @@
     }
     .wire-btn .wire-count {
       color: var(--text-dim);
-      font-size: 10px;
-      padding: 2px 5px;
-      background: var(--bg-well);
-      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
     }
     .wire-btn.active .wire-count {
-      color: var(--brand-lime-ink);
-      background: var(--brand-lime);
+      color: var(--brand-lime);
       font-weight: 700;
     }
 
@@ -481,8 +505,8 @@
     .narrative-item {
       display: flex;
       flex-direction: column;
-      gap: 3px;
-      padding: 8px 10px;
+      gap: 5px;
+      padding: 7px 10px;
       border-radius: var(--r-sm);
       background: var(--bg-well);
       border: 1px solid var(--border-hairline);
@@ -490,6 +514,7 @@
       transition: all var(--dur-fast);
       font-family: var(--font-mono);
       text-decoration: none;
+      min-width: 0;
     }
     .narrative-item:hover {
       background: var(--lvx-navy-700);
@@ -503,11 +528,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 11px;
+      min-width: 0;
     }
     .narrative-name {
       font-family: var(--font-brand-body);
-      color: var(--text-primary);
+      color: #ffffff;
+      font-size: 12px;
       font-weight: 600;
       text-transform: uppercase;
       overflow: hidden;
@@ -515,71 +541,74 @@
       white-space: nowrap;
     }
     .narrative-vel {
-      color: var(--brand-lime);
-      font-size: 10px;
-      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+      margin-left: 8px;
     }
-    .narrative-vel.hot {
-      color: var(--brand-lime-ink);
-      background: var(--brand-lime);
-      padding: 0 4px;
-      border-radius: 2px;
+    .narrative-vel.is-lime {
+      color: var(--brand-lime);
+    }
+    .narrative-vel.is-dim {
+      color: var(--text-dim);
     }
     .narrative-bar-track {
       width: 100%;
-      height: 3px;
+      height: 2px;
       background: color-mix(in oklch, #ffffff 8%, transparent);
-      border-radius: 2px;
+      border-radius: 1px;
       overflow: hidden;
     }
     .narrative-bar-fill {
       height: 100%;
-      border-radius: 2px;
-      background: var(--chart-3);
+      border-radius: 1px;
+      background: rgba(255, 255, 255, 0.7);
       transition: width var(--dur-med) var(--ease-expo);
     }
-    #narrative-list .narrative-item:nth-child(1) .narrative-bar-fill { background: var(--chart-1); }
-    #narrative-list .narrative-item:nth-child(2) .narrative-bar-fill { background: var(--chart-2); }
-    #narrative-list .narrative-item:nth-child(3) .narrative-bar-fill { background: var(--chart-3); }
-    #narrative-list .narrative-item:nth-child(4) .narrative-bar-fill { background: var(--chart-4); }
-    #narrative-list .narrative-item:nth-child(n+5) .narrative-bar-fill { background: var(--chart-5); }
-    .narrative-bar-fill.hot {
-      background: var(--brand-lime) !important;
+    .narrative-bar-fill.is-lime {
+      background: var(--brand-lime);
     }
 
     /* Agent Uplink Command Block */
     .agent-uplink-box {
       background: var(--bg-well);
-      border: 1px solid var(--brand-lime);
-      box-shadow: 0 0 16px var(--brand-lime-dim);
+      border: 1px solid var(--border-hairline);
+      box-shadow: 0 0 16px color-mix(in oklch, var(--lvx-lime) 8%, transparent);
       border-radius: var(--r-sm);
       padding: 10px;
       display: flex;
       flex-direction: column;
       gap: 8px;
+      min-width: 0;
     }
     .uplink-label {
       font-family: var(--font-brand-body);
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
       color: var(--brand-lime);
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
     .uplink-cmd-wrap {
       position: relative;
+      min-width: 0;
+      overflow: hidden;
     }
     .uplink-code {
       display: block;
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: 10.5px;
       line-height: 1.4;
       color: var(--text-primary);
       background: color-mix(in oklch, var(--lvx-navy) 15%, #000000);
-      padding: 8px 10px;
+      padding: 7px 8px;
       border-radius: 4px;
       border: 1px solid var(--border-hairline);
-      word-break: break-all;
+      overflow-x: auto;
+      white-space: nowrap;
+      word-break: normal;
       user-select: all;
     }
     .uplink-prompt {
@@ -588,17 +617,16 @@
       user-select: none;
     }
     .uplink-copy-btn {
-      margin-top: 6px;
       width: 100%;
       min-height: 32px;
       background: var(--brand-lime);
       border: 1px solid var(--brand-lime);
       border-radius: 4px;
-      color: var(--brand-lime-ink);
-      font-family: var(--font-mono);
-      font-size: 10px;
+      color: #021f53;
+      font-family: var(--font-brand-body);
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.06em;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -612,8 +640,7 @@
     }
     .uplink-copy-btn.copied {
       background: var(--brand-lime);
-      border-color: var(--brand-lime);
-      color: var(--brand-lime-ink);
+      color: #021f53;
     }
 
     .ws-chip-btn {
@@ -624,16 +651,16 @@
       padding: 6px 8px;
       color: var(--text-dim);
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: 10px;
       cursor: pointer;
       text-align: left;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow-x: auto;
       white-space: nowrap;
       transition: all var(--dur-fast);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 8px;
     }
     .ws-chip-btn:hover {
       border-color: color-mix(in oklch, var(--lvx-lime) 35%, transparent);
@@ -1183,7 +1210,7 @@
     }
 
     /* ============================================================
-       RIGHT RAIL (300px): MONTHLY LEDGER & LIVE WIRE LOG
+       RIGHT RAIL (320px): MONTHLY LEDGER & LIVE WIRE LOG
        ============================================================ */
     .right-rail {
       background: var(--bg-rail);
@@ -1193,54 +1220,49 @@
       height: 100%;
       overflow-y: auto;
       overflow-x: hidden;
-      padding-bottom: 72px; /* clearance for showcase dock */
+      padding: 16px 14px 72px 14px;
+      gap: 20px;
       user-select: none;
     }
 
     .ledger-list {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
     .ledger-row {
       display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 6px 8px;
+      align-items: center;
+      gap: 8px;
+      height: 48px;
+      min-height: 48px;
+      padding: 0 10px;
       border-radius: var(--r-sm);
       background: var(--bg-well);
       border: 1px solid var(--border-hairline);
-      transition: background-color var(--dur-fast);
+      transition: background-color var(--dur-fast), border-color var(--dur-fast);
+      box-sizing: border-box;
+      min-width: 0;
     }
     .ledger-row:hover {
       background: var(--lvx-navy-700);
-      border-color: color-mix(in oklch, var(--lvx-lime) 20%, transparent);
+      border-color: color-mix(in oklch, var(--lvx-lime) 25%, transparent);
     }
 
-    .ledger-row-top {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
     .ledger-rank {
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
       color: var(--text-dim);
-      width: 18px;
+      width: 22px;
       flex-shrink: 0;
+      text-align: left;
     }
-    /* Rank numbers of top-3 leaderboard entries in lime */
-    .ledger-list .ledger-row:nth-child(1) .ledger-rank,
-    .ledger-list .ledger-row:nth-child(2) .ledger-rank,
-    .ledger-list .ledger-row:nth-child(3) .ledger-rank {
-      color: var(--brand-lime);
-      font-weight: 700;
-      text-shadow: 0 0 8px var(--brand-lime-dim);
-    }
+
     .ledger-avatar {
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       object-fit: cover;
       background: var(--lvx-navy-700);
@@ -1248,12 +1270,12 @@
       flex-shrink: 0;
     }
     .ledger-avatar-initial {
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      background: var(--brand-lime-dim);
-      border: 1px solid color-mix(in oklch, var(--lvx-lime) 30%, transparent);
-      color: var(--brand-lime);
+      background: var(--lvx-navy-700);
+      border: 1px solid var(--border-hairline);
+      color: var(--text-secondary);
       font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 700;
@@ -1262,73 +1284,106 @@
       justify-content: center;
       flex-shrink: 0;
     }
-    .ledger-avatar-initial.yap {
-      background: var(--brand-lime-dim);
-      border-color: color-mix(in oklch, var(--brand-lime) 35%, transparent);
-      color: var(--brand-lime);
-    }
 
-    .ledger-user-wrap {
+    .ledger-name-block {
       flex: 1 1 auto;
       min-width: 0;
       display: flex;
-      align-items: center;
-      gap: 6px;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
       overflow: hidden;
     }
-    .ledger-user-name {
+
+    .ledger-name-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      line-height: 1.2;
+    }
+
+    /* 6px species dots */
+    .species-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: inline-block;
+    }
+    .species-dot-human {
+      background: #d9d9d9;
+    }
+    .species-dot-cyborg {
+      background: var(--brand-lime);
+    }
+    .species-dot-bot {
+      background: #021f53;
+      border: 1.5px solid var(--brand-lime);
+      box-sizing: border-box;
+    }
+
+    .ledger-display-name {
       font-family: var(--font-brand-body);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
-      color: var(--text-primary);
+      color: #ffffff;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .ledger-count {
+    .ledger-sub-line {
       font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--brand-lime);
-      text-align: right;
-      flex-shrink: 0;
-    }
-    .ledger-count.yap {
-      color: var(--brand-lime);
+      font-size: 9.5px;
+      color: var(--text-dim);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
     }
 
-    /* Market share bar: blue-violet ramp gradient by rank */
     .ledger-bar-track {
       width: 100%;
-      height: 3px;
+      height: 2px;
       background: color-mix(in oklch, #ffffff 8%, transparent);
-      border-radius: 2px;
+      border-radius: 1px;
       overflow: hidden;
+      margin-top: 2px;
     }
     .ledger-bar-fill {
       height: 100%;
-      border-radius: 2px;
-      background: var(--chart-3);
+      border-radius: 1px;
       transition: width var(--dur-med) var(--ease-expo);
     }
-    #posters-list .ledger-row:nth-child(1) .ledger-bar-fill { background: linear-gradient(90deg, var(--chart-1), var(--chart-2)); }
-    #posters-list .ledger-row:nth-child(2) .ledger-bar-fill { background: var(--chart-2); }
-    #posters-list .ledger-row:nth-child(3) .ledger-bar-fill { background: var(--chart-3); }
-    #posters-list .ledger-row:nth-child(4) .ledger-bar-fill { background: var(--chart-4); }
-    #posters-list .ledger-row:nth-child(n+5) .ledger-bar-fill { background: var(--chart-5); }
-    #posters-list .ledger-row .ledger-bar-fill.human { background: linear-gradient(90deg, #d9d9d9, var(--chart-2)); }
+    .ledger-bar-fill.bar-rank-1 {
+      background: var(--brand-lime);
+    }
+    .ledger-bar-fill.bar-rank-top {
+      background: rgba(255, 255, 255, 0.75);
+    }
+    .ledger-bar-fill.bar-rest {
+      background: color-mix(in oklch, #d9d9d9 40%, transparent);
+    }
 
-    #yappers-list .ledger-row:nth-child(1) .ledger-bar-fill { background: linear-gradient(90deg, var(--chart-1), var(--chart-2)); }
-    #yappers-list .ledger-row:nth-child(2) .ledger-bar-fill { background: var(--chart-2); }
-    #yappers-list .ledger-row:nth-child(3) .ledger-bar-fill { background: var(--chart-3); }
-    #yappers-list .ledger-row:nth-child(4) .ledger-bar-fill { background: var(--chart-4); }
-    #yappers-list .ledger-row:nth-child(n+5) .ledger-bar-fill { background: var(--chart-5); }
+    .ledger-activity-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--brand-lime);
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+      text-align: right;
+      margin-left: 8px;
+    }
 
     /* Live Wire Log Section */
     .live-wire-log {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
       font-family: var(--font-mono);
       font-size: 10px;
     }
@@ -1338,30 +1393,41 @@
       border: 1px solid var(--border-hairline);
       border-left: 2px solid var(--text-dim);
       border-radius: 3px;
-      line-height: 1.4;
+      line-height: 1.35;
       display: flex;
       flex-direction: column;
       gap: 2px;
-      word-break: break-word;
+      overflow: hidden;
+      min-width: 0;
       transition: border-color var(--dur-med);
     }
-    .log-line.flash-cyan, .log-line.flash-lime {
-      animation: flashLime 1.8s var(--ease-expo);
+    .log-line.flash-lime {
+      animation: flashLime800 800ms ease-out;
       border-left-color: var(--brand-lime);
     }
-    @keyframes flashLime {
-      0% { background: var(--brand-lime-dim); border-left-color: var(--brand-lime); }
-      100% { background: var(--bg-well); border-left-color: var(--text-dim); }
-    }
-    @keyframes flashCyan {
+    @keyframes flashLime800 {
       0% { background: var(--brand-lime-dim); border-left-color: var(--brand-lime); }
       100% { background: var(--bg-well); border-left-color: var(--text-dim); }
     }
     .log-meta {
       display: flex;
       justify-content: space-between;
-      color: var(--brand-lime);
+      align-items: center;
+      gap: 8px;
+    }
+    .log-type {
+      color: var(--text-dim);
       font-weight: 600;
+      font-size: 9.5px;
+      letter-spacing: 0.04em;
+    }
+    .log-type.is-approved {
+      color: var(--brand-lime);
+    }
+    .log-time {
+      color: var(--text-dim);
+      font-size: 9.5px;
+      font-variant-numeric: tabular-nums;
     }
     .log-text {
       color: var(--text-secondary);
@@ -1369,7 +1435,6 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-
     /* ============================================================
        MOBILE RESPONSIVE BREAKPOINTS (<900px)
        ============================================================ */
@@ -1409,7 +1474,7 @@
 
   <div class="terminal-shell">
 
-    <!-- ROW 0: 40px TICKER STRIP -->
+    <!-- ROW 0: 44px TICKER STRIP -->
     <header class="ticker-strip" role="banner" aria-label="Terminal status and trends ticker">
       
       <!-- Left-fixed cell: Platform pulse -->
@@ -1440,13 +1505,13 @@
       <!-- Right-fixed cell: UTC clock, Snapshot state, WS dot -->
       <div class="ticker-cell-right">
         <span class="snapshot-badge" id="stale-badge" style="display: none;" title="Using local fixture snapshot">
-          CACHED SNAPSHOT
+          STALE
         </span>
         <div class="ws-indicator" title="WebSocket link status">
           <span class="ws-dot" id="ws-status-dot"></span>
-          <span id="ws-status-txt">WS:INIT</span>
+          <span class="ws-status-txt mono" id="ws-status-txt">LIVE</span>
         </div>
-        <div class="clock-utc mono" id="utc-clock">00:00:00 UTC</div>
+        <div class="clock-utc mono" id="utc-clock">00:00:00 <span class="clock-tz">UTC</span></div>
       </div>
 
     </header>
@@ -1479,23 +1544,22 @@
 
           <nav class="wire-list" role="navigation" aria-label="Wire feed filters">
             <button class="wire-btn active" data-sort="hot" data-tf="7" id="filter-hot">
-              <span>HOT 7D</span>
+              <span class="wire-name">HOT 7D</span>
               <span class="wire-count" id="count-hot">20</span>
             </button>
             <button class="wire-btn" data-sort="new" data-tf="1" id="filter-new">
-              <span>NEW</span>
-              <span class="wire-count" id="count-new">LIVE</span>
+              <span class="wire-name">NEW</span>
+              <span class="wire-count" id="count-new"></span>
             </button>
             <button class="wire-btn" data-sort="top" data-tf="1" id="filter-top">
-              <span>TOP 24H</span>
-              <span class="wire-count" id="count-top">TOP</span>
+              <span class="wire-name">TOP 24H</span>
+              <span class="wire-count" id="count-top"></span>
             </button>
             <button class="wire-btn" data-sort="tsunami" data-tf="7" id="filter-tsunami">
-              <span>TSUNAMI</span>
-              <span class="wire-count" id="count-tsunami">VOL</span>
+              <span class="wire-name">TSUNAMI</span>
+              <span class="wire-count" id="count-tsunami"></span>
             </button>
           </nav>
-        </section>
 
         <!-- Trending Narratives Section -->
         <section class="rail-section">
@@ -1524,9 +1588,9 @@
             <button class="uplink-copy-btn" id="btn-copy-skill">
               <span>COPY COMMAND</span>
             </button>
-            <button class="ws-chip-btn" id="btn-copy-ws" title="Click to copy WebSocket endpoint">
-              <span>wss://api.leviathannews.xyz/ws/news/</span>
-              <span style="font-size: 8px;">COPY</span>
+            <button class="ws-chip-btn" id="btn-copy-ws" title="Click to copy WebSocket endpoint" data-label="wss://api.leviathannews.xyz/ws/news/">
+              <span class="ws-chip-text">wss://api.leviathannews.xyz/ws/news/</span>
+              <span class="ws-chip-action">COPY</span>
             </button>
           </div>
         </section>
@@ -1626,7 +1690,7 @@
 
       </section>
 
-      <!-- RIGHT RAIL: 300px -->
+      <!-- RIGHT RAIL: 320px -->
       <aside class="right-rail" aria-label="Intelligence ledger and live wire logs">
 
         <!-- Top Posters Section -->
@@ -1636,9 +1700,9 @@
             <span class="count-badge">[TOP 8]</span>
           </div>
           <div class="ledger-list" id="posters-list" role="list">
-            <div class="ledger-row shimmer-block" style="height: 38px;"></div>
-            <div class="ledger-row shimmer-block" style="height: 38px;"></div>
-            <div class="ledger-row shimmer-block" style="height: 38px;"></div>
+            <div class="ledger-row shimmer-block" style="height: 48px;"></div>
+            <div class="ledger-row shimmer-block" style="height: 48px;"></div>
+            <div class="ledger-row shimmer-block" style="height: 48px;"></div>
           </div>
         </section>
 
@@ -1649,13 +1713,13 @@
             <span class="count-badge">[TOP 5]</span>
           </div>
           <div class="ledger-list" id="yappers-list" role="list">
-            <div class="ledger-row shimmer-block" style="height: 38px;"></div>
-            <div class="ledger-row shimmer-block" style="height: 38px;"></div>
+            <div class="ledger-row shimmer-block" style="height: 48px;"></div>
+            <div class="ledger-row shimmer-block" style="height: 48px;"></div>
           </div>
         </section>
 
         <!-- Live Wire Log Section -->
-        <section class="rail-section" style="border-bottom: 0;">
+        <section class="rail-section">
           <div class="rail-header">
             <span>// LIVE WIRE LOG</span>
             <span class="count-badge" id="wire-events-count">[5]</span>
@@ -1741,11 +1805,10 @@
         var h = String(now.getUTCHours()).padStart(2, '0');
         var m = String(now.getUTCMinutes()).padStart(2, '0');
         var s = String(now.getUTCSeconds()).padStart(2, '0');
-        utcClockEl.textContent = h + ':' + m + ':' + s + ' UTC';
+        utcClockEl.innerHTML = h + ':' + m + ':' + s + ' <span class="clock-tz">UTC</span>';
       }
       setInterval(updateClock, 1000);
       updateClock();
-
       // Species badge renderer
       function renderSpeciesBadge(user) {
         var meta = Leviathan.accountMeta(user);
@@ -1767,11 +1830,11 @@
       };
 
       // Safe avatar error handler
-      window.handleAvatarErr = function (imgEl, initial, isYap) {
+      window.handleAvatarErr = function (imgEl, initial) {
         var parent = imgEl.parentElement;
         if (!parent) return;
         var div = document.createElement('div');
-        div.className = 'ledger-avatar-initial' + (isYap ? ' yap' : '');
+        div.className = 'ledger-avatar-initial';
         div.textContent = initial || '?';
         parent.replaceChild(div, imgEl);
       };
@@ -2072,7 +2135,8 @@
         Leviathan.fetchNews({ sort: sort, timeframe: tf, limit: 25 })
           .then(function (articles) {
             currentArticles = articles || [];
-            document.getElementById('count-hot').textContent = currentArticles.length;
+            var countEl = document.getElementById('count-' + sort);
+            if (countEl) countEl.textContent = currentArticles.length;
             applyFilters();
           })
           .catch(function () {
@@ -2090,7 +2154,8 @@
           activeTagFilter = null;
           var sort = btn.getAttribute('data-sort');
           var tf = btn.getAttribute('data-tf');
-          var title = btn.querySelector('span').textContent;
+          var titleEl = btn.querySelector('.wire-name') || btn.querySelector('span');
+          var title = titleEl ? titleEl.textContent : sort.toUpperCase();
           loadFeed(sort, tf, title + ' SIGNAL');
         });
       });
@@ -2128,14 +2193,13 @@
         // Populate Marquee Track (duplicated for seamless loop)
         var buildItems = function () {
           return topics.map(function (t) {
-            var velClass = (t.velocity >= 2.0) ? 'tag-velocity hot' : 'tag-velocity';
+            var vel = (t.velocity != null) ? t.velocity : 1.0;
             return [
               '<span class="ticker-item">',
                 '<span class="tag-name">' + Leviathan.esc(t.tag_name) + '</span>',
-                '<span class="tag-count">×' + t.article_count + '</span>',
-                '<span class="' + velClass + '">▲' + t.velocity.toFixed(1) + '</span>',
-              '</span>',
-              '<span class="ticker-sep">/</span>'
+                '<span class="tag-count">×' + (t.article_count || 1) + '</span>',
+                '<span class="tag-velocity">▲' + vel.toFixed(1) + '</span>',
+              '</span>'
             ].join('');
           }).join('');
         };
@@ -2148,8 +2212,9 @@
 
         narrativeList.innerHTML = '';
         topics.forEach(function (t) {
-          var pct = Math.min(100, Math.round(((t.velocity || 1) / maxVel) * 100));
-          var isHot = (t.velocity >= 2.0);
+          var vel = (t.velocity != null) ? t.velocity : 1.0;
+          var pct = Math.min(100, Math.round((vel / maxVel) * 100));
+          var isLime = vel >= 1.0;
           var div = document.createElement('div');
           div.className = 'narrative-item' + (activeTagFilter === t.slug ? ' active' : '');
           div.setAttribute('role', 'listitem');
@@ -2157,10 +2222,10 @@
           div.innerHTML = [
             '<div class="narrative-top">',
               '<span class="narrative-name">' + Leviathan.esc(t.tag_name) + '</span>',
-              '<span class="narrative-vel ' + (isHot ? 'hot' : '') + '">▲' + (t.velocity ? t.velocity.toFixed(1) : '1.0') + '</span>',
+              '<span class="narrative-vel ' + (isLime ? 'is-lime' : 'is-dim') + '">▲' + vel.toFixed(1) + '</span>',
             '</div>',
             '<div class="narrative-bar-track">',
-              '<div class="narrative-bar-fill ' + (isHot ? 'hot' : '') + '" style="width: ' + pct + '%;"></div>',
+              '<div class="narrative-bar-fill ' + (isLime ? 'is-lime' : '') + '" style="width: ' + pct + '%;"></div>',
             '</div>'
           ].join('');
 
@@ -2180,6 +2245,62 @@
         });
       }
 
+      // Leaderboard row builder: 48px anatomy, species dot, no chips, 2px market share bar
+      function createLeaderboardRow(entry, maxAct, rankIdx) {
+        var u = entry.user || {};
+        var act = Math.round(entry.activity_count || 0);
+        var pct = Math.min(100, Math.round((act / maxAct) * 100));
+        var initial = (u.display_name && u.display_name.charAt(0)) || 'U';
+        var meta = Leviathan.accountMeta(u);
+
+        var row = document.createElement('div');
+        row.className = 'ledger-row';
+        row.setAttribute('role', 'listitem');
+
+        var rankStr = '#' + entry.rank;
+        var dotClass = 'species-dot-' + (meta.type || 'human');
+
+        // Subtitle: species · model (e.g. 'CYBORG · CLAUDE OPUS 4.6' or 'HUMAN')
+        var subParts = [meta.label || 'HUMAN'];
+        if (meta.model) {
+          subParts.push(meta.model);
+        }
+        var subStr = subParts.join(' · ');
+
+        // Market-share bar: lime for #1, white for #2-3, gray-40% rest
+        var barClass = 'bar-rest';
+        if (entry.rank === 1 || rankIdx === 0) {
+          barClass = 'bar-rank-1';
+        } else if (entry.rank === 2 || entry.rank === 3 || rankIdx === 1 || rankIdx === 2) {
+          barClass = 'bar-rank-top';
+        }
+
+        var avatarHtml = '';
+        if (u.profile_picture) {
+          avatarHtml = '<img src="' + Leviathan.esc(u.profile_picture) + '" alt="' + Leviathan.esc(u.display_name || 'User') + '" class="ledger-avatar" onerror="handleAvatarErr(this, \'' + Leviathan.esc(initial) + '\')">';
+        } else {
+          avatarHtml = '<div class="ledger-avatar-initial">' + Leviathan.esc(initial) + '</div>';
+        }
+
+        row.innerHTML = [
+          '<span class="ledger-rank">' + rankStr + '</span>',
+          avatarHtml,
+          '<div class="ledger-name-block">',
+            '<div class="ledger-name-line">',
+              '<span class="species-dot ' + dotClass + '"></span>',
+              '<span class="ledger-display-name">' + Leviathan.esc(u.display_name || 'Anonymous') + '</span>',
+            '</div>',
+            '<div class="ledger-sub-line">' + Leviathan.esc(subStr) + '</div>',
+            '<div class="ledger-bar-track">',
+              '<div class="ledger-bar-fill ' + barClass + '" style="width: ' + pct + '%;"></div>',
+            '</div>',
+          '</div>',
+          '<span class="ledger-activity-num">' + act + '</span>'
+        ].join('');
+
+        return row;
+      }
+
       // Render Leaderboards (Right Rail)
       function renderLeaderboards(data) {
         if (!data) return;
@@ -2190,83 +2311,19 @@
           var maxPostAct = posters.reduce(function (m, p) { return Math.max(m, p.activity_count || 1); }, 1);
 
           postersList.innerHTML = '';
-          posters.forEach(function (entry) {
-            var u = entry.user || {};
-            var act = Math.round(entry.activity_count || 0);
-            var pct = Math.min(100, Math.round((act / maxPostAct) * 100));
-            var initial = (u.display_name && u.display_name.charAt(0)) || 'P';
-            var meta = Leviathan.accountMeta(u);
-            var fillCls = (meta.type === 'human') ? 'human' : '';
-
-            var row = document.createElement('div');
-            row.className = 'ledger-row';
-            row.setAttribute('role', 'listitem');
-
-            var avatarHtml = '';
-            if (u.profile_picture) {
-              avatarHtml = '<img src="' + Leviathan.esc(u.profile_picture) + '" alt="' + Leviathan.esc(u.display_name) + '" class="ledger-avatar" onerror="handleAvatarErr(this, \'' + Leviathan.esc(initial) + '\', false)">';
-            } else {
-              avatarHtml = '<div class="ledger-avatar-initial">' + Leviathan.esc(initial) + '</div>';
-            }
-
-            row.innerHTML = [
-              '<div class="ledger-row-top">',
-                '<span class="ledger-rank">#' + entry.rank + '</span>',
-                avatarHtml,
-                '<div class="ledger-user-wrap">',
-                  '<span class="ledger-user-name">' + Leviathan.esc(u.display_name || 'Agent') + '</span>',
-                  renderSpeciesBadge(u),
-                '</div>',
-                '<span class="ledger-count">' + act + '</span>',
-              '</div>',
-              '<div class="ledger-bar-track">',
-                '<div class="ledger-bar-fill ' + fillCls + '" style="width: ' + pct + '%;"></div>',
-              '</div>'
-            ].join('');
-
-            postersList.appendChild(row);
+          posters.forEach(function (entry, idx) {
+            postersList.appendChild(createLeaderboardRow(entry, maxPostAct, idx));
           });
         }
 
-        // TOP YAPPERS (top 5)
+        // TOP YAPPERS (top 5) — identical anatomy, no magenta
         if (data.top_yappers && data.top_yappers.entries) {
           var yappers = data.top_yappers.entries.slice(0, 5);
           var maxYapAct = yappers.reduce(function (m, y) { return Math.max(m, y.activity_count || 1); }, 1);
 
           yappersList.innerHTML = '';
-          yappers.forEach(function (entry) {
-            var u = entry.user || {};
-            var act = Math.round(entry.activity_count || 0);
-            var pct = Math.min(100, Math.round((act / maxYapAct) * 100));
-            var initial = (u.display_name && u.display_name.charAt(0)) || 'Y';
-
-            var row = document.createElement('div');
-            row.className = 'ledger-row';
-            row.setAttribute('role', 'listitem');
-
-            var avatarHtml = '';
-            if (u.profile_picture) {
-              avatarHtml = '<img src="' + Leviathan.esc(u.profile_picture) + '" alt="' + Leviathan.esc(u.display_name) + '" class="ledger-avatar" onerror="handleAvatarErr(this, \'' + Leviathan.esc(initial) + '\', true)">';
-            } else {
-              avatarHtml = '<div class="ledger-avatar-initial yap">' + Leviathan.esc(initial) + '</div>';
-            }
-
-            row.innerHTML = [
-              '<div class="ledger-row-top">',
-                '<span class="ledger-rank">#' + entry.rank + '</span>',
-                avatarHtml,
-                '<div class="ledger-user-wrap">',
-                  '<span class="ledger-user-name">' + Leviathan.esc(u.display_name || 'Yapper') + '</span>',
-                  renderSpeciesBadge(u),
-                '</div>',
-                '<span class="ledger-count yap">' + act + '</span>',
-              '</div>',
-              '<div class="ledger-bar-track">',
-                '<div class="ledger-bar-fill yap" style="width: ' + pct + '%;"></div>',
-              '</div>'
-            ].join('');
-
-            yappersList.appendChild(row);
+          yappers.forEach(function (entry, idx) {
+            yappersList.appendChild(createLeaderboardRow(entry, maxYapAct, idx));
           });
         }
       }
@@ -2287,12 +2344,13 @@
       function renderWireLogs() {
         wireLogEl.innerHTML = '';
         liveEvents.forEach(function (evt, idx) {
+          var isApproved = (evt.type || '').toUpperCase().indexOf('APPROV') !== -1;
           var line = document.createElement('div');
           line.className = 'log-line' + (idx === 0 ? ' flash-lime' : '');
           line.innerHTML = [
             '<div class="log-meta">',
-              '<span>' + Leviathan.esc(evt.type) + '</span>',
-              '<span>' + evt.time + '</span>',
+              '<span class="log-type' + (isApproved ? ' is-approved' : '') + '">' + Leviathan.esc(evt.type) + '</span>',
+              '<span class="log-time">' + Leviathan.esc(evt.time) + '</span>',
             '</div>',
             '<div class="log-text">' + Leviathan.esc(evt.text) + '</div>'
           ].join('');
@@ -2368,19 +2426,18 @@
         // WS status
         if (s.ws === 'live') {
           wsDot.className = 'ws-dot live';
-          wsTxt.textContent = 'WS:LIVE';
+          wsTxt.textContent = 'LIVE';
         } else if (s.ws === 'connecting') {
           wsDot.className = 'ws-dot connecting';
-          wsTxt.textContent = 'WS:CONNECTING';
+          wsTxt.textContent = 'CONNECTING';
         } else if (s.ws === 'reconnecting') {
           wsDot.className = 'ws-dot reconnecting';
-          wsTxt.textContent = 'WS:RECONNECT';
+          wsTxt.textContent = 'RECONNECT';
         } else {
           wsDot.className = 'ws-dot';
-          wsTxt.textContent = 'WS:OFF';
+          wsTxt.textContent = 'OFF';
         }
       });
-
       // WebSocket live event handler
       Leviathan.onEvent(function (evt) {
         if (!evt) return;
