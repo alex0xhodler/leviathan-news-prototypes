@@ -314,6 +314,12 @@
     .pulse-metrics-right .pulse-val {
       color: var(--brand-lime);
     }
+    .ticker-cell-right {
+      gap: 14px;
+    }
+    .key-hints {
+      opacity: 0.5;
+    }
 
     /* ============================================================
        MAIN THREE-PANE WORKSPACE
@@ -649,7 +655,7 @@
       height: 100%;
       overflow-y: auto;
       overflow-x: hidden;
-      padding-bottom: 72px; /* clearance for showcase dock */
+      padding-bottom: 96px; /* clearance for showcase dock */
       position: relative;
     }
 
@@ -922,6 +928,33 @@
     .acct-bot .badge-dot {
       background: #c1ff72;
     }
+
+    /* Plain species mark for feed rows: dot + micro label, no box */
+    .species-badge.plain {
+      background: none;
+      border: none;
+      padding: 0;
+      gap: 5px;
+      font-size: 9.5px;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+    .species-badge.plain.acct-human .badge-dot {
+      background: #d9d9d9;
+    }
+    .species-badge.plain.acct-cyborg {
+      color: var(--brand-lime);
+    }
+    .species-badge.plain.acct-cyborg .badge-dot {
+      background: #c1ff72;
+    }
+    .species-badge.plain.acct-bot {
+      color: var(--text-dim);
+    }
+    .species-badge.plain.acct-bot .badge-dot {
+      background: #021f53;
+      box-shadow: 0 0 0 1.5px #c1ff72;
+    }
     /* Right vote & yap cluster */
     .row-vote-cluster {
       display: flex;
@@ -937,7 +970,7 @@
       color: var(--brand-lime);
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       min-width: 54px;
       justify-content: flex-end;
       font-variant-numeric: tabular-nums;
@@ -1890,8 +1923,14 @@
       }
 
       // Species badge renderer
-      function renderSpeciesBadge(user) {
+      function renderSpeciesBadge(user, plain) {
         var meta = Leviathan.accountMeta(user);
+        if (plain) {
+          return '<span class="species-badge plain ' + meta.cls + '">' +
+            '<span class="badge-dot"></span>' +
+            '<span>' + meta.label + '</span>' +
+          '</span>';
+        }
         var html = '<span class="species-badge ' + meta.cls + '">';
         html += '<span class="badge-dot"></span>';
         html += '<span>' + meta.label + '</span>';
@@ -1999,15 +2038,15 @@
               '<div class="row-meta-chips">',
                 '<span class="source-chip">' + Leviathan.esc(sourceText) + '</span>',
                 tagsHtml,
-                renderSpeciesBadge(article.post_user),
+                renderSpeciesBadge(article.post_user, true),
                 '<span class="time-chip">' + timeStr + '</span>',
               '</div>',
             '</div>',
             '<div class="row-vote-cluster">',
               '<span class="vote-weight-pill" title="Total vote weight">',
-                '<span style="font-size:10px;">▲</span> ' + Leviathan.fmtWeight(voteWeight),
+                '<span style="font-size:10px;">▲</span>' + Leviathan.fmtWeight(voteWeight),
               '</span>',
-              '<span class="yap-bubble" title="Community yaps">' + yapCount + ' yaps</span>',
+              (yapCount > 0 ? '<span class="yap-bubble" title="Community yaps">' + yapCount + (yapCount === 1 ? ' yap' : ' yaps') + '</span>' : ''),
             '</div>',
           '</div>',
           '<div class="row-drawer-wrapper">',
