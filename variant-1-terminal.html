@@ -317,6 +317,33 @@
     .ticker-cell-right {
       gap: 14px;
     }
+    .active-tag-chip {
+      font-size: 9.5px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--brand-lime-dim);
+      border: 1px solid var(--brand-lime);
+      color: var(--brand-lime);
+      cursor: pointer;
+      white-space: nowrap;
+      flex: none;
+      letter-spacing: 0.05em;
+      transition: all var(--dur-fast);
+    }
+    .active-tag-chip:hover {
+      background: var(--brand-lime);
+      color: var(--lvx-navy-950, #021f53);
+    }
+    .brand-tag {
+      flex: 1;
+    }
+    .brand-tag::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      margin-left: 10px;
+      background: linear-gradient(to right, color-mix(in oklch, var(--lvx-lime) 35%, transparent), transparent);
+    }
     .key-hints {
       opacity: 0.5;
     }
@@ -341,7 +368,7 @@
       height: 100%;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 16px 14px 72px 14px;
+      padding: 16px 14px 16px 14px;
       gap: 20px;
       user-select: none;
     }
@@ -477,9 +504,11 @@
     }
     .narrative-item {
       display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 8px 10px;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      height: 30px;
+      padding: 0 10px;
       border-radius: var(--r-sm);
       background: var(--bg-well);
       border: 1px solid var(--border-hairline);
@@ -506,20 +535,26 @@
     .narrative-name {
       font-family: var(--font-brand-body);
       color: #ffffff;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      flex: none;
+      max-width: 55%;
+    }
+    .narrative-item.active .narrative-name {
+      color: var(--brand-lime);
     }
     .narrative-vel {
       font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 600;
       font-variant-numeric: tabular-nums;
-      flex-shrink: 0;
-      margin-left: 8px;
+      flex: none;
+      font-size: 10.5px;
     }
     .narrative-vel.is-lime {
       color: var(--brand-lime);
@@ -528,13 +563,16 @@
       color: var(--text-dim);
     }
     .narrative-bar-track {
-      width: 100%;
+      flex: 1;
       height: 2px;
+      min-width: 20px;
       background: color-mix(in oklch, #ffffff 8%, transparent);
       border-radius: 2px;
       overflow: hidden;
+      display: block;
     }
     .narrative-bar-fill {
+      display: block;
       height: 100%;
       border-radius: 2px;
       background: rgba(255, 255, 255, 0.7);
@@ -1471,6 +1509,14 @@
       .ticker-strip {
         height: 40px;
       }
+      .ticker-cell-left {
+        flex: 0 0 auto;
+        width: auto;
+        border-right: none;
+      }
+      .brand-tag::after {
+        display: none;
+      }
       .brand-tag {
         border: none;
         background: transparent;
@@ -1729,6 +1775,7 @@
           <div class="feed-meta-title">
             <span class="feed-name-txt" id="active-feed-name">HOT SIGNAL — 7D</span>
             <span class="feed-count-chip mono" id="article-count-badge">[ 0 ARTICLES ]</span>
+            <button class="active-tag-chip mono" id="active-tag-chip" style="display:none" title="Clear narrative filter (all)"></button>
           </div>
 
           <div class="key-hints" aria-hidden="true">
@@ -1883,7 +1930,7 @@
       var activeTimeframe = '7';
       var activeSort = 'hot';
       var selectedIndex = 0;
-      var activeTagFilter = null;
+      var activeTagFilters = new Set();
       var openDrawerId = null;
       var liveEvents = [];
 
@@ -1900,6 +1947,30 @@
       var wsDot = document.getElementById('ws-status-dot');
       var wsTxt = document.getElementById('ws-status-txt');
       var staleBadge = document.getElementById('stale-badge');
+
+      // Narrative filter chip in feed header (click = clear all)
+      var activeTagChip = document.getElementById('active-tag-chip');
+      function updateTagChip() {
+        if (!activeTagChip) return;
+        if (activeTagFilters.size === 0) {
+          activeTagChip.style.display = 'none';
+          return;
+        }
+        var names = Array.from(activeTagFilters).map(function (n) { return '#' + n.toUpperCase(); });
+        activeTagChip.textContent = names.slice(0, 2).join(' ') + (names.length > 2 ? ' +' + (names.length - 2) : '') + ' \u00d7';
+        activeTagChip.style.display = '';
+      }
+      if (activeTagChip) {
+        activeTagChip.addEventListener('click', function () {
+          activeTagFilters.clear();
+          document.querySelectorAll('.narrative-item.active').forEach(function (el) {
+            el.classList.remove('active');
+            el.setAttribute('aria-checked', 'false');
+          });
+          updateTagChip();
+          applyFilters();
+        });
+      }
 
       // Pulse elements (right cell of top strip)
       var p1h = document.getElementById('pulse-1h-r');
@@ -2197,10 +2268,10 @@
         var query = (filterInput.value || '').trim().toLowerCase();
 
         filteredArticles = currentArticles.filter(function (a) {
-          // Tag filter from left rail
-          if (activeTagFilter) {
+          // Narrative chip filter from left rail (multi-select, OR)
+          if (activeTagFilters.size > 0) {
             var hasTag = (a.tags || []).some(function (t) {
-              return t.slug === activeTagFilter || t.name.toLowerCase() === activeTagFilter.toLowerCase();
+              return activeTagFilters.has((t.name || '').toLowerCase()) || activeTagFilters.has((t.slug || '').toLowerCase());
             });
             if (!hasTag) return false;
           }
@@ -2270,7 +2341,8 @@
         btn.addEventListener('click', function () {
           wireButtons.forEach(function (b) { b.classList.remove('active'); });
           btn.classList.add('active');
-          activeTagFilter = null;
+          activeTagFilters.clear();
+          updateTagChip();
           var sort = btn.getAttribute('data-sort');
           var tf = btn.getAttribute('data-tf');
           var titleEl = btn.querySelector('.wire-name') || btn.querySelector('span');
@@ -2334,30 +2406,37 @@
           var vel = (t.velocity != null) ? t.velocity : 1.0;
           var pct = Math.min(100, Math.round((vel / maxVel) * 100));
           var isLime = vel >= 1.0;
+          var tagKey = (t.tag_name || '').toLowerCase();
           var div = document.createElement('div');
-          div.className = 'narrative-item' + (activeTagFilter === t.slug ? ' active' : '');
-          div.setAttribute('role', 'listitem');
+          div.className = 'narrative-item' + (activeTagFilters.has(tagKey) ? ' active' : '');
+          div.setAttribute('role', 'checkbox');
+          div.setAttribute('aria-checked', activeTagFilters.has(tagKey) ? 'true' : 'false');
           div.setAttribute('tabindex', '0');
+          div.setAttribute('title', 'Toggle narrative filter');
           div.innerHTML = [
-            '<div class="narrative-top">',
-              '<span class="narrative-name">' + Leviathan.esc(t.tag_name) + '</span>',
-              '<span class="narrative-vel ' + (isLime ? 'is-lime' : 'is-dim') + '">▲' + vel.toFixed(1) + '</span>',
-            '</div>',
-            '<div class="narrative-bar-track">',
-              '<div class="narrative-bar-fill ' + (isLime ? 'is-lime' : '') + '" style="width: ' + pct + '%;"></div>',
-            '</div>'
+            '<span class="narrative-name">' + Leviathan.esc(t.tag_name) + '</span>',
+            '<span class="narrative-bar-track">',
+              '<span class="narrative-bar-fill ' + (isLime ? 'is-lime' : '') + '" style="width: ' + pct + '%;"></span>',
+            '</span>',
+            '<span class="narrative-vel ' + (isLime ? 'is-lime' : 'is-dim') + '">▲' + vel.toFixed(1) + '</span>'
           ].join('');
 
-          div.addEventListener('click', function () {
-            if (activeTagFilter === t.slug) {
-              activeTagFilter = null;
+          var toggleTag = function () {
+            if (activeTagFilters.has(tagKey)) {
+              activeTagFilters.delete(tagKey);
               div.classList.remove('active');
+              div.setAttribute('aria-checked', 'false');
             } else {
-              document.querySelectorAll('.narrative-item').forEach(function (el) { el.classList.remove('active'); });
-              activeTagFilter = t.slug;
+              activeTagFilters.add(tagKey);
               div.classList.add('active');
+              div.setAttribute('aria-checked', 'true');
             }
+            updateTagChip();
             applyFilters();
+          };
+          div.addEventListener('click', toggleTag);
+          div.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTag(); }
           });
 
           narrativeList.appendChild(div);
