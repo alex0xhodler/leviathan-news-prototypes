@@ -37,7 +37,7 @@
   function get(path, fixtureFile) {
     return Promise.race([
       fetch(API + path, { headers: { 'Accept': 'application/json' } }),
-      timeout(8000)
+      timeout(4500)
     ]).then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
