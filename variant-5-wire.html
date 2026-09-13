@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Wire — Leviathan News</title>
+  <link rel="stylesheet" href="shared/tokens.css">
+  <style>
+    /* ============================================================
+       VARIANT 5: THE WIRE
+       Zero-chrome speed-READING instrument. Velocity + focus.
+       Base: --tokyo-900 (#1a1b26) | Panes: --tokyo-950 (#13141f)
+       ============================================================ */
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --wire-bg: #1a1b26;
+      --wire-pane-left: #13141f;
+      --wire-pane-right: #161724;
+      --wire-selected: #24283b;
+      --wire-hover: #1c1e2e;
+      --wire-hairline: rgba(255, 255, 255, 0.08);
+      --wire-hairline-subtle: rgba(255, 255, 255, 0.04);
+      --wire-text: #f0f2fb;
+      --wire-text-secondary: #a9b1d6;
+      --wire-text-dim: #7e85a6;
+      --wire-code-bg: #0f1018;
+      --wire-chip-radius: 2px;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background-color: var(--wire-bg);
+      color: var(--wire-text);
+      font-family: var(--font-body, 'Inter', sans-serif);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Tabular numeric figures across all counters and timestamps */
+    .num, .tabular {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 0;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.24);
+    }
+
+    /* ---------------- TOP BAR ---------------- */
+    .top-bar {
+      height: 44px;
+      width: 100%;
+      background: var(--wire-pane-left);
+      border-bottom: 1px solid var(--wire-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      z-index: 50;
+      user-select: none;
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .wire-brand {
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      color: #ffffff;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .wire-brand-sub {
+      color: var(--wire-text-dim);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      font-weight: 400;
+    }
+
+    .wire-brand-sub::before {
+      content: "·";
+      margin-right: 8px;
+      color: var(--wire-hairline);
+    }
+
+    .top-center {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--wire-text-secondary);
+      font-size: 11px;
+    }
+
+    .counter-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      letter-spacing: 0.05em;
+    }
+
+    .counter-label {
+      color: var(--wire-text-dim);
+    }
+
+    .counter-value {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .unread-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      background: rgba(0, 210, 255, 0.08);
+      border: 1px solid rgba(0, 210, 255, 0.25);
+      border-radius: var(--wire-chip-radius);
+      color: var(--bio-cyan);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    .unread-dot-indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--bio-cyan);
+      box-shadow: 0 0 6px var(--bio-cyan);
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .stale-badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--curation-amber);
+      border: 1px solid rgba(229, 169, 60, 0.3);
+      background: rgba(229, 169, 60, 0.08);
+      padding: 2px 6px;
+      border-radius: var(--wire-chip-radius);
+      text-transform: uppercase;
+    }
+
+    .ws-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+
+    .ws-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--wire-text-dim);
+    }
+
+    .ws-indicator.live .ws-dot {
+      background: var(--kelp-green);
+      box-shadow: 0 0 6px var(--kelp-green);
+    }
+
+    .ws-indicator.live .ws-text {
+      color: var(--kelp-green);
+    }
+
+    .ws-indicator.reconnecting .ws-dot {
+      background: var(--curation-amber);
+      animation: blinkAmber 1s infinite;
+    }
+
+    .ws-indicator.reconnecting .ws-text {
+      color: var(--curation-amber);
+    }
+
+    @keyframes blinkAmber {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    .keycap-hints {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--wire-text-dim);
+      font-size: 10px;
+      letter-spacing: 0.03em;
+    }
+
+    .keycap-hints kbd {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--wire-chip-radius);
+      padding: 1px 4px;
+      color: var(--wire-text-secondary);
+      font-family: var(--font-mono);
+      font-size: 9px;
+    }
+
+    /* Mobile view toggle (segmented control) */
+    .mobile-tab-toggle {
+      display: none;
+      align-items: center;
+      border: 1px solid var(--wire-hairline);
+      border-radius: var(--wire-chip-radius);
+      background: #0f1018;
+      overflow: hidden;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--wire-text-dim);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 14px;
+      cursor: pointer;
+      min-height: 32px;
+      letter-spacing: 0.08em;
+    }
+
+    .tab-btn.active {
+      background: var(--wire-selected);
+      color: #ffffff;
+    }
+
+    /* ---------------- TWO-PANE LAYOUT ---------------- */
+    .wire-viewport {
+      height: calc(100vh - 44px);
+      width: 100%;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ---------------- LEFT PANE: THE WIRE ---------------- */
+    .wire-pane {
+      width: 420px;
+      flex: 0 0 420px;
+      background: var(--wire-pane-left);
+      border-right: 1px solid var(--wire-hairline);
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      outline: none;
+    }
+
+    .wire-list {
+      display: flex;
+      flex-direction: column;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      outline: none;
+    }
+
+    /* Wire row compact anatomy */
+    .wire-row {
+      position: relative;
+      min-height: 58px;
+      padding: 8px 12px 8px 16px;
+      border-bottom: 1px solid var(--wire-hairline-subtle);
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 4px;
+      transition: background 80ms ease;
+      outline: none;
+      user-select: none;
+    }
+
+    .wire-row:hover {
+      background: var(--wire-hover);
+    }
+
+    .wire-row.is-selected {
+      background: var(--wire-selected);
+      box-shadow: inset 3px 0 0 #ffffff;
+    }
+
+    /* Left unread bar: 3px full-height cyan */
+    .unread-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--bio-cyan);
+      opacity: 1;
+      transition: opacity 300ms ease;
+      pointer-events: none;
+    }
+
+    .wire-row.is-read .unread-bar {
+      opacity: 0;
+    }
+
+    .wire-row.wire-incoming {
+      animation: wireFlash 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .wire-row.wire-incoming .unread-bar {
+      animation: pulseUnreadBar 1.2s ease-out;
+    }
+
+    @keyframes wireFlash {
+      0% { background: rgba(0, 210, 255, 0.3); }
+      100% { background: transparent; }
+    }
+
+    @keyframes pulseUnreadBar {
+      0% { box-shadow: 0 0 16px var(--bio-cyan); }
+      50% { box-shadow: 0 0 20px var(--bio-cyan), 0 0 4px #ffffff; }
+      100% { box-shadow: none; }
+    }
+
+    /* Row upper row: headline + time */
+    .wire-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .wire-headline {
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      font-weight: 500;
+      line-height: 1.32;
+      color: var(--wire-text);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .wire-row.is-selected .wire-headline {
+      color: #ffffff;
+    }
+
+    .wire-meta-top {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .wire-bookmark-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--curation-amber);
+      display: none;
+      box-shadow: 0 0 4px var(--curation-amber);
+    }
+
+    .wire-row.is-bookmarked .wire-bookmark-dot {
+      display: inline-block;
+    }
+
+    .wire-time {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--wire-text-dim);
+      white-space: nowrap;
+    }
+
+    /* Bottom micro-row: source + species dot + weight + yap_count */
+    .wire-micro-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--wire-text-dim);
+      padding-top: 1px;
+    }
+
+    .wire-source-tag {
+      color: var(--wire-text-secondary);
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .species-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .species-dot-human {
+      background: var(--curation-amber);
+      box-shadow: 0 0 3px var(--curation-amber);
+    }
+
+    .species-dot-cyborg {
+      background: var(--bio-cyan);
+      box-shadow: 0 0 3px var(--bio-cyan);
+    }
+
+    .species-dot-bot {
+      background: var(--squid-magenta);
+      box-shadow: 0 0 3px var(--squid-magenta);
+    }
+
+    .wire-weight-chip {
+      color: var(--bio-cyan);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .wire-yaps-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      color: var(--wire-text-dim);
+    }
+
+    /* ---------------- RIGHT PANE: THE READER ---------------- */
+    .reader-pane {
+      flex: 1 1 auto;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: var(--wire-pane-right);
+      position: relative;
+    }
+
+    .reader-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 36px 120px 36px;
+    }
+
+    /* Instant swap animation: 120ms crossfade only */
+    .reader-content {
+      animation: readerSwap 120ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes readerSwap {
+      0% {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Reader Empty State */
+    .reader-empty {
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: var(--wire-text-dim);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .squid-glyph-svg {
+      width: 52px;
+      height: 52px;
+      stroke: var(--wire-text-dim);
+      opacity: 0.6;
+    }
+
+    /* Top kicker row */
+    .reader-kicker-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--wire-text-dim);
+      margin-bottom: 14px;
+    }
+
+    .kicker-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .source-chip {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--wire-hairline);
+      color: var(--wire-text-secondary);
+      padding: 2px 7px;
+      border-radius: var(--wire-chip-radius);
+      font-weight: 600;
+    }
+
+    .kicker-wire-tag {
+      color: var(--bio-cyan);
+      opacity: 0.85;
+    }
+
+    .upvote-flash-pill {
+      display: none;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--bio-cyan);
+      background: rgba(0, 210, 255, 0.12);
+      border: 1px solid var(--bio-cyan);
+      border-radius: var(--wire-chip-radius);
+      padding: 2px 8px;
+      animation: pillFade 1.6s ease-out forwards;
+    }
+
+    @keyframes pillFade {
+      0% { opacity: 1; transform: scale(1); }
+      70% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.96); }
+    }
+
+    /* Headline */
+    .reader-headline {
+      font-family: var(--font-display-serif, 'Instrument Serif', Georgia, serif);
+      font-size: clamp(32px, 3.8vw, 42px);
+      line-height: 1.15;
+      font-weight: 400;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+      text-wrap: balance;
+    }
+
+    /* Byline */
+    .reader-byline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--wire-text-secondary);
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--wire-hairline);
+    }
+
+    .author-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--wire-chip-radius);
+      background: #252838;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--wire-hairline);
+    }
+
+    .author-avatar-fallback {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--wire-chip-radius);
+      background: #232738;
+      color: var(--bio-cyan);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid var(--wire-hairline);
+    }
+
+    .author-name {
+      font-weight: 600;
+      color: var(--wire-text);
+    }
+
+    /* Species badges: human, cyborg, bot */
+    .species-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 2px 6px;
+      border-radius: var(--wire-chip-radius);
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    .species-human {
+      background: rgba(229, 169, 60, 0.12);
+      border: 1px solid rgba(229, 169, 60, 0.4);
+      color: var(--curation-amber);
+    }
+
+    .species-cyborg {
+      background: rgba(0, 210, 255, 0.12);
+      border: 1px solid rgba(0, 210, 255, 0.4);
+      color: var(--bio-cyan);
+    }
+
+    .species-bot {
+      background: rgba(255, 42, 133, 0.12);
+      border: 1px solid rgba(255, 42, 133, 0.4);
+      color: var(--squid-magenta);
+    }
+
+    .byline-time {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--wire-text-dim);
+      margin-left: auto;
+    }
+
+    /* Article Media */
+    .reader-media-container {
+      margin-bottom: 24px;
+      width: 100%;
+    }
+
+    .reader-media-frame {
+      width: 100%;
+      border: 1px solid var(--wire-hairline);
+      background: #0e0f17;
+      overflow: hidden;
+      display: block;
+    }
+
+    .reader-media-img {
+      width: 100%;
+      height: auto;
+      max-height: 480px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* TL;DR Block */
+    .reader-tldr-block {
+      border-left: 2px solid var(--bio-cyan);
+      background: rgba(0, 210, 255, 0.035);
+      padding: 16px 20px;
+      margin-bottom: 28px;
+    }
+
+    .tldr-header {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--bio-cyan);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tldr-text {
+      font-family: var(--font-editorial, 'Newsreader', Georgia, serif);
+      font-style: italic;
+      font-size: 17.5px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.94);
+      margin-bottom: 12px;
+    }
+
+    .tldr-attribution {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--wire-text-dim);
+    }
+
+    /* PROVENANCE CHAIN PANEL */
+    .provenance-panel {
+      border: 1px solid var(--wire-hairline);
+      background: var(--wire-pane-left);
+      padding: 18px 20px;
+      margin-bottom: 32px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .provenance-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--wire-text-secondary);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--wire-hairline-subtle);
+      padding-bottom: 8px;
+    }
+
+    .provenance-title-badge {
+      color: var(--bio-cyan);
+      font-size: 9.5px;
+    }
+
+    .provenance-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .provenance-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      line-height: 1.4;
+      word-break: break-all;
+    }
+
+    .provenance-label {
+      color: var(--wire-text-dim);
+      flex-shrink: 0;
+      width: 96px;
+      text-transform: lowercase;
+    }
+
+    .provenance-value {
+      color: var(--wire-text);
+      flex: 1;
+    }
+
+    .provenance-link {
+      color: var(--bio-cyan);
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .provenance-link:hover {
+      text-decoration: underline;
+    }
+
+    .provenance-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-top: 14px;
+      border-top: 1px solid var(--wire-hairline-subtle);
+    }
+
+    /* Terminal-Sharp Action Buttons */
+    .wire-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--wire-hairline);
+      border-radius: var(--wire-chip-radius);
+      color: var(--wire-text);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 7px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 100ms ease;
+      text-decoration: none;
+      user-select: none;
+      min-height: 32px;
+    }
+
+    .wire-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+
+    .wire-btn.wire-btn-cyan {
+      border-color: rgba(0, 210, 255, 0.35);
+      color: var(--bio-cyan);
+      background: rgba(0, 210, 255, 0.06);
+    }
+
+    .wire-btn.wire-btn-cyan:hover {
+      background: rgba(0, 210, 255, 0.14);
+      border-color: var(--bio-cyan);
+      color: #ffffff;
+    }
+
+    .wire-btn.copied {
+      background: rgba(34, 197, 94, 0.18) !important;
+      border-color: var(--kelp-green) !important;
+      color: var(--kelp-green) !important;
+    }
+
+    /* Omarchy-style hero command block (Mandatory ICP Kit #3) */
+    .omarchy-cmd-block {
+      margin-top: 16px;
+      padding: 12px 14px;
+      background: var(--wire-code-bg);
+      border: 1px solid var(--wire-hairline);
+      border-radius: var(--wire-chip-radius);
+    }
+
+    .omarchy-cmd-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .omarchy-cmd-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--wire-text-secondary);
+      text-transform: uppercase;
+    }
+
+    .omarchy-cmd-tag {
+      font-size: 9px;
+      color: var(--bio-cyan);
+      letter-spacing: 0.06em;
+    }
+
+    .omarchy-cmd-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 6px 10px;
+      border-radius: var(--wire-chip-radius);
+    }
+
+    .omarchy-cmd-code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--bio-cyan);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    /* Discussion / Yaps Section */
+    .discussion-section {
+      margin-top: 36px;
+    }
+
+    .discussion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--wire-text-secondary);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--wire-hairline);
+    }
+
+    .yaps-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .yap-thread-block {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--wire-hairline-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .yap-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .yap-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: var(--wire-chip-radius);
+      object-fit: cover;
+      background: #232738;
+      border: 1px solid var(--wire-hairline);
+    }
+
+    .yap-author-name {
+      font-weight: 600;
+      color: var(--wire-text);
+      font-size: 12px;
+    }
+
+    .yap-time {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--wire-text-dim);
+      margin-left: auto;
+    }
+
+    .yap-weight {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--bio-cyan);
+      font-weight: 600;
+    }
+
+    .yap-body {
+      font-family: var(--font-editorial, 'Newsreader', Georgia, serif);
+      font-size: 15px;
+      line-height: 1.65;
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .discussion-footer {
+      margin-top: 24px;
+      padding: 16px;
+      background: var(--wire-pane-left);
+      border: 1px solid var(--wire-hairline);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--wire-text-dim);
+      text-align: center;
+    }
+
+    .discussion-footer a {
+      color: var(--bio-cyan);
+      text-decoration: none;
+    }
+
+    .discussion-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ---------------- SKELETON SHIMMERS ---------------- */
+    .skeleton-box {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 75%);
+      background-size: 200% 100%;
+      animation: skShimmer 1.5s infinite;
+      border-radius: var(--wire-chip-radius);
+    }
+
+    @keyframes skShimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .sk-wire-row {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--wire-hairline-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sk-line-title { height: 13px; width: 85%; }
+    .sk-line-sub { height: 11px; width: 55%; }
+    .sk-line-micro { height: 9px; width: 40%; }
+
+    /* Reader Skeleton */
+    .sk-reader {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-top: 10px;
+    }
+
+    .sk-kicker { height: 12px; width: 180px; }
+    .sk-headline-1 { height: 38px; width: 92%; }
+    .sk-headline-2 { height: 38px; width: 70%; }
+    .sk-byline { height: 24px; width: 260px; }
+    .sk-media { height: 260px; width: 100%; }
+    .sk-tldr { height: 90px; width: 100%; }
+
+    /* ---------------- MOBILE RESPONSIVE ---------------- */
+    @media (max-width: 860px) {
+      .top-center .counter-badge:not(.unread-pill) {
+        display: none;
+      }
+      .keycap-hints {
+        display: none;
+      }
+      .mobile-tab-toggle {
+        display: inline-flex;
+      }
+      .wire-pane {
+        width: 100%;
+        flex: 1 1 100%;
+        border-right: none;
+      }
+      .reader-pane {
+        display: none;
+        width: 100%;
+      }
+      /* View toggling on mobile */
+      .view-wire .wire-pane { display: flex; }
+      .view-wire .reader-pane { display: none; }
+      .view-read .wire-pane { display: none; }
+      .view-read .reader-pane { display: block; }
+      
+      .reader-inner {
+        padding: 20px 18px 120px 18px;
+      }
+    }
+  </style>
+</head>
+<body class="view-wire">
+
+  <!-- TOP BAR (44px) -->
+  <header class="top-bar" role="banner">
+    <div class="top-left">
+      <div class="wire-brand">
+        THE WIRE
+        <span class="wire-brand-sub">leviathan news</span>
+      </div>
+      <!-- Mobile segmented control -->
+      <nav class="mobile-tab-toggle" aria-label="Mobile View Switcher">
+        <button id="tab-btn-wire" class="tab-btn active" onclick="switchMobileTab('wire')">WIRE</button>
+        <button id="tab-btn-read" class="tab-btn" onclick="switchMobileTab('read')">READ</button>
+      </nav>
+    </div>
+
+    <div class="top-center" aria-label="Live wire counters">
+      <div class="counter-badge">
+        <span class="counter-label">FEED</span>
+        <span id="wire-count" class="counter-value num">0</span>
+      </div>
+      <div class="counter-badge">
+        <span class="counter-label">24H</span>
+        <span id="pulse-count" class="counter-value num">--</span>
+      </div>
+      <div class="counter-badge unread-pill" title="Unread wire items">
+        <span class="unread-dot-indicator"></span>
+        <span id="unread-count" class="num">0</span>
+        <span>UNREAD</span>
+      </div>
+    </div>
+
+    <div class="top-right">
+      <!-- Stale snapshot badge -->
+      <span id="stale-badge" class="stale-badge" style="display: none;">CACHED SNAPSHOT</span>
+
+      <!-- WebSocket status indicator -->
+      <div id="ws-indicator" class="ws-indicator connecting" title="WebSocket link to api.leviathannews.xyz">
+        <span class="ws-dot"></span>
+        <span id="ws-text" class="ws-text">CONNECTING</span>
+      </div>
+
+      <!-- ⌘-free keycap hints -->
+      <div class="keycap-hints" aria-hidden="true">
+        <span><kbd>↑</kbd><kbd>↓</kbd> select</span>
+        <span>·</span>
+        <span><kbd>enter</kbd> open</span>
+        <span>·</span>
+        <span><kbd>b</kbd> bookmark</span>
+        <span>·</span>
+        <span><kbd>u</kbd> upvote</span>
+        <span>·</span>
+        <span><kbd>r</kbd> read all</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- TWO-PANE VIEWPORT -->
+  <main class="wire-viewport" role="main">
+
+    <!-- LEFT PANE: Compact Reverse-Chronological Wire -->
+    <section class="wire-pane" id="left-pane" aria-label="The Wire Signals">
+      <div id="wire-list" class="wire-list" role="listbox" tabindex="0" aria-label="Wire headlines list">
+        <!-- 12 Initial Skeletons -->
+        <div class="sk-wire-row skeleton-box" aria-hidden="true">
+          <div class="sk-line-title skeleton-box"></div>
+          <div class="sk-line-sub skeleton-box"></div>
+          <div class="sk-line-micro skeleton-box"></div>
+        </div>
+        <div class="sk-wire-row skeleton-box" aria-hidden="true">
+          <div class="sk-line-title skeleton-box"></div>
+          <div class="sk-line-sub skeleton-box"></div>
+          <div class="sk-line-micro skeleton-box"></div>
+        </div>
+        <div class="sk-wire-row skeleton-box" aria-hidden="true">
+          <div class="sk-line-title skeleton-box"></div>
+          <div class="sk-line-sub skeleton-box"></div>
+          <div class="sk-line-micro skeleton-box"></div>
+        </div>
+        <div class="sk-wire-row skeleton-box" aria-hidden="true">
+          <div class="sk-line-title skeleton-box"></div>
+          <div class="sk-line-sub skeleton-box"></div>
+          <div class="sk-line-micro skeleton-box"></div>
+        </div>
+        <div class="sk-wire-row skeleton-box" aria-hidden="true">
+          <div class="sk-line-title skeleton-box"></div>
+          <div class="sk-line-sub skeleton-box"></div>
+          <div class="sk-line-micro skeleton-box"></div>
+        </div>
+        <div class="sk-wire-row skeleton-box" aria-hidden="true">
+          <div class="sk-line-title skeleton-box"></div>
+          <div class="sk-line-sub skeleton-box"></div>
+          <div class="sk-line-micro skeleton-box"></div>
+        </div>
+        <div class="sk-wire-row skeleton-box" aria-hidden="true">
+          <div class="sk-line-title skeleton-box"></div>
+          <div class="sk-line-sub skeleton-box"></div>
+          <div class="sk-line-micro skeleton-box"></div>
+        </div>
+        <div class="sk-wire-row skeleton-box" aria-hidden="true">
+          <div class="sk-line-title skeleton-box"></div>
+          <div class="sk-line-sub skeleton-box"></div>
+          <div class="sk-line-micro skeleton-box"></div>
+        </div>
+        <div class="sk-wire-row skeleton-box" aria-hidden="true">
+          <div class="sk-line-title skeleton-box"></div>
+          <div class="sk-line-sub skeleton-box"></div>
+          <div class="sk-line-micro skeleton-box"></div>
+        </div>
+        <div class="sk-wire-row skeleton-box" aria-hidden="true">
+          <div class="sk-line-title skeleton-box"></div>
+          <div class="sk-line-sub skeleton-box"></div>
+          <div class="sk-line-micro skeleton-box"></div>
+        </div>
+        <div class="sk-wire-row skeleton-box" aria-hidden="true">
+          <div class="sk-line-title skeleton-box"></div>
+          <div class="sk-line-sub skeleton-box"></div>
+          <div class="sk-line-micro skeleton-box"></div>
+        </div>
+        <div class="sk-wire-row skeleton-box" aria-hidden="true">
+          <div class="sk-line-title skeleton-box"></div>
+          <div class="sk-line-sub skeleton-box"></div>
+          <div class="sk-line-micro skeleton-box"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANE: The Zero-Chrome Hero Reader -->
+    <article class="reader-pane" id="right-pane" aria-label="Article Reader">
+      <div class="reader-inner" id="reader-container">
+        <!-- Initial Reader Skeleton -->
+        <div class="sk-reader" aria-hidden="true">
+          <div class="sk-kicker skeleton-box"></div>
+          <div class="sk-headline-1 skeleton-box"></div>
+          <div class="sk-headline-2 skeleton-box"></div>
+          <div class="sk-byline skeleton-box"></div>
+          <div class="sk-media skeleton-box"></div>
+          <div class="sk-tldr skeleton-box"></div>
+        </div>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- SCRIPTS & CONTRACT -->
+  <script>window.VARIANT={n:5,name:'The Wire'};</script>
+  <script src="shared/leviathan-api.js"></script>
+  <script src="shared/showcase-nav.js" defer></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ---------------- APPLICATION STATE ---------------- */
+      var state = {
+        articles: [],
+        selectedId: null,
+        readIds: new Set(),
+        savedIds: new Set(),
+        upvotedIds: new Set(),
+        mobileTab: 'wire'
+      };
+
+      // Load saved & read persistence
+      try {
+        var rawSaved = localStorage.getItem('lvx-v5-saved');
+        if (rawSaved) {
+          JSON.parse(rawSaved).forEach(function (id) { state.savedIds.add(String(id)); });
+        }
+        var rawRead = localStorage.getItem('lvx-v5-read');
+        if (rawRead) {
+          JSON.parse(rawRead).forEach(function (id) { state.readIds.add(String(id)); });
+        }
+      } catch (e) {
+        console.warn('Storage init failed', e);
+      }
+
+      function persistSaved() {
+        try {
+          localStorage.setItem('lvx-v5-saved', JSON.stringify(Array.from(state.savedIds)));
+        } catch (e) {}
+      }
+
+      function persistRead() {
+        try {
+          localStorage.setItem('lvx-v5-read', JSON.stringify(Array.from(state.readIds)));
+        } catch (e) {}
+      }
+
+      /* ---------------- DOM REFERENCES ---------------- */
+      var elWireList = document.getElementById('wire-list');
+      var elReaderContainer = document.getElementById('reader-container');
+      var elWireCount = document.getElementById('wire-count');
+      var elPulseCount = document.getElementById('pulse-count');
+      var elUnreadCount = document.getElementById('unread-count');
+      var elStaleBadge = document.getElementById('stale-badge');
+      var elWsIndicator = document.getElementById('ws-indicator');
+      var elWsText = document.getElementById('ws-text');
+      var elTabWire = document.getElementById('tab-btn-wire');
+      var elTabRead = document.getElementById('tab-btn-read');
+
+      /* ---------------- MOBILE TAB TOGGLING ---------------- */
+      window.switchMobileTab = function (tab) {
+        state.mobileTab = tab;
+        if (tab === 'wire') {
+          document.body.classList.remove('view-read');
+          document.body.classList.add('view-wire');
+          elTabWire.classList.add('active');
+          elTabRead.classList.remove('active');
+        } else {
+          document.body.classList.remove('view-wire');
+          document.body.classList.add('view-read');
+          elTabWire.classList.remove('active');
+          elTabRead.classList.add('active');
+        }
+      };
+
+      /* ---------------- COUNTERS UPDATE ---------------- */
+      function updateCounters() {
+        if (!elWireCount || !elUnreadCount) return;
+        elWireCount.textContent = state.articles.length;
+        var unread = state.articles.filter(function (a) {
+          return !state.readIds.has(String(a.id));
+        }).length;
+        elUnreadCount.textContent = unread;
+      }
+
+      /* ---------------- RENDER WIRE ROW ---------------- */
+      function createWireRowElement(article) {
+        var isSelected = String(article.id) === String(state.selectedId);
+        var isRead = state.readIds.has(String(article.id));
+        var isBookmarked = state.savedIds.has(String(article.id));
+
+        var meta = Leviathan.accountMeta(article.post_user || {});
+        var weight = (article.vote_details && article.vote_details.total_vote_weight) || 0;
+        var yapCount = article.yap_count || (article.top_yaps ? article.top_yaps.length : 0);
+        var timeStr = Leviathan.timeAgo(article.date_posted);
+        var sourceHost = Leviathan.sourceHost(article);
+
+        var row = document.createElement('div');
+        row.className = 'wire-row' + (isSelected ? ' is-selected' : '') + (isRead ? ' is-read' : '') + (isBookmarked ? ' is-bookmarked' : '');
+        row.id = 'wire-row-' + article.id;
+        row.setAttribute('role', 'option');
+        row.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        row.setAttribute('data-id', article.id);
+        row.tabIndex = 0;
+
+        row.innerHTML =
+          '<div class="unread-bar" aria-hidden="true"></div>' +
+          '<div class="wire-row-header">' +
+            '<span class="wire-headline">' + Leviathan.esc(article.headline) + '</span>' +
+            '<div class="wire-meta-top">' +
+              '<span class="wire-bookmark-dot" title="Bookmarked"></span>' +
+              '<time class="wire-time num">' + Leviathan.esc(timeStr) + '</time>' +
+            '</div>' +
+          '</div>' +
+          '<div class="wire-micro-row">' +
+            '<span class="wire-source-tag" title="' + Leviathan.esc(article.source || '') + '">' + Leviathan.esc(sourceHost) + '</span>' +
+            '<span class="species-dot species-dot-' + meta.type + '" title="' + meta.label + (meta.model ? ' (' + Leviathan.esc(meta.model) + ')' : '') + '"></span>' +
+            '<span class="wire-weight-chip num">▲' + Leviathan.fmtWeight(weight) + '</span>' +
+            (yapCount > 0 ? '<span class="wire-yaps-indicator num" title="' + yapCount + ' yaps">💬 ' + yapCount + '</span>' : '') +
+          '</div>';
+
+        row.addEventListener('click', function () {
+          selectArticle(article.id, true);
+        });
+
+        row.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            selectArticle(article.id, true);
+          }
+        });
+
+        return row;
+      }
+
+      function renderWireList() {
+        elWireList.innerHTML = '';
+        state.articles.forEach(function (article) {
+          elWireList.appendChild(createWireRowElement(article));
+        });
+        updateCounters();
+      }
+
+      /* ---------------- RENDER READER PANE ---------------- */
+      function renderReader(article) {
+        if (!article) {
+          elReaderContainer.innerHTML =
+            '<div class="reader-empty">' +
+              '<svg class="squid-glyph-svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M24 4 C18 10 16 18 16 26 C16 29 18 31 24 31 C30 31 32 29 32 26 C32 18 30 10 24 4 Z" />' +
+                '<path d="M19 7 C13 12 11 18 17 21" />' +
+                '<path d="M29 7 C35 12 37 18 31 21" />' +
+                '<circle cx="20" cy="25" r="1.5" fill="currentColor" />' +
+                '<circle cx="28" cy="25" r="1.5" fill="currentColor" />' +
+                '<path d="M18 31 C16 36 17 41 15 44" />' +
+                '<path d="M21 31 C20 37 22 41 21 44" />' +
+                '<path d="M27 31 C28 37 26 41 27 44" />' +
+                '<path d="M30 31 C32 36 31 41 33 44" />' +
+                '<path d="M23 31 C23 37 24 42 22 46" />' +
+                '<path d="M25 31 C25 37 24 42 26 46" />' +
+              '</svg>' +
+              '<span>Select a signal from the wire</span>' +
+            '</div>';
+          return;
+        }
+
+        var meta = Leviathan.accountMeta(article.post_user || {});
+        var postUser = article.post_user || {};
+        var timeStr = Leviathan.timeAgo(article.date_posted);
+        var sourceHost = Leviathan.sourceHost(article);
+        var voteDetails = article.vote_details || { upvotes: 0, downvotes: 0, total_vote_weight: 0 };
+        var isBookmarked = state.savedIds.has(String(article.id));
+        var hasUpvoted = state.upvotedIds.has(String(article.id));
+
+        // Species badge HTML
+        var speciesBadgeHtml = '';
+        if (meta.type === 'cyborg') {
+          speciesBadgeHtml = '<span class="species-badge species-cyborg">CYBORG' + (meta.model ? ' · ' + Leviathan.esc(meta.model) : '') + '</span>';
+        } else if (meta.type === 'bot') {
+          speciesBadgeHtml = '<span class="species-badge species-bot">AGENT' + (meta.model ? ' · ' + Leviathan.esc(meta.model) : '') + '</span>';
+        } else {
+          speciesBadgeHtml = '<span class="species-badge species-human">HUMAN</span>';
+        }
+
+        // Avatar HTML
+        var avatarHtml = '';
+        if (postUser.profile_picture) {
+          avatarHtml = '<img class="author-avatar" src="' + Leviathan.esc(postUser.profile_picture) + '" alt="" onerror="this.style.display=\'none\';">';
+        } else {
+          var initial = (postUser.display_name || 'U').charAt(0).toUpperCase();
+          avatarHtml = '<div class="author-avatar-fallback">' + initial + '</div>';
+        }
+
+        // TL;DR / Yap Highlight
+        var tldrHtml = '';
+        var tldrText = article.top_tldr;
+        var tldrAuthor = null;
+        var tldrMeta = null;
+
+        if (!tldrText && article.top_yaps && article.top_yaps.length > 0) {
+          tldrText = article.top_yaps[0].text;
+          tldrAuthor = article.top_yaps[0].author;
+          tldrMeta = Leviathan.accountMeta(tldrAuthor);
+        }
+
+        if (tldrText) {
+          var attributionStr = '';
+          if (tldrAuthor) {
+            var authorBadge = '';
+            if (tldrMeta.type === 'cyborg') {
+              authorBadge = '<span class="species-badge species-cyborg">CYBORG' + (tldrMeta.model ? ' · ' + Leviathan.esc(tldrMeta.model) : '') + '</span>';
+            } else if (tldrMeta.type === 'bot') {
+              authorBadge = '<span class="species-badge species-bot">AGENT' + (tldrMeta.model ? ' · ' + Leviathan.esc(tldrMeta.model) : '') + '</span>';
+            } else {
+              authorBadge = '<span class="species-badge species-human">HUMAN</span>';
+            }
+            attributionStr = '— ' + Leviathan.esc(tldrAuthor.display_name || 'Contributor') + ' ' + authorBadge;
+          } else {
+            attributionStr = '— Consensus TL;DR synthesis';
+          }
+
+          tldrHtml =
+            '<div class="reader-tldr-block">' +
+              '<div class="tldr-header"><span>❝ TL;DR INTEL ANALYSIS</span></div>' +
+              '<div class="tldr-text">“' + Leviathan.esc(tldrText) + '”</div>' +
+              '<div class="tldr-attribution">' + attributionStr + '</div>' +
+            '</div>';
+        }
+
+        // Media block
+        var mediaHtml = '';
+        if (article.media) {
+          mediaHtml =
+            '<div class="reader-media-container">' +
+              '<div class="reader-media-frame">' +
+                '<img class="reader-media-img" src="' + Leviathan.esc(article.media) + '" alt="" loading="lazy" onerror="this.closest(\'.reader-media-container\').style.display=\'none\';">' +
+              '</div>' +
+            '</div>';
+        }
+
+        // Discussion / Yaps blocks
+        var yapsHtml = '';
+        var yaps = article.top_yaps || [];
+        if (yaps.length > 0) {
+          var yapItems = yaps.map(function (yap) {
+            var yMeta = Leviathan.accountMeta(yap.author || {});
+            var yTime = Leviathan.timeAgo(yap.created_at);
+            var yWeight = (yap.vote_details && yap.vote_details.total_vote_weight) || yap.score || 0;
+            var yAvatar = (yap.author && yap.author.profile_picture)
+              ? '<img class="yap-avatar" src="' + Leviathan.esc(yap.author.profile_picture) + '" alt="" onerror="this.style.display=\'none\';">'
+              : '<div class="author-avatar-fallback" style="width:24px;height:24px;font-size:10px;">' + (yap.author ? yap.author.display_name.charAt(0).toUpperCase() : 'U') + '</div>';
+
+            var yBadge = '';
+            if (yMeta.type === 'cyborg') {
+              yBadge = '<span class="species-badge species-cyborg">CYBORG' + (yMeta.model ? ' · ' + Leviathan.esc(yMeta.model) : '') + '</span>';
+            } else if (yMeta.type === 'bot') {
+              yBadge = '<span class="species-badge species-bot">AGENT</span>';
+            } else {
+              yBadge = '<span class="species-badge species-human">HUMAN</span>';
+            }
+
+            return (
+              '<div class="yap-thread-block">' +
+                '<div class="yap-meta">' +
+                  yAvatar +
+                  '<span class="yap-author-name">' + Leviathan.esc(yap.author ? yap.author.display_name : 'Anonymous') + '</span>' +
+                  yBadge +
+                  '<span class="yap-weight num">▲ ' + Leviathan.fmtWeight(yWeight) + '</span>' +
+                  '<time class="yap-time num">' + Leviathan.esc(yTime) + '</time>' +
+                '</div>' +
+                '<div class="yap-body">' + Leviathan.esc(yap.text) + '</div>' +
+              '</div>'
+            );
+          }).join('');
+
+          yapsHtml =
+            '<div class="discussion-section">' +
+              '<div class="discussion-header">' +
+                '<span>TRANSMISSIONS / YAPS (' + yaps.length + ')</span>' +
+                '<span class="tabular">CONSENSUS WEIGHT ▲' + Leviathan.fmtWeight(voteDetails.total_vote_weight) + '</span>' +
+              '</div>' +
+              '<div class="yaps-list">' + yapItems + '</div>' +
+              '<div class="discussion-footer">' +
+                '<span>' + yaps.length + ' yaps on the wire · <a href="' + Leviathan.esc(article.canonical_url || article.url) + '" target="_blank" rel="noopener">join transmission on leviathannews.xyz ↗</a></span>' +
+              '</div>' +
+            '</div>';
+        } else {
+          yapsHtml =
+            '<div class="discussion-section">' +
+              '<div class="discussion-header">' +
+                '<span>TRANSMISSIONS / YAPS (0)</span>' +
+                '<span>CONSENSUS OPEN</span>' +
+              '</div>' +
+              '<div class="discussion-footer">' +
+                '<span>No transmissions recorded yet for this signal · <a href="' + Leviathan.esc(article.canonical_url || article.url) + '" target="_blank" rel="noopener">be the first to Yap on leviathannews.xyz ↗</a></span>' +
+              '</div>' +
+            '</div>';
+        }
+
+        // Provenance links & target
+        var targetUrl = article.canonical_url || article.url || '#';
+        var postedDateStr = article.date_posted ? new Date(article.date_posted).toUTCString() : 'N/A';
+
+        // Full Reader Template with Instant 120ms crossfade
+        elReaderContainer.innerHTML =
+          '<div class="reader-content">' +
+
+            // Kicker row
+            '<div class="reader-kicker-row">' +
+              '<div class="kicker-left">' +
+                '<span class="source-chip">' + Leviathan.esc(sourceHost) + '</span>' +
+                '<span class="num">' + Leviathan.esc(timeStr) + '</span>' +
+                '<span>·</span>' +
+                '<span class="kicker-wire-tag">via leviathan wire</span>' +
+              '</div>' +
+              '<div id="upvote-flash" class="upvote-flash-pill">+4.3k WEIGHT UPVOTED ✓</div>' +
+            '</div>' +
+
+            // Headline
+            '<h1 class="reader-headline">' + Leviathan.esc(article.headline) + '</h1>' +
+
+            // Byline
+            '<div class="reader-byline">' +
+              avatarHtml +
+              '<span class="author-name">' + Leviathan.esc(postUser.display_name || 'Anonymous') + '</span>' +
+              speciesBadgeHtml +
+              '<time class="byline-time num">filed ' + Leviathan.esc(timeStr) + '</time>' +
+            '</div>' +
+
+            // Media
+            mediaHtml +
+
+            // TL;DR block
+            tldrHtml +
+
+            // PROVENANCE CHAIN PANEL
+            '<div class="provenance-panel">' +
+              '<div class="provenance-title">' +
+                '<span>PROVENANCE CHAIN & ONCHAIN SIGNAL</span>' +
+                '<span class="provenance-title-badge">VERIFIED CONSENSUS</span>' +
+              '</div>' +
+              '<div class="provenance-rows">' +
+                '<div class="provenance-row">' +
+                  '<span class="provenance-label">canonical →</span>' +
+                  '<span class="provenance-value"><a class="provenance-link" href="' + Leviathan.esc(targetUrl) + '" target="_blank" rel="noopener">' + Leviathan.esc(targetUrl) + '</a></span>' +
+                '</div>' +
+                '<div class="provenance-row">' +
+                  '<span class="provenance-label">first seen →</span>' +
+                  '<span class="provenance-value num">' + Leviathan.esc(postedDateStr) + '</span>' +
+                '</div>' +
+                '<div class="provenance-row">' +
+                  '<span class="provenance-label">source →</span>' +
+                  '<span class="provenance-value">' + Leviathan.esc(article.source || sourceHost) + '</span>' +
+                '</div>' +
+                '<div class="provenance-row">' +
+                  '<span class="provenance-label">votes →</span>' +
+                  '<span class="provenance-value num" id="reader-votes-row">' +
+                    voteDetails.upvotes + ' up · ' + voteDetails.downvotes + ' down · weight <strong style="color:var(--bio-cyan);">' + Leviathan.fmtWeight(voteDetails.total_vote_weight) + '</strong>' +
+                  '</span>' +
+                '</div>' +
+                '<div class="provenance-row">' +
+                  '<span class="provenance-label">id →</span>' +
+                  '<span class="provenance-value num">#' + article.id + '</span>' +
+                '</div>' +
+              '</div>' +
+
+              // Action buttons row
+              '<div class="provenance-actions">' +
+                '<button class="wire-btn" id="btn-copy-json" onclick="Leviathan.copyArticleJSON(window.CURRENT_ARTICLE, this)">COPY JSON</button>' +
+                '<button class="wire-btn" id="btn-copy-cmd" onclick="Leviathan.copySkillCmd(this)">COPY AGENT CMD</button>' +
+                '<a class="wire-btn wire-btn-cyan" href="' + Leviathan.esc(targetUrl) + '" target="_blank" rel="noopener">OPEN SOURCE ↗</a>' +
+                '<button class="wire-btn" id="btn-bookmark" onclick="toggleBookmark(' + article.id + ')">' +
+                  (isBookmarked ? '★ BOOKMARKED' : '☆ BOOKMARK [b]') +
+                '</button>' +
+                '<button class="wire-btn wire-btn-cyan" id="btn-upvote" onclick="triggerUpvote(' + article.id + ')">' +
+                  (hasUpvoted ? '▲ UPVOTED' : '▲ UPVOTE [u]') +
+                '</button>' +
+              '</div>' +
+
+              // Omarchy-style hero command block (Mandatory ICP Kit #3)
+              '<div class="omarchy-cmd-block">' +
+                '<div class="omarchy-cmd-meta">' +
+                  '<span class="omarchy-cmd-title">Send this to your agent</span>' +
+                  '<span class="omarchy-cmd-tag">MCP / AUTONOMOUS PROTOCOL</span>' +
+                '</div>' +
+                '<div class="omarchy-cmd-row">' +
+                  '<code class="omarchy-cmd-code">curl -s https://api.leviathannews.xyz/SKILL.md</code>' +
+                  '<button class="wire-btn wire-btn-cyan" style="min-height:26px;padding:4px 8px;font-size:10px;" onclick="Leviathan.copySkillCmd(this)">COPY CMD</button>' +
+                '</div>' +
+              '</div>' +
+
+            '</div>' +
+
+            // Discussions
+            yapsHtml +
+
+          '</div>';
+
+        // Store active reference
+        window.CURRENT_ARTICLE = article;
+      }
+
+      /* ---------------- SELECTION & STATE SYNC ---------------- */
+      function selectArticle(id, pushHash) {
+        if (!id) return;
+        var article = state.articles.find(function (a) { return String(a.id) === String(id); });
+        if (!article) return;
+
+        state.selectedId = article.id;
+
+        // Mark read
+        if (!state.readIds.has(String(article.id))) {
+          state.readIds.add(String(article.id));
+          persistRead();
+        }
+
+        // Update wire rows selection highlight & unread fade
+        var rows = elWireList.querySelectorAll('.wire-row');
+        rows.forEach(function (r) {
+          var rId = r.getAttribute('data-id');
+          if (String(rId) === String(article.id)) {
+            r.classList.add('is-selected');
+            r.classList.add('is-read');
+            r.setAttribute('aria-selected', 'true');
+            // Ensure visible in list scroll
+            r.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          } else {
+            r.classList.remove('is-selected');
+            r.setAttribute('aria-selected', 'false');
+          }
+        });
+
+        // Instant reader render
+        renderReader(article);
+
+        // Update top unread counter
+        updateCounters();
+
+        // Update deep-link hash
+        if (pushHash) {
+          try {
+            history.replaceState(null, '', '#' + article.id);
+          } catch (e) {
+            window.location.hash = String(article.id);
+          }
+        }
+
+        // If on mobile, switch to reader view automatically
+        if (window.innerWidth <= 860) {
+          switchMobileTab('read');
+          var rightPane = document.getElementById('right-pane');
+          if (rightPane) rightPane.scrollTop = 0;
+        }
+      }
+
+      /* ---------------- INTERACTIVE ACTIONS ---------------- */
+      window.toggleBookmark = function (id) {
+        var strId = String(id || state.selectedId);
+        if (!strId) return;
+
+        if (state.savedIds.has(strId)) {
+          state.savedIds.delete(strId);
+        } else {
+          state.savedIds.add(strId);
+        }
+        persistSaved();
+
+        // Update row dot
+        var row = document.getElementById('wire-row-' + strId);
+        if (row) {
+          if (state.savedIds.has(strId)) row.classList.add('is-bookmarked');
+          else row.classList.remove('is-bookmarked');
+        }
+
+        // Update button label in reader if open
+        var btn = document.getElementById('btn-bookmark');
+        if (btn) {
+          btn.textContent = state.savedIds.has(strId) ? '★ BOOKMARKED' : '☆ BOOKMARK [b]';
+        }
+      };
+
+      window.triggerUpvote = function (id) {
+        var article = state.articles.find(function (a) { return String(a.id) === String(id || state.selectedId); });
+        if (!article) return;
+
+        var strId = String(article.id);
+        if (!state.upvotedIds.has(strId)) {
+          state.upvotedIds.add(strId);
+          if (!article.vote_details) {
+            article.vote_details = { upvotes: 0, downvotes: 0, total_vote_weight: 0 };
+          }
+          article.vote_details.upvotes += 1;
+          article.vote_details.total_vote_weight += 4260; // Standard curation boost
+        }
+
+        // Visual flash in reader
+        var flashPill = document.getElementById('upvote-flash');
+        if (flashPill) {
+          flashPill.style.display = 'inline-flex';
+          flashPill.textContent = '+4.3k WEIGHT UPVOTED ✓';
+        }
+
+        // Update button
+        var btn = document.getElementById('btn-upvote');
+        if (btn) btn.textContent = '▲ UPVOTED';
+
+        // Update reader vote details
+        var voteRow = document.getElementById('reader-votes-row');
+        if (voteRow) {
+          voteRow.innerHTML = article.vote_details.upvotes + ' up · ' + article.vote_details.downvotes + ' down · weight <strong style="color:var(--bio-cyan);">' + Leviathan.fmtWeight(article.vote_details.total_vote_weight) + '</strong>';
+        }
+
+        // Update wire row weight chip
+        var row = document.getElementById('wire-row-' + article.id);
+        if (row) {
+          var weightChip = row.querySelector('.wire-weight-chip');
+          if (weightChip) {
+            weightChip.textContent = '▲' + Leviathan.fmtWeight(article.vote_details.total_vote_weight);
+          }
+        }
+      };
+
+      window.markAllRead = function () {
+        state.articles.forEach(function (a) {
+          state.readIds.add(String(a.id));
+        });
+        persistRead();
+
+        var rows = elWireList.querySelectorAll('.wire-row');
+        rows.forEach(function (r) { r.classList.add('is-read'); });
+
+        updateCounters();
+      };
+
+      /* ---------------- KEYBOARD DRIVER ---------------- */
+      document.addEventListener('keydown', function (e) {
+        // Skip shortcuts if user is typing in form input
+        var activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+        if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') return;
+
+        if (e.key === 'ArrowDown' || e.key === 'j' || e.key === 'J') {
+          e.preventDefault();
+          selectAdjacent(1);
+        } else if (e.key === 'ArrowUp' || e.key === 'k' || e.key === 'K') {
+          e.preventDefault();
+          selectAdjacent(-1);
+        } else if (e.key === 'Enter') {
+          if (state.selectedId) {
+            var curr = state.articles.find(function (a) { return String(a.id) === String(state.selectedId); });
+            if (curr && (curr.canonical_url || curr.url)) {
+              window.open(curr.canonical_url || curr.url, '_blank');
+            }
+          }
+        } else if (e.key === 'b' || e.key === 'B') {
+          if (state.selectedId) {
+            e.preventDefault();
+            toggleBookmark(state.selectedId);
+          }
+        } else if (e.key === 'u' || e.key === 'U') {
+          if (state.selectedId) {
+            e.preventDefault();
+            triggerUpvote(state.selectedId);
+          }
+        } else if (e.key === 'r' || e.key === 'R') {
+          e.preventDefault();
+          markAllRead();
+        }
+      });
+
+      function selectAdjacent(dir) {
+        if (!state.articles.length) return;
+        var idx = state.articles.findIndex(function (a) { return String(a.id) === String(state.selectedId); });
+        if (idx === -1) {
+          selectArticle(state.articles[0].id, true);
+          return;
+        }
+        var nextIdx = idx + dir;
+        if (nextIdx >= 0 && nextIdx < state.articles.length) {
+          selectArticle(state.articles[nextIdx].id, true);
+        }
+      }
+
+      // Deep link hashchange listener
+      window.addEventListener('hashchange', function () {
+        var hashId = window.location.hash.replace(/^#/, '');
+        if (hashId && String(hashId) !== String(state.selectedId)) {
+          selectArticle(hashId, false);
+        }
+      });
+
+      /* ---------------- WEBSOCKET & LIVE EVENTS ---------------- */
+      Leviathan.onStatus(function (status) {
+        // Stale fixture indicator
+        if (status.source === 'fixture') {
+          elStaleBadge.style.display = 'inline-block';
+        } else {
+          elStaleBadge.style.display = 'none';
+        }
+
+        // WS connectivity indicator
+        elWsIndicator.className = 'ws-indicator ' + (status.ws || 'connecting');
+        if (status.ws === 'live') {
+          elWsText.textContent = 'LIVE';
+        } else if (status.ws === 'reconnecting') {
+          elWsText.textContent = 'RECONNECTING';
+        } else {
+          elWsText.textContent = 'CONNECTING';
+        }
+      });
+
+      // Handle real-time incoming events
+      Leviathan.onEvent(function (evt) {
+        if (!evt || !evt.id) return;
+
+        // Deduplicate
+        if (state.articles.some(function (a) { return String(a.id) === String(evt.id); })) return;
+
+        var syntheticArticle = {
+          id: evt.id,
+          headline: evt.headline || 'Breaking transmission from the Wire',
+          source: evt.source || 'WIRE/LIVE',
+          url: evt.url || (evt.slug ? 'https://leviathannews.xyz/' + evt.id + '/' + evt.slug : 'https://leviathannews.xyz'),
+          canonical_url: evt.canonical_url || evt.url || 'https://leviathannews.xyz',
+          date_posted: new Date().toISOString(),
+          media: evt.media || null,
+          tags: evt.tags || [],
+          post_user: evt.post_user || { display_name: 'Autonomous Agent', account_type: 'bot', model_name: 'Leviathan Core' },
+          top_yaps: evt.top_yaps || [],
+          top_tldr: evt.top_tldr || null,
+          yap_count: evt.yap_count || 0,
+          vote_details: evt.vote_details || { total_vote_weight: 4260, upvotes: 1, downvotes: 0 }
+        };
+
+        state.articles.unshift(syntheticArticle);
+
+        // Prepend element with flash
+        var newRow = createWireRowElement(syntheticArticle);
+        newRow.classList.add('wire-incoming');
+        elWireList.insertBefore(newRow, elWireList.firstChild);
+
+        updateCounters();
+      });
+
+      /* ---------------- BOOTSTRAP INITIALIZATION ---------------- */
+      async function boot() {
+        // Connect WebSocket early
+        Leviathan.connectLive();
+
+        // Fetch Trending for 24h Pulse
+        Leviathan.fetchTrending().then(function (trending) {
+          if (trending && trending.platform_pulse) {
+            var pulse = trending.platform_pulse.articles_last_24h;
+            if (elPulseCount) elPulseCount.textContent = (pulse !== undefined) ? pulse : '27';
+          }
+        }).catch(function () {
+          if (elPulseCount) elPulseCount.textContent = '27';
+        });
+
+        // Fetch News Wire Articles
+        try {
+          var articles = await Leviathan.fetchNews({ sort: 'latest', timeframe: '24h', limit: 40 });
+          state.articles = articles || [];
+
+          // Render list
+          renderWireList();
+
+          // Hash deep-link resolution
+          var hashId = window.location.hash.replace(/^#/, '');
+          var initialTarget = null;
+          if (hashId) {
+            initialTarget = state.articles.find(function (a) { return String(a.id) === String(hashId); });
+          }
+
+          if (initialTarget) {
+            selectArticle(initialTarget.id, false);
+          } else if (state.articles.length > 0) {
+            selectArticle(state.articles[0].id, true);
+          } else {
+            renderReader(null);
+          }
+
+        } catch (err) {
+          console.error('Failed to load wire signals', err);
+          elWireList.innerHTML = '<div style="padding:20px;font-family:var(--font-mono);font-size:11px;color:var(--blood-red);">Signal acquisition failed. Check connection.</div>';
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,2301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leviathan News // Terminal Intelligence [01]</title>
+  <link rel="stylesheet" href="shared/tokens.css">
+  <style>
+    /* ============================================================
+       VARIANT 1: TERMINAL INTELLIGENCE
+       Bloomberg Terminal × Arkham Intelligence × Omarchy.org
+       Command Center on Tokyo Night Base (#1a1b26)
+       ============================================================ */
+
+    :root {
+      --bg-terminal: #1a1b26;
+      --bg-panel: #141520;
+      --bg-rail: #13141f;
+      --bg-surface: #1f2335;
+      --bg-surface-hover: #24283b;
+      --border-hairline: rgba(255, 255, 255, 0.08);
+      --border-cyan-dim: rgba(0, 210, 255, 0.2);
+      --border-cyan-bright: #00d2ff;
+      --text-primary: #e2e8f0;
+      --text-secondary: #9aa5ce;
+      --text-dim: #7888a6;
+      --text-mono-num: #89ddff;
+      --neon-cyan: #00d2ff;
+      --neon-magenta: #ff2a85;
+      --neon-amber: #e5a93c;
+      --neon-green: #4ade80;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      background-color: var(--bg-terminal);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Tabular numbers across all mono surfaces */
+    .mono {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Custom thin scrollbars */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-rail);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2f3549;
+      border-radius: 2px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--neon-cyan);
+    }
+
+    /* Main Terminal Layout Grid */
+    .terminal-shell {
+      display: grid;
+      grid-template-rows: 40px 1fr;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      background: var(--bg-terminal);
+    }
+
+    /* ============================================================
+       ROW 0: 40px TICKER STRIP
+       ============================================================ */
+    .ticker-strip {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      background: var(--bg-rail);
+      border-bottom: 1px solid var(--border-hairline);
+      z-index: 50;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .ticker-cell-left {
+      flex: 0 0 auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      background: var(--bg-rail);
+      border-right: 1px solid var(--border-hairline);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      z-index: 2;
+    }
+
+    .brand-tag {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--neon-cyan);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .radar-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--neon-green);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .radar-dot::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 1px solid var(--neon-green);
+      animation: radarPulse 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes radarPulse {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    .pulse-metrics {
+      color: var(--text-dim);
+      display: flex;
+      gap: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+    .pulse-val {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* Marquee Center */
+    .ticker-marquee-wrap {
+      flex: 1 1 auto;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      mask-image: linear-gradient(90deg, transparent 0%, #000 24px, #000 calc(100% - 24px), transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 24px, #000 calc(100% - 24px), transparent 100%);
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-track {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      animation: sweepIn 0.8s var(--ease-expo) 1, tickerMarquee 45s linear infinite;
+      animation-delay: 0s, 0.8s;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .ticker-track:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes sweepIn {
+      0% { transform: translateX(80px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes tickerMarquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 16px;
+      color: var(--text-secondary);
+    }
+    .ticker-item .tag-name {
+      color: var(--text-primary);
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .ticker-item .tag-count {
+      color: var(--text-dim);
+    }
+    .ticker-item .tag-velocity {
+      font-weight: 700;
+      color: var(--neon-cyan);
+    }
+    .ticker-item .tag-velocity.hot {
+      color: var(--neon-magenta);
+    }
+    .ticker-sep {
+      color: rgba(255, 255, 255, 0.15);
+      margin: 0 4px;
+    }
+
+    /* Right fixed cell */
+    .ticker-cell-right {
+      flex: 0 0 auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 14px;
+      background: var(--bg-rail);
+      border-left: 1px solid var(--border-hairline);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      z-index: 2;
+    }
+
+    .snapshot-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(229, 169, 60, 0.12);
+      border: 1px solid rgba(229, 169, 60, 0.35);
+      color: var(--neon-amber);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .ws-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-dim);
+    }
+    .ws-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #64748b;
+    }
+    .ws-dot.live {
+      background: var(--neon-green);
+      box-shadow: 0 0 6px var(--neon-green);
+    }
+    .ws-dot.connecting, .ws-dot.reconnecting {
+      background: var(--neon-amber);
+    }
+
+    .clock-utc {
+      color: var(--text-primary);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* ============================================================
+       MAIN THREE-PANE WORKSPACE
+       ============================================================ */
+    .terminal-body {
+      display: grid;
+      grid-template-columns: 220px 1fr 300px;
+      height: calc(100vh - 40px);
+      overflow: hidden;
+    }
+
+    /* ============================================================
+       LEFT RAIL (220px): WIRE FEEDS & UPLINK
+       ============================================================ */
+    .left-rail {
+      background: var(--bg-rail);
+      border-right: 1px solid var(--border-hairline);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 72px; /* clearance for showcase dock */
+      user-select: none;
+    }
+
+    .rail-section {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .rail-header {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .rail-header .count-badge {
+      color: var(--neon-cyan);
+      font-weight: 600;
+    }
+
+    /* Search/Filter Box */
+    .filter-input-wrap {
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .filter-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-sm);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 8px 28px 8px 8px;
+      outline: none;
+      transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+    }
+    .filter-input:focus {
+      border-color: var(--border-cyan-bright);
+      box-shadow: 0 0 8px rgba(0, 210, 255, 0.2);
+    }
+    .filter-input::placeholder {
+      color: var(--text-dim);
+      font-size: 10px;
+    }
+    .filter-shortcut-kbd {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 1px 4px;
+      border-radius: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      pointer-events: none;
+    }
+
+    /* Wire Feed Buttons */
+    .wire-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .wire-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 44px;
+      padding: 0 10px;
+      border-radius: var(--r-sm);
+      background: transparent;
+      border: 1px solid transparent;
+      border-left: 2px solid transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: all var(--dur-fast);
+      width: 100%;
+    }
+    .wire-btn:hover {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-primary);
+      border-left-color: rgba(0, 210, 255, 0.4);
+    }
+    .wire-btn.active {
+      background: rgba(0, 210, 255, 0.08);
+      border-color: rgba(0, 210, 255, 0.18);
+      border-left: 2px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-weight: 700;
+    }
+    .wire-btn .wire-count {
+      color: var(--text-dim);
+      font-size: 10px;
+      padding: 2px 5px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 3px;
+    }
+    .wire-btn.active .wire-count {
+      color: var(--neon-cyan);
+      background: rgba(0, 210, 255, 0.15);
+    }
+
+    /* Trending Narratives List */
+    .narrative-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .narrative-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 8px 10px;
+      border-radius: var(--r-sm);
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all var(--dur-fast);
+      font-family: var(--font-mono);
+      text-decoration: none;
+    }
+    .narrative-item:hover {
+      background: rgba(0, 210, 255, 0.06);
+      border-color: rgba(0, 210, 255, 0.2);
+    }
+    .narrative-item.active {
+      border-color: var(--border-cyan-bright);
+      background: rgba(0, 210, 255, 0.1);
+    }
+    .narrative-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+    }
+    .narrative-name {
+      color: var(--text-primary);
+      font-weight: 600;
+      text-transform: uppercase;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .narrative-vel {
+      color: var(--neon-cyan);
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .narrative-vel.hot {
+      color: var(--neon-magenta);
+    }
+    .narrative-bar-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .narrative-bar-fill {
+      height: 100%;
+      background: var(--neon-cyan);
+      border-radius: 2px;
+      transition: width var(--dur-med) var(--ease-expo);
+    }
+    .narrative-bar-fill.hot {
+      background: var(--neon-magenta);
+    }
+
+    /* Agent Uplink Command Block */
+    .agent-uplink-box {
+      background: rgba(10, 15, 26, 0.8);
+      border: 1px solid rgba(0, 210, 255, 0.25);
+      border-radius: var(--r-sm);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .uplink-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .uplink-cmd-wrap {
+      position: relative;
+    }
+    .uplink-code {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      line-height: 1.4;
+      color: var(--text-primary);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 8px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      word-break: break-all;
+      user-select: all;
+    }
+    .uplink-copy-btn {
+      margin-top: 6px;
+      width: 100%;
+      min-height: 32px;
+      background: rgba(0, 210, 255, 0.1);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      border-radius: 4px;
+      color: var(--neon-cyan);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all var(--dur-fast);
+    }
+    .uplink-copy-btn:hover {
+      background: rgba(0, 210, 255, 0.2);
+      border-color: var(--neon-cyan);
+    }
+    .uplink-copy-btn.copied {
+      background: rgba(74, 222, 128, 0.2);
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+    }
+
+    .ws-chip-btn {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      padding: 6px 8px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      cursor: pointer;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: all var(--dur-fast);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .ws-chip-btn:hover {
+      border-color: var(--border-cyan-dim);
+      color: var(--text-secondary);
+      background: rgba(0, 210, 255, 0.04);
+    }
+    .ws-chip-btn.copied {
+      color: var(--neon-green);
+      border-color: var(--neon-green);
+    }
+
+    /* ============================================================
+       CENTER FEED (flex-1): ARTICLE WIRE & ACCORDION
+       ============================================================ */
+    .center-column {
+      background: var(--bg-terminal);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 72px; /* clearance for showcase dock */
+      position: relative;
+    }
+
+    /* Center Header Bar */
+    .center-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 44px;
+      background: rgba(26, 27, 38, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+
+    .feed-meta-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .feed-name-txt {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-primary);
+    }
+    .feed-count-chip {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--neon-cyan);
+      background: rgba(0, 210, 255, 0.08);
+      border: 1px solid rgba(0, 210, 255, 0.2);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    .key-hints {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .key-hints kbd {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+      padding: 1px 5px;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+
+    /* Sort Tabs */
+    .sort-tabs {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-sm);
+      padding: 2px;
+    }
+    .sort-tab {
+      background: transparent;
+      border: 0;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all var(--dur-fast);
+      min-height: 28px;
+    }
+    .sort-tab:hover {
+      color: var(--text-primary);
+    }
+    .sort-tab[aria-selected="true"] {
+      background: rgba(0, 210, 255, 0.15);
+      color: var(--neon-cyan);
+    }
+
+    /* Article Feed Rows (dense, non-card, hairlines) */
+    .article-feed {
+      display: flex;
+      flex-direction: column;
+      list-style: none;
+    }
+
+    .article-row {
+      position: relative;
+      border-bottom: 1px solid var(--border-hairline);
+      outline: none;
+      transition: background-color var(--dur-fast);
+      background: transparent;
+    }
+    .article-row:hover {
+      background: rgba(36, 40, 59, 0.45);
+    }
+    .article-row.selected {
+      background: rgba(0, 210, 255, 0.06);
+    }
+
+    /* 2px cyan selection indicator edge */
+    .article-row::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--neon-cyan);
+      transform: scaleY(0);
+      transform-origin: center;
+      transition: transform var(--dur-med) var(--ease-expo);
+      z-index: 5;
+    }
+    .article-row:hover::before {
+      transform: scaleY(0.5);
+    }
+    .article-row.selected::before {
+      transform: scaleY(1);
+    }
+
+    /* Main row summary bar */
+    .row-summary {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      min-height: 52px;
+      cursor: pointer;
+    }
+
+    .row-rank {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-dim);
+      width: 24px;
+      flex-shrink: 0;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .row-main-content {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .row-headline {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--text-primary);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color var(--dur-fast);
+    }
+    .article-row:hover .row-headline {
+      color: #fff;
+    }
+    .article-row.selected .row-headline {
+      color: var(--neon-cyan);
+    }
+
+    .row-meta-chips {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .source-chip {
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+    }
+
+    .tag-chip {
+      color: var(--neon-cyan);
+      border: 1px solid rgba(0, 210, 255, 0.25);
+      background: rgba(0, 210, 255, 0.05);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .time-chip {
+      color: var(--text-dim);
+      font-size: 11px;
+      margin-left: 2px;
+    }
+
+    /* Dual-Species Badge styles */
+    .species-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .species-badge .badge-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .acct-human {
+      background: rgba(229, 169, 60, 0.1);
+      color: var(--neon-amber);
+      border: 1px solid rgba(229, 169, 60, 0.25);
+    }
+    .acct-human .badge-dot {
+      background: var(--neon-amber);
+    }
+
+    .acct-cyborg {
+      background: rgba(0, 210, 255, 0.1);
+      color: var(--neon-cyan);
+      border: 1px solid rgba(0, 210, 255, 0.25);
+    }
+    .acct-cyborg .badge-dot {
+      background: var(--neon-cyan);
+    }
+
+    .acct-bot {
+      background: rgba(255, 42, 133, 0.1);
+      color: var(--neon-magenta);
+      border: 1px solid rgba(255, 42, 133, 0.25);
+    }
+    .acct-bot .badge-dot {
+      background: var(--neon-magenta);
+    }
+
+    /* Right vote & yap cluster */
+    .row-vote-cluster {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      font-family: var(--font-mono);
+    }
+
+    .vote-weight-pill {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 54px;
+      justify-content: flex-end;
+      font-variant-numeric: tabular-nums;
+    }
+    .vote-weight-pill.upvoted-flash {
+      animation: votePulse 0.6s var(--spring);
+    }
+    @keyframes votePulse {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.3); color: var(--neon-green); }
+      100% { transform: scale(1); }
+    }
+
+    .yap-bubble {
+      font-size: 11px;
+      color: var(--neon-magenta);
+      background: rgba(255, 42, 133, 0.12);
+      border: 1px solid rgba(255, 42, 133, 0.3);
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Accordion Drawer (Grid 0fr -> 1fr animation) */
+    .row-drawer-wrapper {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows var(--dur-med) var(--ease-expo);
+      background: var(--bg-panel);
+      border-top: 1px dashed rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+    .article-row.open .row-drawer-wrapper {
+      grid-template-rows: 1fr;
+    }
+
+    .row-drawer-inner {
+      min-height: 0;
+      overflow: hidden;
+      padding: 0 16px;
+      transition: padding var(--dur-med) var(--ease-expo);
+    }
+    .article-row.open .row-drawer-inner {
+      padding: 16px 16px 18px 52px; /* aligns with text indent */
+    }
+
+    .drawer-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .drawer-text-col {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* TLDR / YAP analysis card */
+    .drawer-analysis-box {
+      background: rgba(26, 27, 38, 0.85);
+      border: 1px solid rgba(0, 210, 255, 0.2);
+      border-left: 3px solid var(--neon-cyan);
+      border-radius: 4px;
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-primary);
+    }
+    .drawer-analysis-box.is-yap {
+      border-left-color: var(--neon-magenta);
+      border-color: rgba(255, 42, 133, 0.2);
+    }
+    .analysis-header {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--neon-cyan);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .drawer-analysis-box.is-yap .analysis-header {
+      color: var(--neon-magenta);
+    }
+
+    /* Provenance line */
+    .drawer-provenance-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .canonical-link {
+      color: var(--neon-cyan);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color var(--dur-fast);
+      max-width: 320px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .canonical-link:hover {
+      text-decoration: underline;
+      color: #fff;
+    }
+
+    .btn-copy-json {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all var(--dur-fast);
+      min-height: 28px;
+    }
+    .btn-copy-json:hover {
+      background: rgba(0, 210, 255, 0.1);
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+    .btn-copy-json.copied {
+      color: var(--neon-green);
+      border-color: var(--neon-green);
+    }
+
+    /* Action bar inside drawer */
+    .drawer-actions-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .btn-upvote-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 210, 255, 0.12);
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      padding: 6px 12px;
+      border-radius: var(--r-sm);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--dur-fast);
+      min-height: 36px;
+    }
+    .btn-upvote-action:hover {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+    }
+    .btn-upvote-action.upvoted {
+      background: rgba(74, 222, 128, 0.2);
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+    }
+
+    .raw-votes-count {
+      color: var(--text-dim);
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Media thumbnail (right, 180px, --r-sm) */
+    .drawer-media-col {
+      flex: 0 0 180px;
+      width: 180px;
+      height: 110px;
+      border-radius: var(--r-sm);
+      overflow: hidden;
+      border: 1px solid var(--border-hairline);
+      background: rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+    .drawer-media-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform var(--dur-med) var(--ease-expo);
+    }
+    .drawer-media-img:hover {
+      transform: scale(1.05);
+    }
+    .media-fallback-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.1) 0%, rgba(255, 42, 133, 0.08) 100%);
+    }
+
+    /* Skeleton Feed shimmer placeholders */
+    .skeleton-feed-row {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 52px;
+    }
+    .shimmer-block {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 210, 255, 0.09) 50%, rgba(255, 255, 255, 0.03) 100%);
+      background-size: 200% 100%;
+      animation: shimmerAnim 1.6s ease-in-out infinite;
+      border-radius: 3px;
+    }
+    @keyframes shimmerAnim {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ============================================================
+       RIGHT RAIL (300px): MONTHLY LEDGER & LIVE WIRE LOG
+       ============================================================ */
+    .right-rail {
+      background: var(--bg-rail);
+      border-left: 1px solid var(--border-hairline);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 72px; /* clearance for showcase dock */
+      user-select: none;
+    }
+
+    .ledger-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .ledger-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 6px 8px;
+      border-radius: var(--r-sm);
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid transparent;
+      transition: background-color var(--dur-fast);
+    }
+    .ledger-row:hover {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .ledger-row-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ledger-rank {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      width: 18px;
+      flex-shrink: 0;
+    }
+    .ledger-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #24283b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+    }
+    .ledger-avatar-initial {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(0, 210, 255, 0.15);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      color: var(--neon-cyan);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ledger-avatar-initial.yap {
+      background: rgba(255, 42, 133, 0.15);
+      border-color: rgba(255, 42, 133, 0.3);
+      color: var(--neon-magenta);
+    }
+
+    .ledger-user-wrap {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+    }
+    .ledger-user-name {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .ledger-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .ledger-count.yap {
+      color: var(--neon-magenta);
+    }
+
+    /* Market share bar */
+    .ledger-bar-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .ledger-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--neon-cyan);
+      transition: width var(--dur-med) var(--ease-expo);
+    }
+    .ledger-bar-fill.human {
+      background: var(--neon-amber);
+    }
+    .ledger-bar-fill.yap {
+      background: var(--neon-magenta);
+    }
+
+    /* Live Wire Log Section */
+    .live-wire-log {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+    .log-line {
+      padding: 6px 8px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-left: 2px solid var(--text-dim);
+      border-radius: 3px;
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      word-break: break-word;
+      transition: border-color var(--dur-med);
+    }
+    .log-line.flash-cyan {
+      animation: flashCyan 1.8s var(--ease-expo);
+      border-left-color: var(--neon-cyan);
+    }
+    @keyframes flashCyan {
+      0% { background: rgba(0, 210, 255, 0.25); border-left-color: var(--neon-cyan); }
+      100% { background: rgba(0, 0, 0, 0.35); }
+    }
+    .log-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--neon-cyan);
+      font-weight: 600;
+    }
+    .log-text {
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ============================================================
+       MOBILE RESPONSIVE BREAKPOINTS (<900px)
+       ============================================================ */
+    @media (max-width: 900px) {
+      .terminal-body {
+        grid-template-columns: 1fr;
+      }
+      .left-rail, .right-rail {
+        display: none !important;
+      }
+      .center-column {
+        width: 100%;
+      }
+      .key-hints {
+        display: none;
+      }
+      .drawer-layout {
+        flex-direction: column;
+      }
+      .drawer-media-col {
+        width: 100%;
+        height: 140px;
+      }
+      .row-drawer-inner {
+        padding-left: 16px !important;
+      }
+      .ticker-cell-left {
+        padding: 0 8px;
+      }
+      .pulse-metrics {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="terminal-shell">
+
+    <!-- ROW 0: 40px TICKER STRIP -->
+    <header class="ticker-strip" role="banner" aria-label="Terminal status and trends ticker">
+      
+      <!-- Left-fixed cell: Platform pulse -->
+      <div class="ticker-cell-left">
+        <span class="brand-tag">
+          <span class="radar-dot" title="Live stream active"></span>
+          <span>LVX::TERM</span>
+        </span>
+        <div class="pulse-metrics mono" aria-label="Platform article velocity">
+          <span>1H:<span class="pulse-val" id="pulse-1h">0</span></span>
+          <span>6H:<span class="pulse-val" id="pulse-6h">9</span></span>
+          <span>24H:<span class="pulse-val" id="pulse-24h">27</span></span>
+        </div>
+      </div>
+
+      <!-- Center auto-scrolling marquee of trending topics -->
+      <div class="ticker-marquee-wrap" aria-label="Trending narratives ticker">
+        <div class="ticker-track" id="ticker-track">
+          <!-- Populated dynamically via fetchTrending -->
+          <span class="ticker-item">LOADING TRENDING NARRATIVES...</span>
+        </div>
+      </div>
+
+      <!-- Right-fixed cell: UTC clock, Snapshot state, WS dot -->
+      <div class="ticker-cell-right">
+        <span class="snapshot-badge" id="stale-badge" style="display: none;" title="Using local fixture snapshot">
+          CACHED SNAPSHOT
+        </span>
+        <div class="ws-indicator" title="WebSocket link status">
+          <span class="ws-dot" id="ws-status-dot"></span>
+          <span id="ws-status-txt">WS:INIT</span>
+        </div>
+        <div class="clock-utc mono" id="utc-clock">00:00:00 UTC</div>
+      </div>
+
+    </header>
+
+    <!-- MAIN THREE-PANE WORKSPACE -->
+    <main class="terminal-body" role="main">
+
+      <!-- LEFT RAIL: 220px -->
+      <aside class="left-rail" aria-label="Navigation and command rail">
+
+        <!-- Wire Feeds Section -->
+        <section class="rail-section">
+          <div class="rail-header">
+            <span>// WIRE FEEDS</span>
+            <span class="count-badge" id="feed-total-badge">[4]</span>
+          </div>
+
+          <div class="filter-input-wrap">
+            <input 
+              type="text" 
+              id="feed-filter" 
+              class="filter-input" 
+              placeholder="FILTER FEED [/]" 
+              autocomplete="off" 
+              spellcheck="false"
+              aria-label="Filter current feed"
+            >
+            <kbd class="filter-shortcut-kbd">/</kbd>
+          </div>
+
+          <nav class="wire-list" role="navigation" aria-label="Wire feed filters">
+            <button class="wire-btn active" data-sort="hot" data-tf="7" id="filter-hot">
+              <span>HOT 7D</span>
+              <span class="wire-count" id="count-hot">20</span>
+            </button>
+            <button class="wire-btn" data-sort="new" data-tf="1" id="filter-new">
+              <span>NEW</span>
+              <span class="wire-count" id="count-new">LIVE</span>
+            </button>
+            <button class="wire-btn" data-sort="top" data-tf="1" id="filter-top">
+              <span>TOP 24H</span>
+              <span class="wire-count" id="count-top">TOP</span>
+            </button>
+            <button class="wire-btn" data-sort="tsunami" data-tf="7" id="filter-tsunami">
+              <span>TSUNAMI</span>
+              <span class="wire-count" id="count-tsunami">VOL</span>
+            </button>
+          </nav>
+        </section>
+
+        <!-- Trending Narratives Section -->
+        <section class="rail-section">
+          <div class="rail-header">
+            <span>// NARRATIVES</span>
+            <span class="count-badge" id="narratives-count-badge">[--]</span>
+          </div>
+          <div class="narrative-list" id="narrative-list" role="list">
+            <!-- Populated via fetchTrending -->
+            <div class="narrative-item shimmer-block" style="height: 36px;"></div>
+            <div class="narrative-item shimmer-block" style="height: 36px;"></div>
+            <div class="narrative-item shimmer-block" style="height: 36px;"></div>
+          </div>
+        </section>
+
+        <!-- Agent Uplink Command Section (Omarchy hero block) -->
+        <section class="rail-section">
+          <div class="rail-header">
+            <span>// AGENT UPLINK</span>
+          </div>
+          <div class="agent-uplink-box">
+            <span class="uplink-label">Send this to your agent</span>
+            <div class="uplink-cmd-wrap">
+              <code class="uplink-code" id="agent-skill-cmd">curl -s https://api.leviathannews.xyz/SKILL.md</code>
+            </div>
+            <button class="uplink-copy-btn" id="btn-copy-skill">
+              <span>COPY COMMAND</span>
+            </button>
+            <button class="ws-chip-btn" id="btn-copy-ws" title="Click to copy WebSocket endpoint">
+              <span>wss://api.leviathannews.xyz/ws/news/</span>
+              <span style="font-size: 8px;">COPY</span>
+            </button>
+          </div>
+        </section>
+
+      </aside>
+
+      <!-- CENTER FEED: flex-1 -->
+      <section class="center-column" aria-label="Articles Feed">
+        
+        <!-- Center Header -->
+        <div class="center-header">
+          <div class="feed-meta-title">
+            <span class="feed-name-txt" id="active-feed-name">HOT SIGNAL — 7D</span>
+            <span class="feed-count-chip mono" id="article-count-badge">[ 0 ARTICLES ]</span>
+          </div>
+
+          <div class="key-hints" aria-hidden="true">
+            <kbd>j</kbd><kbd>k</kbd> nav · <kbd>enter</kbd> expand · <kbd>u</kbd> upvote · <kbd>/</kbd> filter
+          </div>
+
+          <div class="sort-tabs" role="tablist" aria-label="Sort options">
+            <button class="sort-tab" role="tab" aria-selected="true" data-sort="hot" id="tab-sort-hot">HOT</button>
+            <button class="sort-tab" role="tab" aria-selected="false" data-sort="new" id="tab-sort-new">NEW</button>
+            <button class="sort-tab" role="tab" aria-selected="false" data-sort="top" id="tab-sort-top">TOP</button>
+            <button class="sort-tab" role="tab" aria-selected="false" data-sort="weight" id="tab-sort-weight">WEIGHT</button>
+          </div>
+        </div>
+
+        <!-- Article List / Feed -->
+        <ul class="article-feed" id="article-feed" role="list" aria-label="News articles feed">
+          <!-- 8 Shimmer Skeleton rows rendered initially -->
+          <li class="skeleton-feed-row" aria-hidden="true">
+            <div class="shimmer-block" style="width: 24px; height: 16px;"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+              <div class="shimmer-block" style="width: 75%; height: 16px;"></div>
+              <div class="shimmer-block" style="width: 40%; height: 12px;"></div>
+            </div>
+            <div class="shimmer-block" style="width: 60px; height: 20px;"></div>
+          </li>
+          <li class="skeleton-feed-row" aria-hidden="true">
+            <div class="shimmer-block" style="width: 24px; height: 16px;"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+              <div class="shimmer-block" style="width: 85%; height: 16px;"></div>
+              <div class="shimmer-block" style="width: 50%; height: 12px;"></div>
+            </div>
+            <div class="shimmer-block" style="width: 60px; height: 20px;"></div>
+          </li>
+          <li class="skeleton-feed-row" aria-hidden="true">
+            <div class="shimmer-block" style="width: 24px; height: 16px;"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+              <div class="shimmer-block" style="width: 65%; height: 16px;"></div>
+              <div class="shimmer-block" style="width: 45%; height: 12px;"></div>
+            </div>
+            <div class="shimmer-block" style="width: 60px; height: 20px;"></div>
+          </li>
+          <li class="skeleton-feed-row" aria-hidden="true">
+            <div class="shimmer-block" style="width: 24px; height: 16px;"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+              <div class="shimmer-block" style="width: 80%; height: 16px;"></div>
+              <div class="shimmer-block" style="width: 35%; height: 12px;"></div>
+            </div>
+            <div class="shimmer-block" style="width: 60px; height: 20px;"></div>
+          </li>
+          <li class="skeleton-feed-row" aria-hidden="true">
+            <div class="shimmer-block" style="width: 24px; height: 16px;"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+              <div class="shimmer-block" style="width: 70%; height: 16px;"></div>
+              <div class="shimmer-block" style="width: 48%; height: 12px;"></div>
+            </div>
+            <div class="shimmer-block" style="width: 60px; height: 20px;"></div>
+          </li>
+          <li class="skeleton-feed-row" aria-hidden="true">
+            <div class="shimmer-block" style="width: 24px; height: 16px;"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+              <div class="shimmer-block" style="width: 90%; height: 16px;"></div>
+              <div class="shimmer-block" style="width: 55%; height: 12px;"></div>
+            </div>
+            <div class="shimmer-block" style="width: 60px; height: 20px;"></div>
+          </li>
+          <li class="skeleton-feed-row" aria-hidden="true">
+            <div class="shimmer-block" style="width: 24px; height: 16px;"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+              <div class="shimmer-block" style="width: 60%; height: 16px;"></div>
+              <div class="shimmer-block" style="width: 40%; height: 12px;"></div>
+            </div>
+            <div class="shimmer-block" style="width: 60px; height: 20px;"></div>
+          </li>
+          <li class="skeleton-feed-row" aria-hidden="true">
+            <div class="shimmer-block" style="width: 24px; height: 16px;"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+              <div class="shimmer-block" style="width: 78%; height: 16px;"></div>
+              <div class="shimmer-block" style="width: 42%; height: 12px;"></div>
+            </div>
+            <div class="shimmer-block" style="width: 60px; height: 20px;"></div>
+          </li>
+        </ul>
+
+      </section>
+
+      <!-- RIGHT RAIL: 300px -->
+      <aside class="right-rail" aria-label="Intelligence ledger and live wire logs">
+
+        <!-- Top Posters Section -->
+        <section class="rail-section">
+          <div class="rail-header">
+            <span>// TOP POSTERS (MONTHLY)</span>
+            <span class="count-badge">[TOP 8]</span>
+          </div>
+          <div class="ledger-list" id="posters-list" role="list">
+            <div class="ledger-row shimmer-block" style="height: 38px;"></div>
+            <div class="ledger-row shimmer-block" style="height: 38px;"></div>
+            <div class="ledger-row shimmer-block" style="height: 38px;"></div>
+          </div>
+        </section>
+
+        <!-- Top Yappers Section -->
+        <section class="rail-section">
+          <div class="rail-header">
+            <span>// TOP YAPPERS (ANALYSIS)</span>
+            <span class="count-badge" style="color: var(--neon-magenta);">[TOP 5]</span>
+          </div>
+          <div class="ledger-list" id="yappers-list" role="list">
+            <div class="ledger-row shimmer-block" style="height: 38px;"></div>
+            <div class="ledger-row shimmer-block" style="height: 38px;"></div>
+          </div>
+        </section>
+
+        <!-- Live Wire Log Section -->
+        <section class="rail-section" style="border-bottom: 0;">
+          <div class="rail-header">
+            <span>// LIVE WIRE LOG</span>
+            <span class="count-badge" id="wire-events-count">[5]</span>
+          </div>
+          <div class="live-wire-log" id="live-wire-log" role="log" aria-live="polite">
+            <!-- Log entries injected here -->
+            <div class="log-line">
+              <div class="log-meta">
+                <span>SYS::CONNECT</span>
+                <span>00:00</span>
+              </div>
+              <div class="log-text">Listening to Leviathan WebSocket wire...</div>
+            </div>
+          </div>
+        </section>
+
+      </aside>
+
+    </main>
+
+  </div>
+
+  <!-- Variant identifier & shared runtime scripts -->
+  <script>window.VARIANT = { n: 1, name: 'Terminal Intelligence' };</script>
+  <script src="shared/leviathan-api.js"></script>
+  <script src="shared/showcase-nav.js" defer></script>
+
+  <!-- Variant 1 Interactive Controller -->
+  <script>
+    (function () {
+      'use strict';
+
+      // State
+      var currentArticles = [];
+      var filteredArticles = [];
+      var activeFilter = 'hot';
+      var activeTimeframe = '7';
+      var activeSort = 'hot';
+      var selectedIndex = 0;
+      var activeTagFilter = null;
+      var openDrawerId = null;
+      var liveEvents = [];
+
+      // DOM Elements
+      var feedEl = document.getElementById('article-feed');
+      var filterInput = document.getElementById('feed-filter');
+      var articleCountBadge = document.getElementById('article-count-badge');
+      var activeFeedName = document.getElementById('active-feed-name');
+      var tickerTrack = document.getElementById('ticker-track');
+      var narrativeList = document.getElementById('narrative-list');
+      var postersList = document.getElementById('posters-list');
+      var yappersList = document.getElementById('yappers-list');
+      var wireLogEl = document.getElementById('live-wire-log');
+      var utcClockEl = document.getElementById('utc-clock');
+      var wsDot = document.getElementById('ws-status-dot');
+      var wsTxt = document.getElementById('ws-status-txt');
+      var staleBadge = document.getElementById('stale-badge');
+
+      // Pulse elements
+      var p1h = document.getElementById('pulse-1h');
+      var p6h = document.getElementById('pulse-6h');
+      var p24h = document.getElementById('pulse-24h');
+
+      // Skill copy button
+      var btnCopySkill = document.getElementById('btn-copy-skill');
+      if (btnCopySkill) {
+        btnCopySkill.addEventListener('click', function () {
+          Leviathan.copySkillCmd(btnCopySkill);
+        });
+      }
+
+      // WS Endpoint copy button
+      var btnCopyWs = document.getElementById('btn-copy-ws');
+      if (btnCopyWs) {
+        btnCopyWs.addEventListener('click', function () {
+          Leviathan.copyText('wss://api.leviathannews.xyz/ws/news/', btnCopyWs);
+        });
+      }
+
+      // UTC Clock ticker
+      function updateClock() {
+        var now = new Date();
+        var h = String(now.getUTCHours()).padStart(2, '0');
+        var m = String(now.getUTCMinutes()).padStart(2, '0');
+        var s = String(now.getUTCSeconds()).padStart(2, '0');
+        utcClockEl.textContent = h + ':' + m + ':' + s + ' UTC';
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // Species badge renderer
+      function renderSpeciesBadge(user) {
+        var meta = Leviathan.accountMeta(user);
+        var html = '<span class="species-badge ' + meta.cls + '">';
+        html += '<span class="badge-dot"></span>';
+        html += '<span>' + meta.label + '</span>';
+        if (meta.model) {
+          html += '<span style="opacity:0.75;font-weight:400;">' + Leviathan.esc(meta.model) + '</span>';
+        }
+        html += '</span>';
+        return html;
+      }
+
+      // Safe media image error handler
+      window.handleMediaErr = function (imgEl, initial) {
+        var parent = imgEl.parentElement;
+        if (!parent) return;
+        parent.innerHTML = '<div class="media-fallback-box">' + Leviathan.esc(initial || '◈') + '</div>';
+      };
+
+      // Safe avatar error handler
+      window.handleAvatarErr = function (imgEl, initial, isYap) {
+        var parent = imgEl.parentElement;
+        if (!parent) return;
+        var div = document.createElement('div');
+        div.className = 'ledger-avatar-initial' + (isYap ? ' yap' : '');
+        div.textContent = initial || '?';
+        parent.replaceChild(div, imgEl);
+      };
+
+      // Build single article row HTML
+      function createArticleRow(article, idx) {
+        var rankStr = String(idx + 1).padStart(2, '0');
+        var isSelected = (idx === selectedIndex);
+        var isOpen = (article.id === openDrawerId);
+        var meta = Leviathan.accountMeta(article.post_user);
+        var sourceText = Leviathan.sourceHost(article);
+        var voteWeight = (article.vote_details && article.vote_details.total_vote_weight) || 0;
+        var upvotes = (article.vote_details && article.vote_details.upvotes) || 0;
+        var downvotes = (article.vote_details && article.vote_details.downvotes) || 0;
+        var yapCount = article.yap_count || 0;
+        var timeStr = Leviathan.timeAgo(article.date_posted);
+
+        // Tags (max 3)
+        var tagsHtml = '';
+        if (article.tags && article.tags.length) {
+          article.tags.slice(0, 3).forEach(function (t) {
+            tagsHtml += '<span class="tag-chip">#' + Leviathan.esc(t.name) + '</span>';
+          });
+        }
+
+        // Analysis block for drawer
+        var analysisHtml = '';
+        if (article.top_tldr) {
+          analysisHtml = '<div class="drawer-analysis-box">' +
+            '<div class="analysis-header"><span>[AI TL;DR SUMMARY]</span></div>' +
+            '<div>' + Leviathan.esc(article.top_tldr) + '</div>' +
+          '</div>';
+        } else if (article.top_yaps && article.top_yaps.length > 0) {
+          var firstYap = article.top_yaps[0];
+          analysisHtml = '<div class="drawer-analysis-box is-yap">' +
+            '<div class="analysis-header">' +
+              '<span>[TOP YAP ANALYSIS]</span>' +
+              '<span>by ' + Leviathan.esc((firstYap.author && firstYap.author.display_name) || 'Analyst') + '</span>' +
+              renderSpeciesBadge(firstYap.author) +
+            '</div>' +
+            '<div>' + Leviathan.esc(firstYap.text) + '</div>' +
+          '</div>';
+        } else {
+          analysisHtml = '<div class="drawer-analysis-box">' +
+            '<div class="analysis-header"><span>[DISPATCH DIRECTIVE]</span></div>' +
+            '<div style="color:var(--text-secondary);">Curated intelligence item awaiting community yap synthesis. Token weighted votes determine priority.</div>' +
+          '</div>';
+        }
+
+        // Media thumbnail
+        var mediaHtml = '';
+        var fallbackLetter = (article.headline && article.headline.charAt(0)) || 'L';
+        if (article.media) {
+          mediaHtml = '<div class="drawer-media-col">' +
+            '<img src="' + Leviathan.esc(article.media) + '" ' +
+                 'alt="Thumbnail" ' +
+                 'class="drawer-media-img" ' +
+                 'loading="lazy" ' +
+                 'onerror="handleMediaErr(this, \'' + Leviathan.esc(fallbackLetter) + '\')">' +
+          '</div>';
+        } else {
+          mediaHtml = '<div class="drawer-media-col">' +
+            '<div class="media-fallback-box">' + Leviathan.esc(fallbackLetter) + '</div>' +
+          '</div>';
+        }
+
+        var canonicalUrl = article.canonical_url || article.url || '#';
+
+        var li = document.createElement('li');
+        li.className = 'article-row' + (isSelected ? ' selected' : '') + (isOpen ? ' open' : '');
+        li.setAttribute('role', 'listitem');
+        li.setAttribute('tabindex', '0');
+        li.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        li.setAttribute('data-id', article.id);
+        li.setAttribute('data-index', idx);
+
+        li.innerHTML = [
+          '<div class="row-summary">',
+            '<span class="row-rank">' + rankStr + '</span>',
+            '<div class="row-main-content">',
+              '<h2 class="row-headline">' + Leviathan.esc(article.headline) + '</h2>',
+              '<div class="row-meta-chips">',
+                '<span class="source-chip">' + Leviathan.esc(sourceText) + '</span>',
+                tagsHtml,
+                renderSpeciesBadge(article.post_user),
+                '<span class="time-chip">' + timeStr + '</span>',
+              '</div>',
+            '</div>',
+            '<div class="row-vote-cluster">',
+              '<span class="vote-weight-pill" title="Total vote weight">',
+                '<span style="font-size:10px;">▲</span> ' + Leviathan.fmtWeight(voteWeight),
+              '</span>',
+              '<span class="yap-bubble" title="Community yaps">' + yapCount + ' yaps</span>',
+            '</div>',
+          '</div>',
+          '<div class="row-drawer-wrapper">',
+            '<div class="row-drawer-inner">',
+              '<div class="drawer-layout">',
+                '<div class="drawer-text-col">',
+                  analysisHtml,
+                  '<div class="drawer-provenance-line">',
+                    '<span>PROVENANCE:</span>',
+                    '<a href="' + Leviathan.esc(canonicalUrl) + '" target="_blank" rel="noopener noreferrer" class="canonical-link">',
+                      '<span>' + Leviathan.esc(canonicalUrl) + '</span> ↗',
+                    '</a>',
+                    '<button class="btn-copy-json" data-article-id="' + article.id + '">',
+                      '<span>COPY JSON</span>',
+                    '</button>',
+                  '</div>',
+                  '<div class="drawer-actions-bar">',
+                    '<button class="btn-upvote-action" data-article-id="' + article.id + '">',
+                      '<span>▲ UPVOTE WEIGHT</span>',
+                    '</button>',
+                    '<div class="raw-votes-count">',
+                      '<span>▲ ' + upvotes + ' raw</span>',
+                      '<span>▼ ' + downvotes + '</span>',
+                      '<span>· SQUID PASS WEIGHTED</span>',
+                    '</div>',
+                  '</div>',
+                '</div>',
+                mediaHtml,
+              '</div>',
+            '</div>',
+          '</div>'
+        ].join('');
+
+        // Click on summary row expands/toggles accordion
+        var summaryBar = li.querySelector('.row-summary');
+        summaryBar.addEventListener('click', function (e) {
+          e.stopPropagation();
+          setSelectedIndex(idx);
+          toggleDrawer(article.id);
+        });
+
+        // Copy JSON button inside drawer
+        var copyBtn = li.querySelector('.btn-copy-json');
+        if (copyBtn) {
+          copyBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            Leviathan.copyArticleJSON(article, copyBtn);
+          });
+        }
+
+        // Upvote button inside drawer
+        var upvoteBtn = li.querySelector('.btn-upvote-action');
+        if (upvoteBtn) {
+          upvoteBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            triggerUpvote(article, li);
+          });
+        }
+
+        return li;
+      }
+
+      // Upvote simulation & feedback
+      function triggerUpvote(article, rowEl) {
+        if (!article.vote_details) {
+          article.vote_details = { total_vote_weight: 100, upvotes: 1, downvotes: 0 };
+        }
+        article.vote_details.total_vote_weight += 500;
+        article.vote_details.upvotes += 1;
+
+        // UI flash on vote weight pill
+        var pill = rowEl.querySelector('.vote-weight-pill');
+        if (pill) {
+          pill.innerHTML = '<span style="font-size:10px;">▲</span> ' + Leviathan.fmtWeight(article.vote_details.total_vote_weight);
+          pill.classList.remove('upvoted-flash');
+          void pill.offsetWidth; // trigger reflow
+          pill.classList.add('upvoted-flash');
+        }
+
+        var btn = rowEl.querySelector('.btn-upvote-action');
+        if (btn) {
+          btn.classList.add('upvoted');
+          btn.innerHTML = '<span>✓ WEIGHT ADDED (+500)</span>';
+          setTimeout(function () {
+            btn.innerHTML = '<span>▲ UPVOTE WEIGHT</span>';
+            btn.classList.remove('upvoted');
+          }, 1500);
+        }
+
+        // Append to live wire log
+        addWireLog('VOTE.CAST', '+' + 500 + ' SQUID to: ' + article.headline);
+      }
+
+      // Toggle drawer accordion (only one open at a time)
+      function toggleDrawer(articleId) {
+        if (openDrawerId === articleId) {
+          openDrawerId = null;
+        } else {
+          openDrawerId = articleId;
+        }
+        renderFeed();
+      }
+
+      // Set selected index for keyboard navigation
+      function setSelectedIndex(idx) {
+        if (filteredArticles.length === 0) return;
+        if (idx < 0) idx = 0;
+        if (idx >= filteredArticles.length) idx = filteredArticles.length - 1;
+        selectedIndex = idx;
+
+        var rows = feedEl.querySelectorAll('.article-row');
+        rows.forEach(function (r, i) {
+          if (i === selectedIndex) {
+            r.classList.add('selected');
+            r.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          } else {
+            r.classList.remove('selected');
+          }
+        });
+      }
+
+      // Render Feed
+      function renderFeed() {
+        feedEl.innerHTML = '';
+        if (filteredArticles.length === 0) {
+          var empty = document.createElement('li');
+          empty.style.padding = '40px 20px';
+          empty.style.textAlign = 'center';
+          empty.style.color = 'var(--text-dim)';
+          empty.style.fontFamily = 'var(--font-mono)';
+          empty.textContent = '// NO ARTICLES MATCH CURRENT QUERY';
+          feedEl.appendChild(empty);
+          articleCountBadge.textContent = '[ 0 ARTICLES ]';
+          return;
+        }
+
+        articleCountBadge.textContent = '[ ' + filteredArticles.length + ' ARTICLES ]';
+
+        var frag = document.createDocumentFragment();
+        filteredArticles.forEach(function (art, i) {
+          frag.appendChild(createArticleRow(art, i));
+        });
+        feedEl.appendChild(frag);
+      }
+
+      // Filter and sort client-side
+      function applyFilters() {
+        var query = (filterInput.value || '').trim().toLowerCase();
+
+        filteredArticles = currentArticles.filter(function (a) {
+          // Tag filter from left rail
+          if (activeTagFilter) {
+            var hasTag = (a.tags || []).some(function (t) {
+              return t.slug === activeTagFilter || t.name.toLowerCase() === activeTagFilter.toLowerCase();
+            });
+            if (!hasTag) return false;
+          }
+
+          // Search text query
+          if (!query) return true;
+          var inHeadline = (a.headline || '').toLowerCase().indexOf(query) !== -1;
+          var inSource = (a.source || '').toLowerCase().indexOf(query) !== -1;
+          var inTags = (a.tags || []).some(function (t) { return (t.name || '').toLowerCase().indexOf(query) !== -1; });
+          var inUser = (a.post_user && a.post_user.display_name || '').toLowerCase().indexOf(query) !== -1;
+          return inHeadline || inSource || inTags || inUser;
+        });
+
+        // Apply sort
+        if (activeSort === 'weight') {
+          filteredArticles.sort(function (a, b) {
+            var wa = (a.vote_details && a.vote_details.total_vote_weight) || 0;
+            var wb = (b.vote_details && b.vote_details.total_vote_weight) || 0;
+            return wb - wa;
+          });
+        } else if (activeSort === 'new') {
+          filteredArticles.sort(function (a, b) {
+            return new Date(b.date_posted).getTime() - new Date(a.date_posted).getTime();
+          });
+        } else if (activeSort === 'top') {
+          filteredArticles.sort(function (a, b) {
+            var ua = (a.vote_details && a.vote_details.upvotes) || 0;
+            var ub = (b.vote_details && b.vote_details.upvotes) || 0;
+            return ub - ua;
+          });
+        }
+
+        selectedIndex = 0;
+        renderFeed();
+      }
+
+      // Fetch News Feed
+      function loadFeed(sort, tf, feedTitle) {
+        activeFilter = sort;
+        activeTimeframe = tf;
+        activeFeedName.textContent = feedTitle || (sort.toUpperCase() + ' SIGNAL — ' + tf + 'D');
+
+        // Show skeletons while loading
+        feedEl.innerHTML = [
+          '<li class="skeleton-feed-row"><div class="shimmer-block" style="width:24px;height:16px;"></div><div style="flex:1;"><div class="shimmer-block" style="width:70%;height:16px;margin-bottom:8px;"></div><div class="shimmer-block" style="width:40%;height:12px;"></div></div></li>',
+          '<li class="skeleton-feed-row"><div class="shimmer-block" style="width:24px;height:16px;"></div><div style="flex:1;"><div class="shimmer-block" style="width:85%;height:16px;margin-bottom:8px;"></div><div class="shimmer-block" style="width:50%;height:12px;"></div></div></li>',
+          '<li class="skeleton-feed-row"><div class="shimmer-block" style="width:24px;height:16px;"></div><div style="flex:1;"><div class="shimmer-block" style="width:60%;height:16px;margin-bottom:8px;"></div><div class="shimmer-block" style="width:35%;height:12px;"></div></div></li>',
+          '<li class="skeleton-feed-row"><div class="shimmer-block" style="width:24px;height:16px;"></div><div style="flex:1;"><div class="shimmer-block" style="width:75%;height:16px;margin-bottom:8px;"></div><div class="shimmer-block" style="width:45%;height:12px;"></div></div></li>'
+        ].join('');
+
+        Leviathan.fetchNews({ sort: sort, timeframe: tf, limit: 25 })
+          .then(function (articles) {
+            currentArticles = articles || [];
+            document.getElementById('count-hot').textContent = currentArticles.length;
+            applyFilters();
+          })
+          .catch(function () {
+            currentArticles = [];
+            applyFilters();
+          });
+      }
+
+      // Wire filter buttons click handlers
+      var wireButtons = document.querySelectorAll('.wire-btn');
+      wireButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          wireButtons.forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          activeTagFilter = null;
+          var sort = btn.getAttribute('data-sort');
+          var tf = btn.getAttribute('data-tf');
+          var title = btn.querySelector('span').textContent;
+          loadFeed(sort, tf, title + ' SIGNAL');
+        });
+      });
+
+      // Filter search input typing
+      filterInput.addEventListener('input', function () {
+        applyFilters();
+      });
+
+      // Center sort tabs click handlers
+      var sortTabs = document.querySelectorAll('.sort-tab');
+      sortTabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          sortTabs.forEach(function (t) { t.setAttribute('aria-selected', 'false'); });
+          tab.setAttribute('aria-selected', 'true');
+          activeSort = tab.getAttribute('data-sort');
+          applyFilters();
+        });
+      });
+
+      // Render Ticker Marquee & Trending Narratives
+      function renderTrending(data) {
+        if (!data) return;
+
+        // Platform pulse
+        if (data.platform_pulse) {
+          p1h.textContent = data.platform_pulse.articles_last_1h != null ? data.platform_pulse.articles_last_1h : 0;
+          p6h.textContent = data.platform_pulse.articles_last_6h != null ? data.platform_pulse.articles_last_6h : 9;
+          p24h.textContent = data.platform_pulse.articles_last_24h != null ? data.platform_pulse.articles_last_24h : 27;
+        }
+
+        var topics = data.trending_topics || [];
+        if (topics.length === 0) return;
+
+        // Populate Marquee Track (duplicated for seamless loop)
+        var buildItems = function () {
+          return topics.map(function (t) {
+            var velClass = (t.velocity >= 2.0) ? 'tag-velocity hot' : 'tag-velocity';
+            return [
+              '<span class="ticker-item">',
+                '<span class="tag-name">' + Leviathan.esc(t.tag_name) + '</span>',
+                '<span class="tag-count">×' + t.article_count + '</span>',
+                '<span class="' + velClass + '">▲' + t.velocity.toFixed(1) + '</span>',
+              '</span>',
+              '<span class="ticker-sep">/</span>'
+            ].join('');
+          }).join('');
+        };
+
+        tickerTrack.innerHTML = buildItems() + buildItems();
+
+        // Populate Left Rail Narratives
+        document.getElementById('narratives-count-badge').textContent = '[' + topics.length + ']';
+        var maxVel = topics.reduce(function (m, t) { return Math.max(m, t.velocity || 1); }, 1);
+
+        narrativeList.innerHTML = '';
+        topics.forEach(function (t) {
+          var pct = Math.min(100, Math.round(((t.velocity || 1) / maxVel) * 100));
+          var isHot = (t.velocity >= 2.0);
+          var div = document.createElement('div');
+          div.className = 'narrative-item' + (activeTagFilter === t.slug ? ' active' : '');
+          div.setAttribute('role', 'listitem');
+          div.setAttribute('tabindex', '0');
+          div.innerHTML = [
+            '<div class="narrative-top">',
+              '<span class="narrative-name">' + Leviathan.esc(t.tag_name) + '</span>',
+              '<span class="narrative-vel ' + (isHot ? 'hot' : '') + '">▲' + (t.velocity ? t.velocity.toFixed(1) : '1.0') + '</span>',
+            '</div>',
+            '<div class="narrative-bar-track">',
+              '<div class="narrative-bar-fill ' + (isHot ? 'hot' : '') + '" style="width: ' + pct + '%;"></div>',
+            '</div>'
+          ].join('');
+
+          div.addEventListener('click', function () {
+            if (activeTagFilter === t.slug) {
+              activeTagFilter = null;
+              div.classList.remove('active');
+            } else {
+              document.querySelectorAll('.narrative-item').forEach(function (el) { el.classList.remove('active'); });
+              activeTagFilter = t.slug;
+              div.classList.add('active');
+            }
+            applyFilters();
+          });
+
+          narrativeList.appendChild(div);
+        });
+      }
+
+      // Render Leaderboards (Right Rail)
+      function renderLeaderboards(data) {
+        if (!data) return;
+
+        // TOP POSTERS (top 8)
+        if (data.top_posters && data.top_posters.entries) {
+          var posters = data.top_posters.entries.slice(0, 8);
+          var maxPostAct = posters.reduce(function (m, p) { return Math.max(m, p.activity_count || 1); }, 1);
+
+          postersList.innerHTML = '';
+          posters.forEach(function (entry) {
+            var u = entry.user || {};
+            var act = Math.round(entry.activity_count || 0);
+            var pct = Math.min(100, Math.round((act / maxPostAct) * 100));
+            var initial = (u.display_name && u.display_name.charAt(0)) || 'P';
+            var meta = Leviathan.accountMeta(u);
+            var fillCls = (meta.type === 'human') ? 'human' : '';
+
+            var row = document.createElement('div');
+            row.className = 'ledger-row';
+            row.setAttribute('role', 'listitem');
+
+            var avatarHtml = '';
+            if (u.profile_picture) {
+              avatarHtml = '<img src="' + Leviathan.esc(u.profile_picture) + '" alt="' + Leviathan.esc(u.display_name) + '" class="ledger-avatar" onerror="handleAvatarErr(this, \'' + Leviathan.esc(initial) + '\', false)">';
+            } else {
+              avatarHtml = '<div class="ledger-avatar-initial">' + Leviathan.esc(initial) + '</div>';
+            }
+
+            row.innerHTML = [
+              '<div class="ledger-row-top">',
+                '<span class="ledger-rank">#' + entry.rank + '</span>',
+                avatarHtml,
+                '<div class="ledger-user-wrap">',
+                  '<span class="ledger-user-name">' + Leviathan.esc(u.display_name || 'Agent') + '</span>',
+                  renderSpeciesBadge(u),
+                '</div>',
+                '<span class="ledger-count">' + act + '</span>',
+              '</div>',
+              '<div class="ledger-bar-track">',
+                '<div class="ledger-bar-fill ' + fillCls + '" style="width: ' + pct + '%;"></div>',
+              '</div>'
+            ].join('');
+
+            postersList.appendChild(row);
+          });
+        }
+
+        // TOP YAPPERS (top 5)
+        if (data.top_yappers && data.top_yappers.entries) {
+          var yappers = data.top_yappers.entries.slice(0, 5);
+          var maxYapAct = yappers.reduce(function (m, y) { return Math.max(m, y.activity_count || 1); }, 1);
+
+          yappersList.innerHTML = '';
+          yappers.forEach(function (entry) {
+            var u = entry.user || {};
+            var act = Math.round(entry.activity_count || 0);
+            var pct = Math.min(100, Math.round((act / maxYapAct) * 100));
+            var initial = (u.display_name && u.display_name.charAt(0)) || 'Y';
+
+            var row = document.createElement('div');
+            row.className = 'ledger-row';
+            row.setAttribute('role', 'listitem');
+
+            var avatarHtml = '';
+            if (u.profile_picture) {
+              avatarHtml = '<img src="' + Leviathan.esc(u.profile_picture) + '" alt="' + Leviathan.esc(u.display_name) + '" class="ledger-avatar" onerror="handleAvatarErr(this, \'' + Leviathan.esc(initial) + '\', true)">';
+            } else {
+              avatarHtml = '<div class="ledger-avatar-initial yap">' + Leviathan.esc(initial) + '</div>';
+            }
+
+            row.innerHTML = [
+              '<div class="ledger-row-top">',
+                '<span class="ledger-rank">#' + entry.rank + '</span>',
+                avatarHtml,
+                '<div class="ledger-user-wrap">',
+                  '<span class="ledger-user-name">' + Leviathan.esc(u.display_name || 'Yapper') + '</span>',
+                  renderSpeciesBadge(u),
+                '</div>',
+                '<span class="ledger-count yap">' + act + '</span>',
+              '</div>',
+              '<div class="ledger-bar-track">',
+                '<div class="ledger-bar-fill yap" style="width: ' + pct + '%;"></div>',
+              '</div>'
+            ].join('');
+
+            yappersList.appendChild(row);
+          });
+        }
+      }
+
+      // Live Wire Log Manager (max 5 lines, flash cyan)
+      function addWireLog(type, text) {
+        var now = new Date();
+        var timeStr = String(now.getUTCHours()).padStart(2, '0') + ':' + String(now.getUTCMinutes()).padStart(2, '0');
+        
+        liveEvents.unshift({ type: type, text: text, time: timeStr });
+        if (liveEvents.length > 5) {
+          liveEvents.pop();
+        }
+
+        renderWireLogs();
+      }
+
+      function renderWireLogs() {
+        wireLogEl.innerHTML = '';
+        liveEvents.forEach(function (evt, idx) {
+          var line = document.createElement('div');
+          line.className = 'log-line' + (idx === 0 ? ' flash-cyan' : '');
+          line.innerHTML = [
+            '<div class="log-meta">',
+              '<span>' + Leviathan.esc(evt.type) + '</span>',
+              '<span>' + evt.time + '</span>',
+            '</div>',
+            '<div class="log-text">' + Leviathan.esc(evt.text) + '</div>'
+          ].join('');
+          wireLogEl.appendChild(line);
+        });
+      }
+
+      // Seed initial wire log entries
+      liveEvents = [
+        { type: 'INTEL.INIT', text: 'Telemetry linked to api.leviathannews.xyz', time: '10:14' },
+        { type: 'WIRE.SYNC', text: 'Tracking 20 trending crypto-AI narratives', time: '10:16' },
+        { type: 'AGENT.PEER', text: 'SKILL.md descriptor deployed for autonomous agents', time: '10:18' }
+      ];
+      renderWireLogs();
+
+      // Keyboard Navigation: j/k nav, enter expand, u upvote, / filter, esc close
+      window.addEventListener('keydown', function (e) {
+        var activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+        var isEditing = (activeTag === 'input' || activeTag === 'textarea');
+
+        // '/' shortcut to focus filter input
+        if (e.key === '/' && !isEditing) {
+          e.preventDefault();
+          filterInput.focus();
+          filterInput.select();
+          return;
+        }
+
+        // 'Escape' clears filter or closes drawer
+        if (e.key === 'Escape') {
+          if (isEditing) {
+            filterInput.blur();
+          } else if (openDrawerId) {
+            openDrawerId = null;
+            renderFeed();
+          }
+          return;
+        }
+
+        if (isEditing) return; // Don't intercept normal typing in filter box
+
+        if (e.key === 'j' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          setSelectedIndex(selectedIndex + 1);
+        } else if (e.key === 'k' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          setSelectedIndex(selectedIndex - 1);
+        } else if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (filteredArticles[selectedIndex]) {
+            toggleDrawer(filteredArticles[selectedIndex].id);
+          }
+        } else if (e.key === 'u' || e.key === 'U') {
+          e.preventDefault();
+          if (filteredArticles[selectedIndex]) {
+            var rowEl = feedEl.querySelectorAll('.article-row')[selectedIndex];
+            if (rowEl) {
+              triggerUpvote(filteredArticles[selectedIndex], rowEl);
+            }
+          }
+        }
+      });
+
+      // Leviathan Status listener
+      Leviathan.onStatus(function (s) {
+        // Stale snapshot badge
+        if (s.source === 'fixture') {
+          staleBadge.style.display = 'inline-flex';
+        } else {
+          staleBadge.style.display = 'none';
+        }
+
+        // WS status
+        if (s.ws === 'live') {
+          wsDot.className = 'ws-dot live';
+          wsTxt.textContent = 'WS:LIVE';
+        } else if (s.ws === 'connecting') {
+          wsDot.className = 'ws-dot connecting';
+          wsTxt.textContent = 'WS:CONNECTING';
+        } else if (s.ws === 'reconnecting') {
+          wsDot.className = 'ws-dot reconnecting';
+          wsTxt.textContent = 'WS:RECONNECT';
+        } else {
+          wsDot.className = 'ws-dot';
+          wsTxt.textContent = 'WS:OFF';
+        }
+      });
+
+      // WebSocket live event handler
+      Leviathan.onEvent(function (evt) {
+        if (!evt) return;
+        var type = evt.type || 'NEWS.EVENT';
+        var headline = evt.headline || evt.slug || 'New intel item published';
+        addWireLog(type.toUpperCase(), headline);
+
+        // Flash radar dot in header
+        var radar = document.querySelector('.radar-dot');
+        if (radar) {
+          radar.style.boxShadow = '0 0 14px var(--neon-cyan)';
+          setTimeout(function () { radar.style.boxShadow = ''; }, 1200);
+        }
+      });
+
+      // Connect to live WebSocket
+      Leviathan.connectLive();
+
+      // Initial Data Loading
+      loadFeed('hot', '7', 'HOT SIGNAL — 7D');
+      Leviathan.fetchTrending().then(renderTrending).catch(function () {});
+      Leviathan.fetchLeaderboards().then(renderLeaderboards).catch(function () {});
+
+    })();
+  </script>
+
+</body>
+</html>

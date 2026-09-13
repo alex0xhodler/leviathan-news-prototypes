@@ -1,0 +1,86 @@
+/* ============================================================
+   LEVIATHAN NEWS — SOTA Design Tokens (shared across variants)
+   Abyssal · Authoritative · High-Velocity
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500&family=Instrument+Serif:ital@0;1&family=Syne:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+:root {
+  /* ---- Abyssal dark base (OKLCH) ---- */
+  --trench-950: oklch(0.14 0.05 240);      /* #050D1A — primary dark base */
+  --trench-900: oklch(0.165 0.045 238);    /* page depth */
+  --abyss-850:  oklch(0.20 0.04 235);      /* #0E1B2E — surface elev-1 */
+  --abyss-800:  oklch(0.235 0.04 235);     /* surface elev-2 */
+  --abyss-700:  oklch(0.28 0.04 235);      /* surface elev-3 / hover */
+
+  /* Omarchy-inspired terminal base (Tokyo Night family) */
+  --tokyo-950:  #13141f;
+  --tokyo-900:  #1a1b26;                   /* omarchy base */
+  --tokyo-800:  #24283b;
+
+  /* ---- Signal accents ---- */
+  --bio-cyan:       oklch(0.80 0.15 210);  /* #00D2FF — AI signal / primary accent */
+  --bio-cyan-dim:   oklch(0.80 0.15 210 / 0.14);
+  --squid-magenta:  oklch(0.68 0.24 330);  /* #FF2A85 — hot / high-impact */
+  --curation-amber: oklch(0.78 0.14 75);   /* #E5A93C — human curation / editorial */
+  --kelp-green:     oklch(0.78 0.16 160);  /* live / success */
+  --blood-red:      oklch(0.62 0.22 25);   /* downvote / kill */
+
+  /* ---- Editorial light ---- */
+  --paper:      oklch(0.98 0.008 90);      /* #FBFBF9 prestige canvas */
+  --paper-warm: oklch(0.96 0.015 90);
+  --ink:        oklch(0.18 0.02 250);
+  --ink-soft:   oklch(0.42 0.02 250);
+
+  /* ---- Typography ---- */
+  --font-editorial:      'Newsreader', 'Georgia', serif;
+  --font-display-serif:  'Instrument Serif', 'Georgia', serif;
+  --font-display:        'Syne', 'Space Grotesk', sans-serif;
+  --font-sans:           'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-body:           'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:           'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* Fluid type scale */
+  --fs-micro:   clamp(0.625rem, 0.6rem + 0.1vw, 0.6875rem);
+  --fs-caption: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
+  --fs-body:    clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
+  --fs-lede:    clamp(1.125rem, 1rem + 0.6vw, 1.375rem);
+  --fs-h3:      clamp(1.25rem, 1.1rem + 0.8vw, 1.625rem);
+  --fs-h2:      clamp(1.625rem, 1.3rem + 1.6vw, 2.5rem);
+  --fs-h1:      clamp(2.25rem, 1.6rem + 3.2vw, 4rem);
+  --fs-mega:    clamp(3rem, 2rem + 6vw, 7rem);
+
+  /* ---- Hairlines ---- */
+  --hairline-cyan:  1px solid oklch(0.80 0.15 210 / 0.14);
+  --hairline-dark:  1px solid oklch(1 0 0 / 0.08);
+  --hairline-light: 1px solid oklch(0.18 0.02 250 / 0.12);
+
+  /* ---- Radii ---- */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+
+  /* ---- Motion ---- */
+  --spring:       cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-expo:    cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast:     140ms;
+  --dur-med:      280ms;
+  --dur-slow:     600ms;
+
+  /* ---- Elevation ---- */
+  --shadow-1: 0 1px 2px oklch(0 0 0 / 0.3), 0 2px 8px oklch(0 0 0 / 0.2);
+  --shadow-2: 0 4px 16px oklch(0 0 0 / 0.35), 0 12px 40px oklch(0 0 0 / 0.25);
+  --glow-cyan: 0 0 24px oklch(0.80 0.15 210 / 0.25);
+  --glow-magenta: 0 0 24px oklch(0.68 0.24 330 / 0.25);
+
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
