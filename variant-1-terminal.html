@@ -355,6 +355,18 @@
     }
     .key-hints {
       opacity: 0.5;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      text-align: center;
+    }
+    .feed-name-txt {
+      flex: none;
+    }
+    .sort-tabs {
+      flex: none;
     }
 
     /* ============================================================
@@ -745,7 +757,7 @@
       white-space: nowrap;
       flex: none;
     }
-    @media (max-width: 1250px) {
+    @media (max-width: 1400px) {
       .key-hints { display: none; }
     }
     .feed-count-chip {
