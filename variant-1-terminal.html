@@ -228,6 +228,15 @@
       gap: 6px;
       padding: 0;
       color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .ticker-item:hover .tag-name {
+      color: var(--brand-lime);
+    }
+    .ticker-item.active .tag-name {
+      color: var(--brand-lime);
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
     .ticker-item .tag-name {
       color: #e6e6e6;
@@ -718,6 +727,8 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-wrap: nowrap;
+      min-width: 0;
     }
     .feed-name-txt {
       font-family: var(--font-brand-display);
@@ -726,6 +737,16 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .feed-count-chip {
+      white-space: nowrap;
+      flex: none;
+    }
+    @media (max-width: 1250px) {
+      .key-hints { display: none; }
     }
     .feed-count-chip {
       font-family: var(--font-mono);
@@ -1940,6 +1961,12 @@
       var articleCountBadge = document.getElementById('article-count-badge');
       var activeFeedName = document.getElementById('active-feed-name');
       var tickerTrack = document.getElementById('ticker-track');
+      tickerTrack.addEventListener('click', function (e) {
+        var item = e.target.closest('.ticker-item');
+        if (!item) return;
+        var key = item.getAttribute('data-tag');
+        if (key) toggleTagFilter(key);
+      });
       var narrativeList = document.getElementById('narrative-list');
       var postersList = document.getElementById('posters-list');
       var yappersList = document.getElementById('yappers-list');
@@ -1957,19 +1984,34 @@
           return;
         }
         var names = Array.from(activeTagFilters).map(function (n) { return '#' + n.toUpperCase(); });
-        activeTagChip.textContent = names.slice(0, 2).join(' ') + (names.length > 2 ? ' +' + (names.length - 2) : '') + ' \u00d7';
+        activeTagChip.textContent = names[0] + (names.length > 1 ? ' +' + (names.length - 1) : '') + ' \u00d7';
         activeTagChip.style.display = '';
       }
       if (activeTagChip) {
         activeTagChip.addEventListener('click', function () {
           activeTagFilters.clear();
-          document.querySelectorAll('.narrative-item.active').forEach(function (el) {
-            el.classList.remove('active');
-            el.setAttribute('aria-checked', 'false');
-          });
-          updateTagChip();
+          syncNarrativeUI();
           applyFilters();
         });
+      }
+
+      // Single source of truth for narrative selection (rail chips + marquee)
+      function syncNarrativeUI() {
+        narrativeList.querySelectorAll('.narrative-item').forEach(function (el) {
+          var on = activeTagFilters.has(el.getAttribute('data-tag'));
+          el.classList.toggle('active', on);
+          el.setAttribute('aria-checked', on ? 'true' : 'false');
+        });
+        document.querySelectorAll('#ticker-track .ticker-item').forEach(function (el) {
+          el.classList.toggle('active', activeTagFilters.has(el.getAttribute('data-tag')));
+        });
+        updateTagChip();
+      }
+      function toggleTagFilter(tagKey) {
+        if (activeTagFilters.has(tagKey)) activeTagFilters.delete(tagKey);
+        else activeTagFilters.add(tagKey);
+        syncNarrativeUI();
+        applyFilters();
       }
 
       // Pulse elements (right cell of top strip)
@@ -2346,8 +2388,8 @@
           var sort = btn.getAttribute('data-sort');
           var tf = btn.getAttribute('data-tf');
           var titleEl = btn.querySelector('.wire-name') || btn.querySelector('span');
-          var title = titleEl ? titleEl.textContent : sort.toUpperCase();
-          loadFeed(sort, tf, title + ' SIGNAL');
+          var title = titleEl ? titleEl.textContent.replace(/\s+(7D|24H|1D)$/i, '') : sort.toUpperCase();
+          loadFeed(sort, tf, title + ' SIGNAL — ' + (tf === '1' ? '24H' : tf + 'D'));
         });
       });
 
@@ -2386,7 +2428,7 @@
           return topics.map(function (t) {
             var vel = (t.velocity != null) ? t.velocity : 1.0;
             return [
-              '<span class="ticker-item">',
+              '<span class="ticker-item" data-tag="' + Leviathan.esc((t.tag_name || '').toLowerCase()) + '" title="Toggle narrative filter">',
                 '<span class="tag-name">' + Leviathan.esc(t.tag_name) + '</span>',
                 '<span class="tag-count">×' + (t.article_count || 1) + '</span>',
                 '<span class="tag-velocity">▲' + vel.toFixed(1) + '</span>',
@@ -2413,6 +2455,7 @@
           div.setAttribute('aria-checked', activeTagFilters.has(tagKey) ? 'true' : 'false');
           div.setAttribute('tabindex', '0');
           div.setAttribute('title', 'Toggle narrative filter');
+          div.setAttribute('data-tag', tagKey);
           div.innerHTML = [
             '<span class="narrative-name">' + Leviathan.esc(t.tag_name) + '</span>',
             '<span class="narrative-bar-track">',
@@ -2421,19 +2464,7 @@
             '<span class="narrative-vel ' + (isLime ? 'is-lime' : 'is-dim') + '">▲' + vel.toFixed(1) + '</span>'
           ].join('');
 
-          var toggleTag = function () {
-            if (activeTagFilters.has(tagKey)) {
-              activeTagFilters.delete(tagKey);
-              div.classList.remove('active');
-              div.setAttribute('aria-checked', 'false');
-            } else {
-              activeTagFilters.add(tagKey);
-              div.classList.add('active');
-              div.setAttribute('aria-checked', 'true');
-            }
-            updateTagChip();
-            applyFilters();
-          };
+          var toggleTag = function () { toggleTagFilter(tagKey); };
           div.addEventListener('click', toggleTag);
           div.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTag(); }
