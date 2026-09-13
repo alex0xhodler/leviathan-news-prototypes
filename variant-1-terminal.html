@@ -361,6 +361,17 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       text-align: center;
+      mask-image: linear-gradient(to right, #000 82%, transparent);
+      -webkit-mask-image: linear-gradient(to right, #000 82%, transparent);
+    }
+    .center-header {
+      gap: 14px;
+    }
+    .center-header.has-tag-filter .key-hints {
+      display: none;
+    }
+    .center-header.has-tag-filter .feed-meta-title {
+      flex: 1;
     }
     .feed-name-txt {
       flex: none;
@@ -1991,6 +2002,8 @@
       var activeTagChip = document.getElementById('active-tag-chip');
       function updateTagChip() {
         if (!activeTagChip) return;
+        var hdr = document.querySelector('.center-header');
+        if (hdr) hdr.classList.toggle('has-tag-filter', activeTagFilters.size > 0);
         if (activeTagFilters.size === 0) {
           activeTagChip.style.display = 'none';
           return;
