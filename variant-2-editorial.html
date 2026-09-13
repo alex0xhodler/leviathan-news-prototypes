@@ -266,7 +266,7 @@
       font-family: var(--font-editorial);
       font-weight: 700;
       text-transform: uppercase;
-      font-size: clamp(4.5rem, 6.2vw, 5.5rem);
+      font-size: clamp(2.3rem, 11vw, 5.5rem);
       line-height: 0.92;
       letter-spacing: -0.01em;
       text-wrap: balance;
@@ -383,6 +383,9 @@
       gap: 12px;
     }
 
+    .sticky-wordmark {
+      display: none;
+    }
     .masthead-nav-links {
       display: flex;
       align-items: center;
@@ -617,6 +620,14 @@
       gap: 32px;
       padding-bottom: 32px;
       border-bottom: 1px solid var(--border-hairline);
+    }
+    .lead-story-grid > *,
+    .lead-pull-quote,
+    .lead-quote-sub {
+      min-width: 0;
+    }
+    .lead-pull-quote {
+      overflow: hidden;
     }
 
     .lead-left-col {
@@ -1804,49 +1815,108 @@
 
     /* ---- RESPONSIVE COLLAPSE (<860px) ---- */
     @media (max-width: 860px) {
+      html, body {
+        overflow-x: clip;
+      }
+
       .broadsheet-wrapper {
         padding: 0 16px;
       }
 
+      /* Micro-bar: date only, single line */
       .masthead-top-bar {
-        flex-direction: column;
+        flex-direction: row;
+        justify-content: center;
         text-align: center;
-        gap: 4px;
+        gap: 12px;
         padding: 8px 0;
+        font-size: 8.5px;
+      }
+      .masthead-top-left,
+      .masthead-top-right {
+        display: none;
       }
 
       .masthead-wordmark-container {
-        padding: 16px 0 12px;
+        padding: 12px 0 10px;
       }
 
       .masthead-sub-flank {
         gap: 10px;
       }
 
-      .cached-edition-stamp {
-        position: static;
-        margin: 8px auto 0;
-        transform: none;
+      /* Stamp would float mid-air above the nameplate: hidden on phones */
+      .cached-edition-stamp,
+      .cached-edition-stamp.visible {
         display: none;
       }
 
-      .cached-edition-stamp.visible {
-        display: inline-flex;
+      .nameplate-hairline {
+        width: 32px;
+      }
+      .masthead-sub-news {
+        font-size: 8.5px;
+        letter-spacing: 0.42em;
+      }
+      .masthead-manifesto {
+        font-size: 15px;
       }
 
+      /* Sticky mini-masthead: wordmark + controls row, sections strip below */
       .masthead-nav-bar {
-        flex-direction: column;
-        align-items: stretch;
+        position: sticky;
+        top: 0;
+        z-index: 60;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px 10px;
+        margin: 0 -16px;
+        padding: 8px 16px 8px;
+        background: color-mix(in oklch, var(--paper, #ffffff) 94%, transparent);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-hairline);
       }
-
+      .sticky-wordmark {
+        display: block;
+        flex: 1;
+        font-family: var(--font-editorial);
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: var(--ink-main);
+        line-height: 1;
+      }
       .masthead-nav-links {
-        justify-content: center;
+        order: 3;
+        flex: 1 1 100%;
+        min-width: 0;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        scrollbar-width: none;
+        gap: 4px;
+      }
+      .masthead-nav-links::-webkit-scrollbar {
+        display: none;
+      }
+      .masthead-nav-btn {
+        flex: none;
+        white-space: nowrap;
+        font-size: 10px;
+        padding: 4px 8px;
+      }
+      .masthead-nav-controls {
+        flex: none;
+        justify-content: flex-end;
+        padding-top: 0;
+        border-top: none;
       }
 
-      .masthead-nav-controls {
-        justify-content: space-between;
-        padding-top: 6px;
-        border-top: 1px solid var(--border-hairline);
+      .lead-kicker {
+        font-size: 9px;
+        letter-spacing: 0.14em;
       }
 
       /* Lead Story Collapses to 1 Column */
@@ -1924,8 +1994,24 @@
         </p>
       </div>
 
+
+      <!-- Breaking Alert Banner -->
+      <div class="breaking-news-wrapper">
+        <div class="breaking-banner" id="breaking-banner" role="alert" aria-live="polite">
+          <span class="breaking-pill">BREAKING</span>
+          <div class="breaking-content" id="breaking-text">
+            Just filed: Waiting for incoming wire events...
+          </div>
+          <div class="breaking-countdown" title="Banner auto-close progress">
+            <div class="breaking-countdown-bar" id="breaking-progress"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
       <!-- Thin Nav Row -->
       <nav class="masthead-nav-bar" aria-label="Broadsheet Sections and Preferences">
+        <span class="sticky-wordmark" aria-hidden="true">Leviathan</span>
         <ul class="masthead-nav-links" id="section-nav">
           <li><button class="masthead-nav-btn active" data-filter="all">All Despatches</button></li>
           <li><button class="masthead-nav-btn" data-filter="markets">Markets</button></li>
@@ -1949,20 +2035,6 @@
           </div>
         </div>
       </nav>
-
-      <!-- Breaking Alert Banner -->
-      <div class="breaking-news-wrapper">
-        <div class="breaking-banner" id="breaking-banner" role="alert" aria-live="polite">
-          <span class="breaking-pill">BREAKING</span>
-          <div class="breaking-content" id="breaking-text">
-            Just filed: Waiting for incoming wire events...
-          </div>
-          <div class="breaking-countdown" title="Banner auto-close progress">
-            <div class="breaking-countdown-bar" id="breaking-progress"></div>
-          </div>
-        </div>
-      </div>
-    </header>
 
     <!-- ================= MAIN CONTENT ================= -->
     <main class="broadsheet-main" id="main-content">
