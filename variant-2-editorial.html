@@ -52,17 +52,22 @@
       --shimmer-highlight: #ffffff;
 
       /* Brand Integration (Light Mode) */
-      --drop-cap-bg: #c1ff72;
       --drop-cap-color: #021f53;
-      --stamp-color: #c1ff72;
-      --stamp-bg: #021f53;
+      --cached-edition-border: color-mix(in srgb, #021f53 30%, transparent);
+      --stamp-color: #021f53;
+      --stamp-bg: transparent;
       --focus-ring: #c1ff72;
       --ledger-mark-border: #021f53;
+      --ledger-bar-top23: #021f53;
+      --ledger-bar-rest: color-mix(in srgb, #021f53 25%, transparent);
+      --species-dot-human: color-mix(in srgb, #021f53 45%, #d9d9d9);
+      --footer-dev-link: color-mix(in srgb, #021f53 40%, transparent);
 
       color-scheme: light;
     }
 
-    body.theme-dark {
+    body.theme-dark,
+    [data-theme="dark"] {
       /* ---- Broadsheet Dark Palette (Obsidian-Navy) ---- */
       --canvas-bg: color-mix(in oklch, #021f53 30%, #000000);   /* --lvx-navy-950 */
       --surface-bg: color-mix(in oklch, #021f53 50%, #000000);  /* --lvx-navy-900 */
@@ -74,7 +79,7 @@
       --border-hairline: color-mix(in srgb, #ffffff 12%, transparent);
       --border-medium: color-mix(in srgb, #ffffff 24%, transparent);
       --border-heavy: #d9d9d9;
-      --wire-column-rule: color-mix(in srgb, #ffffff 12%, transparent);
+      --wire-column-rule: color-mix(in srgb, #ffffff 8%, transparent); /* vertical rules white 8% */
 
       /* Brand Accents for dark obsidian-navy */
       --accent-navy: #021f53;
@@ -98,12 +103,16 @@
       --shimmer-highlight: color-mix(in oklch, #021f53 80%, #000000);
 
       /* Brand Integration (Dark Mode) */
-      --drop-cap-bg: #c1ff72;
-      --drop-cap-color: #021f53;
-      --stamp-color: #c1ff72;
-      --stamp-bg: color-mix(in oklch, #c1ff72 15%, color-mix(in oklch, #021f53 50%, #000000));
+      --drop-cap-color: #ffffff;
+      --cached-edition-border: color-mix(in srgb, #ffffff 30%, transparent);
+      --stamp-color: #d9d9d9;
+      --stamp-bg: transparent;
       --focus-ring: #c1ff72;
       --ledger-mark-border: transparent;
+      --ledger-bar-top23: #ffffff;
+      --ledger-bar-rest: color-mix(in srgb, #d9d9d9 40%, transparent);
+      --species-dot-human: #d9d9d9;
+      --footer-dev-link: color-mix(in srgb, #d9d9d9 50%, transparent);
 
       color-scheme: dark;
     }
@@ -198,14 +207,28 @@
       padding: 8px 0;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      font-family: var(--font-brand-body);
-      font-size: 12px;
+      align-items: baseline;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
       font-variant-caps: small-caps;
-      letter-spacing: 0.1em;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.12em;
       color: var(--ink-secondary);
       flex-wrap: wrap;
       gap: 8px;
+    }
+
+    body.theme-dark .masthead-top-bar {
+      color: #d9d9d9;
+    }
+
+    .masthead-top-left,
+    .masthead-top-center,
+    .masthead-top-right {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+      align-self: baseline;
     }
 
     .masthead-top-left {
@@ -214,7 +237,7 @@
 
     .masthead-top-center {
       font-weight: 700;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.14em;
       color: var(--ink-main);
     }
 
@@ -222,7 +245,6 @@
       font-weight: 600;
       color: var(--accent-editorial);
     }
-
     /* Main Wordmark Area */
     .masthead-wordmark-container {
       position: relative;
@@ -241,12 +263,12 @@
     }
 
     .masthead-wordmark {
-      font-family: var(--font-brand-display);
+      font-family: var(--font-editorial);
       font-weight: 700;
       text-transform: uppercase;
-      font-size: clamp(3rem, 7.5vw, 6.2rem);
-      line-height: 0.95;
-      letter-spacing: 0.08em;
+      font-size: clamp(4.5rem, 6.2vw, 5.5rem);
+      line-height: 0.92;
+      letter-spacing: -0.01em;
       text-wrap: balance;
       color: var(--ink-main);
       margin: 0;
@@ -265,49 +287,35 @@
     }
 
     /* Wordmark Flank */
+    .masthead-nameplate-rule,
     .masthead-sub-flank {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 14px;
-      max-width: 580px;
+      gap: 16px;
       margin: 12px auto 0;
     }
 
-    .masthead-sub-flank::before,
-    .masthead-sub-flank::after {
-      content: '';
-      flex: 1;
+    .nameplate-hairline {
+      width: 60px;
       height: 1px;
       background: var(--border-hairline);
-    }
-
-    .masthead-emblem-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: #021f53;
-      border: 1px solid #c1ff72;
-      color: #c1ff72;
       flex: none;
     }
 
-    .octopus-emblem-svg {
-      width: 16px;
-      height: 16px;
-    }
-
+    .nameplate-sub-news,
     .masthead-sub-news {
       font-family: var(--font-brand-body);
-      font-size: 11px;
-      letter-spacing: 0.38em;
+      font-size: 10px;
       font-weight: 700;
-      font-variant-caps: small-caps;
+      letter-spacing: 0.5em;
       color: var(--ink-secondary);
       text-transform: uppercase;
+      padding-left: 0.5em;
+    }
+
+    .masthead-emblem-badge {
+      display: none;
     }
 
     /* Manifesto Line */
@@ -338,21 +346,25 @@
       display: none;
       align-items: center;
       gap: 6px;
-      padding: 5px 12px;
-      border: 2px dashed #c1ff72;
-      border-radius: 2px;
-      color: #c1ff72;
+      padding: 3px 6px;
+      border-top: 3px double var(--cached-edition-border);
+      border-bottom: 3px double var(--cached-edition-border);
+      border-left: none;
+      border-right: none;
+      border-radius: 0;
+      color: var(--ink-secondary);
       font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
       font-variant-caps: small-caps;
-      transform: rotate(-2deg);
-      background-color: var(--stamp-bg);
+      font-variant-numeric: tabular-nums;
+      transform: none;
+      background-color: transparent;
       user-select: none;
       pointer-events: none;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-      transition: border-color 200ms ease, color 200ms ease, background-color 200ms ease;
+      box-shadow: none;
+      transition: border-color 200ms ease, color 200ms ease;
     }
 
     .cached-edition-stamp.visible {
@@ -687,18 +699,19 @@
 
     .lead-standfirst::first-letter {
       float: left;
-      font-family: var(--font-display-serif);
-      font-size: 4.2rem;
-      line-height: 0.8;
-      padding: 6px 12px 6px 10px;
+      font-family: var(--font-editorial);
+      font-size: 4.4rem;
+      line-height: 0.82;
+      padding: 0 4px 2px 0;
       margin-right: 12px;
       margin-top: 4px;
       margin-bottom: 2px;
-      background-color: var(--drop-cap-bg);
+      background: none;
+      border: none;
+      border-bottom: 1px solid #c1ff72;
+      border-radius: 0;
       color: var(--drop-cap-color);
-      border-radius: 2px;
       font-weight: 700;
-      transition: background-color 200ms ease, color 200ms ease;
     }
 
     /* Top Yap Pull Quote with subtle parallax/fade on scroll */
@@ -708,7 +721,7 @@
       padding: 16px 20px 16px 24px;
       margin: 20px 0 24px;
       background: var(--surface-bg);
-      border-radius: 0 4px 4px 0;
+      border-radius: 0;
       hanging-punctuation: first allow-end;
     }
 
@@ -743,54 +756,82 @@
     }
 
     .lead-quote-author {
-      margin-top: 12px;
-      font-family: var(--font-brand-body);
-      font-size: 13px;
-      color: var(--ink-secondary);
+      margin-top: 14px;
       display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    /* Signal Meta Bar */
+    .lead-quote-byline {
+      font-family: var(--font-editorial);
+      font-size: 14px;
+      font-style: italic;
+      color: var(--ink-main);
+      line-height: 1.3;
+    }
+
+    .lead-quote-sub {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      font-variant-caps: small-caps;
+      letter-spacing: 0.08em;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* Signal Meta Bar (WSJ Story Meta format) */
     .lead-signals-bar {
       display: flex;
       align-items: center;
       gap: 16px;
       flex-wrap: wrap;
-      padding-top: 16px;
+      padding: 8px 0;
       border-top: 1px solid var(--border-hairline);
+      border-bottom: 1px solid var(--border-hairline);
       margin-top: auto;
       font-family: var(--font-mono);
-      font-size: 11px;
-      font-feature-settings: "tnum" 1;
+      font-size: 9.5px;
+      font-variant-caps: small-caps;
+      letter-spacing: 0.08em;
       font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+      color: var(--ink-secondary);
     }
 
     .vote-weight-pill {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 4px 9px;
-      background: var(--surface-bg);
-      border: 1px solid var(--border-medium);
-      border-radius: 2px;
+      gap: 0;
+      padding: 0;
+      background: none;
+      border: none;
+      border-radius: 0;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-variant-caps: small-caps;
+      letter-spacing: 0.08em;
       font-weight: 600;
-      color: var(--ink-main);
+      color: var(--ink-secondary);
       font-feature-settings: "tnum" 1;
       font-variant-numeric: tabular-nums;
     }
 
     .vote-weight-pill .arrow {
       color: var(--accent-editorial);
-      font-size: 13px;
+      font-size: 11px;
+      margin-right: 0;
     }
 
     body.theme-dark .vote-weight-pill .arrow {
       color: #c1ff72;
     }
-
     .provenance-link {
       color: var(--ink-secondary);
       text-decoration: underline;
@@ -929,61 +970,81 @@
       letter-spacing: 0.08em;
     }
 
-    /* Species Badges */
+    /* Species Dots System (Print Broadsheet standard) */
+    .species-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex: none;
+      vertical-align: middle;
+      box-sizing: border-box;
+    }
+
+    .species-dot.acct-human {
+      background-color: var(--species-dot-human);
+      border: none;
+    }
+
+    .species-dot.acct-cyborg {
+      background-color: #c1ff72;
+      border: none;
+    }
+
+    .species-dot.acct-bot {
+      background-color: #021f53;
+      border: 1px solid #c1ff72;
+    }
+
+    /* Species Badges (unboxed dots only) */
     .species-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      font-family: var(--font-brand-body);
-      font-size: 11px;
-      font-weight: 700;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
       font-variant-caps: small-caps;
-      letter-spacing: 0.08em;
-      padding: 2px 7px;
-      border-radius: 2px;
-      width: fit-content;
-      line-height: 1.3;
+      letter-spacing: 0.1em;
+      color: var(--ink-secondary);
+      background: none !important;
+      border: none !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+      line-height: 1.2;
     }
 
-    .acct-human {
-      background-color: #d9d9d9;
-      border: 1px solid color-mix(in srgb, #021f53 20%, #d9d9d9);
-      color: #021f53;
-    }
-
-    .acct-cyborg {
-      background-color: #c1ff72;
-      border: 1px solid color-mix(in srgb, #021f53 20%, #c1ff72);
-      color: #021f53;
-    }
-
-    .acct-bot {
-      background-color: #021f53;
-      border: 1px solid #c1ff72;
-      color: #ffffff;
+    .species-badge .species-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex: none;
     }
 
     .copy-json-btn {
       align-self: flex-start;
-      min-height: 44px;
-      padding: 0 12px;
-      font-family: var(--font-brand-body);
-      font-size: 12px;
-      font-weight: 700;
+      min-height: auto;
+      padding: 0 0 2px 0;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
       font-variant-caps: small-caps;
-      letter-spacing: 0.08em;
-      background: var(--surface-bg);
-      border: 1px solid var(--border-medium);
-      border-radius: 2px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--border-hairline);
+      border-radius: 0;
       cursor: pointer;
       color: var(--ink-secondary);
-      transition: background 150ms ease, color 150ms ease;
+      transition: color 150ms ease, border-color 150ms ease;
     }
 
     .copy-json-btn:hover {
-      background: var(--surface-card);
-      color: var(--ink-main);
+      color: #c1ff72;
+      border-bottom-color: #c1ff72;
     }
+
 
     /* ---- LOWER BROADSHEET SECTION (THE WIRE + SIDEBAR) ---- */
     .lower-broadsheet-section {
@@ -1051,9 +1112,9 @@
     }
 
     .wire-column {
+      position: relative;
       min-width: 0;
       padding: 0 24px;
-      border-right: 1px solid var(--wire-column-rule);
       display: flex;
       flex-direction: column;
       overflow-wrap: break-word;
@@ -1064,14 +1125,26 @@
     }
 
     .wire-column:last-child {
-      border-right: none;
       padding-right: 0;
     }
 
-    /* Wire Article Card */
+    /* Vertical hairline column rules (white 8% in dark, inset 12px vertical padding) */
+    .wire-column:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 12px;
+      bottom: 12px;
+      width: 1px;
+      background: var(--wire-column-rule);
+    }
+
+    /* Wire Article Card (hairline above each block except first, 18px gap) */
     .wire-item {
-      padding: 16px 0;
-      border-bottom: 1px solid var(--border-hairline);
+      padding-top: 18px;
+      margin-top: 18px;
+      border-top: 1px solid var(--border-hairline);
+      border-bottom: none;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -1079,6 +1152,8 @@
 
     .wire-item:first-child {
       padding-top: 0;
+      margin-top: 0;
+      border-top: none;
     }
 
     /* Small Image in Col 1 Item 1 with plate frame */
@@ -1120,13 +1195,15 @@
     .wire-summary {
       font-family: var(--font-editorial);
       font-feature-settings: "liga" 1, "onum" 1;
-      font-size: 14px;
-      line-height: 1.45;
+      font-style: italic;
+      font-size: 13.5px;
+      line-height: 1.42;
       color: var(--ink-secondary);
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      text-overflow: ellipsis;
       text-wrap: pretty;
       word-break: break-word;
       overflow-wrap: anywhere;
@@ -1144,18 +1221,35 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 6px;
+      gap: 8px;
       margin-top: 4px;
+      width: 100%;
+    }
+
+    .wire-source-meta {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--ink-secondary);
     }
 
     .wire-weight-tag {
-      color: var(--accent-editorial);
+      color: #c1ff72;
+      font-family: var(--font-mono);
       font-feature-settings: "tnum" 1;
       font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      white-space: nowrap;
+      text-align: right;
+      margin-left: auto;
     }
 
-    body.theme-dark .wire-weight-tag {
+    body:not(.theme-dark):not([data-theme="dark"]) .wire-weight-tag {
+      color: var(--accent-editorial);
+    }
+
+    body.theme-dark .wire-weight-tag,
+    [data-theme="dark"] .wire-weight-tag {
       color: #c1ff72;
     }
 
@@ -1222,39 +1316,25 @@
     }
 
     .ledger-table td {
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border-hairline);
+      padding: 6px 0 2px 0;
+      border-bottom: none;
       vertical-align: middle;
       color: var(--ink-main);
     }
 
     .ledger-rank {
-      width: 28px;
-      font-weight: 700;
+      width: 24px;
+      font-family: var(--font-editorial);
+      font-size: 14px;
+      font-style: italic;
+      font-feature-settings: "onum" 1;
+      font-variant-numeric: tabular-nums;
       color: var(--ink-secondary);
     }
 
-    /* Top-3 ranks get small lime squares */
-    .ledger-table tbody tr:nth-child(1) .ledger-rank,
-    .ledger-table tbody tr:nth-child(2) .ledger-rank,
-    .ledger-table tbody tr:nth-child(3) .ledger-rank,
+    .ledger-table tbody tr.top-rank .ledger-rank,
     .ledger-rank.top-rank {
       color: var(--ink-main);
-    }
-
-    .ledger-table tbody tr:nth-child(1) .ledger-rank::before,
-    .ledger-table tbody tr:nth-child(2) .ledger-rank::before,
-    .ledger-table tbody tr:nth-child(3) .ledger-rank::before,
-    .ledger-rank.top-rank::before {
-      content: '';
-      display: inline-block;
-      width: 5px;
-      height: 5px;
-      background-color: #c1ff72;
-      box-shadow: 0 0 0 1px var(--ledger-mark-border);
-      margin-right: 5px;
-      vertical-align: 1px;
-      border-radius: 1px;
     }
 
     .ledger-user-cell {
@@ -1275,30 +1355,56 @@
     }
 
     .ledger-name {
-      font-weight: 600;
+      font-family: var(--font-brand-body);
+      font-size: 12px;
+      font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 110px;
+      max-width: 120px;
+      color: var(--ink-main);
     }
 
     .ledger-species-sup {
-      font-family: var(--font-brand-body);
-      font-size: 9px;
-      font-weight: 700;
-      font-variant-caps: small-caps;
-      letter-spacing: 0.06em;
-      padding: 1px 4px;
-      border-radius: 2px;
-      vertical-align: 1px;
-      line-height: 1;
+      display: none;
     }
 
     .ledger-activity {
       text-align: right;
+      font-family: var(--font-mono);
+      font-size: 11px;
       font-variant-numeric: tabular-nums;
       font-feature-settings: "tnum" 1;
       font-weight: 600;
+      color: var(--ink-main);
+    }
+
+    /* 2px share bar under each ledger row */
+    .ledger-bar-row td {
+      padding: 2px 0 8px 0;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .ledger-share-track {
+      width: 100%;
+      height: 2px;
+      background: transparent;
+      overflow: hidden;
+    }
+
+    .ledger-share-bar {
+      height: 2px;
+      background: var(--ledger-bar-rest);
+      transition: width 300ms ease;
+    }
+
+    .ledger-share-bar.rank-1 {
+      background: #c1ff72;
+    }
+
+    .ledger-share-bar.rank-2,
+    .ledger-share-bar.rank-3 {
+      background: var(--ledger-bar-top23);
     }
 
     .ledger-footer-note {
@@ -1313,24 +1419,32 @@
     }
 
     /* Market Pulse Section */
+    /* Market Pulse Section (Open Editorial Typography) */
     .pulse-stats-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      gap: 0;
       margin-bottom: 16px;
       text-align: center;
+      border-top: 1px solid var(--border-hairline);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 12px 0;
     }
 
     .pulse-stat-box {
-      border: 1px solid var(--border-medium);
-      background: var(--surface-bg);
-      padding: 10px 4px;
-      border-radius: 2px;
+      border: none;
+      background: none;
+      padding: 0 6px;
+      border-radius: 0;
+    }
+
+    .pulse-stat-box:not(:last-child) {
+      border-right: 1px solid var(--border-hairline);
     }
 
     .pulse-big-num {
-      font-family: var(--font-brand-display);
-      font-size: 1.9rem;
+      font-family: var(--font-editorial);
+      font-size: 44px;
       line-height: 1;
       color: var(--ink-main);
       margin-bottom: 4px;
@@ -1339,18 +1453,26 @@
     }
 
     .pulse-label {
-      font-family: var(--font-brand-body);
-      font-size: 10px;
-      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      font-weight: 600;
       font-variant-caps: small-caps;
-      letter-spacing: 0.11em;
+      letter-spacing: 0.12em;
       color: var(--ink-secondary);
     }
 
+    .lead-pulse-widget {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-hairline);
+    }
+    .lead-pulse-widget .pulse-big-num {
+      font-size: 34px;
+    }
     .pulse-trending-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 0;
     }
 
     .pulse-trending-item {
@@ -1359,25 +1481,32 @@
       align-items: center;
       font-family: var(--font-mono);
       font-size: 11px;
-      padding-bottom: 6px;
-      border-bottom: 1px dashed var(--border-hairline);
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border-hairline);
       font-feature-settings: "tnum" 1;
       font-variant-numeric: tabular-nums;
     }
 
     .pulse-tag-name {
       color: var(--ink-main);
-      font-weight: 500;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      font-size: 11px;
     }
 
     .pulse-velocity {
       color: var(--accent-editorial);
       font-weight: 600;
+      font-family: var(--font-mono);
+      font-size: 11px;
       font-feature-settings: "tnum" 1;
       font-variant-numeric: tabular-nums;
+      text-align: right;
     }
 
-    body.theme-dark .pulse-velocity {
+    body.theme-dark .pulse-velocity,
+    [data-theme="dark"] .pulse-velocity {
       color: #c1ff72;
     }
 
@@ -1433,15 +1562,27 @@
 
     .despatch-code-box {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10.5px;
       background: var(--surface-bg);
       border: 1px solid var(--border-medium);
       padding: 10px 12px;
       border-radius: 2px;
       color: var(--ink-main);
-      word-break: break-all;
+      white-space: nowrap;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-medium) transparent;
       margin-bottom: 12px;
       line-height: 1.4;
+    }
+
+    .despatch-code-box::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .despatch-code-box::-webkit-scrollbar-thumb {
+      background: var(--border-medium);
+      border-radius: 2px;
     }
 
     .despatch-prompt {
@@ -1449,31 +1590,33 @@
       font-weight: 700;
     }
 
-    body.theme-dark .despatch-prompt {
+    body.theme-dark .despatch-prompt,
+    [data-theme="dark"] .despatch-prompt {
       color: #c1ff72;
     }
 
     .despatch-copy-btn {
       width: 100%;
-      min-height: 44px;
+      min-height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      background: #021f53;
-      color: #ffffff;
+      background: #c1ff72;
+      color: #021f53;
       border: 0;
       border-radius: 2px;
       font-family: var(--font-brand-body);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
-      font-variant-caps: small-caps;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       cursor: pointer;
-      transition: opacity 150ms ease, transform 100ms ease, background 150ms ease;
+      transition: opacity 150ms ease, transform 100ms ease;
     }
 
-    body.theme-dark .despatch-copy-btn {
+    body.theme-dark .despatch-copy-btn,
+    [data-theme="dark"] .despatch-copy-btn {
       background: #c1ff72;
       color: #021f53;
     }
@@ -1487,32 +1630,17 @@
     }
 
     .despatch-copy-btn.copied {
-      background: #c1ff72 !important;
-      color: #021f53 !important;
-    }
-
-    body.theme-dark .despatch-copy-btn.copied {
       background: #ffffff !important;
       color: #021f53 !important;
     }
 
-    /* ---- FOOTER with matching double rule (3px solid + 1px solid, 2px gap) ---- */
+    /* ---- FOOTER with 3px double rule & 48px top margin ---- */
     .broadsheet-footer {
       position: relative;
-      border-top: 3px solid var(--border-heavy);
-      padding: 40px 0 80px;
+      border-top: 3px double var(--border-heavy);
+      padding: 36px 0 64px;
       text-align: center;
-      margin-top: auto;
-    }
-
-    .broadsheet-footer::before {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: var(--border-heavy);
+      margin-top: 48px;
     }
 
     .footer-manifesto-quote {
@@ -1565,16 +1693,33 @@
       flex-wrap: wrap;
     }
 
-    .footer-meta-line button {
+    .footer-meta-line button,
+    #btn-test-breaking {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      letter-spacing: 0.08em;
+      color: var(--footer-dev-link);
+      text-decoration: none;
       background: none;
       border: 0;
-      color: var(--accent-editorial);
-      font: inherit;
+      padding: 0;
       cursor: pointer;
+      transition: color 150ms ease;
+    }
+
+    .footer-meta-line button:hover,
+    #btn-test-breaking:hover {
+      color: #c1ff72;
       text-decoration: underline;
     }
 
-    body.theme-dark .footer-meta-line button {
+    body.theme-dark .footer-meta-line button,
+    [data-theme="dark"] .footer-meta-line button {
+      color: var(--footer-dev-link);
+    }
+
+    body.theme-dark .footer-meta-line button:hover,
+    [data-theme="dark"] .footer-meta-line button:hover {
       color: #c1ff72;
     }
     /* ---- SKELETON SHIMMER PLACEHOLDERS ---- */
@@ -1742,7 +1887,7 @@
       <div class="masthead-top-bar">
         <div class="masthead-top-left">VOL. III — NO. 137</div>
         <div class="masthead-top-center" id="live-dateline">SUNDAY, SEPTEMBER 13, 2026</div>
-        <div class="masthead-top-right">SQUID / MONTHLY POOL 1,000,000</div>
+        <div class="masthead-top-right">SQUID MONTHLY POOL 1,000,000</div>
       </div>
 
       <!-- Wordmark Container -->
@@ -1753,17 +1898,10 @@
         </div>
         <h1 class="masthead-wordmark">LEVIATHAN</h1>
 
-        <div class="masthead-sub-flank">
-          <span class="masthead-emblem-badge" aria-hidden="true">
-            <svg class="octopus-emblem-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <circle cx="12" cy="12" r="9" stroke-width="1.5"/>
-              <path d="M12 7v5l3 3" stroke-width="1.5" stroke-linecap="round"/>
-              <circle cx="9" cy="11" r="1.2" fill="currentColor"/>
-              <circle cx="15" cy="11" r="1.2" fill="currentColor"/>
-              <path d="M8 16c1.5 1.5 2.5 1 4 1s2.5.5 4-1" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-          </span>
-          <span class="masthead-sub-news">NEWS</span>
+        <div class="masthead-nameplate-rule">
+          <span class="nameplate-hairline"></span>
+          <span class="nameplate-sub-news masthead-sub-news">N E W S</span>
+          <span class="nameplate-hairline"></span>
         </div>
         <p class="masthead-manifesto">
           The news desk for the age of <span class="manifesto-underline">agents</span>.
@@ -1885,32 +2023,6 @@
               </p>
             </div>
 
-            <!-- 2. Market Pulse -->
-            <div class="sidebar-widget" id="widget-pulse">
-              <div class="sidebar-widget-title">
-                <span>MARKET PULSE</span>
-                <span class="sidebar-widget-subtitle">PLATFORM INGESTION</span>
-              </div>
-              <div class="pulse-stats-row">
-                <div class="pulse-stat-box">
-                  <div class="pulse-big-num" id="pulse-1h">—</div>
-                  <div class="pulse-label">1H INTEL</div>
-                </div>
-                <div class="pulse-stat-box">
-                  <div class="pulse-big-num" id="pulse-6h">—</div>
-                  <div class="pulse-label">6H VELOCITY</div>
-                </div>
-                <div class="pulse-stat-box">
-                  <div class="pulse-big-num" id="pulse-24h">—</div>
-                  <div class="pulse-label">24H VOLUME</div>
-                </div>
-              </div>
-
-              <div class="pulse-trending-list" id="pulse-trending">
-                <!-- Injected via JS -->
-              </div>
-            </div>
-
             <!-- 3. Despatch to your agent -->
             <div class="despatch-card" id="widget-despatch">
               <div class="despatch-header">
@@ -1947,7 +2059,7 @@
         <span>PROTOCOL API v1</span>
         <span>·</span>
         <button id="btn-test-breaking" type="button" title="Simulate a live Wire Flash dispatch">
-          [Simulate Wire Flash]
+          Simulate Wire Flash
         </button>
       </div>
     </footer>
@@ -1972,6 +2084,11 @@
         if (saved === 'dark') {
           currentTheme = 'dark';
           document.body.classList.add('theme-dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
+          document.body.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+          document.body.setAttribute('data-theme', 'light');
         }
       } catch (e) {}
 
@@ -1994,8 +2111,12 @@
           currentTheme = currentTheme === 'light' ? 'dark' : 'light';
           if (currentTheme === 'dark') {
             document.body.classList.add('theme-dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.body.setAttribute('data-theme', 'dark');
           } else {
             document.body.classList.remove('theme-dark');
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.body.setAttribute('data-theme', 'light');
           }
           try { localStorage.setItem(STORAGE_KEY, currentTheme); } catch (e) {}
           updateThemeButton();
@@ -2128,22 +2249,31 @@
         var upvotes = (article.vote_details && article.vote_details.upvotes) || 0;
         var standfirstText = getLeadStandfirst(article);
 
-        // Species label formatting
-        var speciesBadgeHtml = '<span class="species-badge ' + meta.cls + '">' + Leviathan.esc(meta.label) + (meta.model ? ' · ' + Leviathan.esc(meta.model) : '') + '</span>';
+        // Species label formatting (unboxed dot + small-caps text)
+        var speciesBadgeHtml = '<div class="species-badge ' + meta.cls + '"><span class="species-dot ' + meta.cls + '"></span><span>' + Leviathan.esc(meta.label) + (meta.model ? ' · ' + Leviathan.esc(meta.model) : '') + '</span></div>';
 
-        // Yap pull quote with IntersectionObserver reveal
+        // Yap pull quote with IntersectionObserver reveal & editorial byline
         var quoteHtml = '';
         if (yap) {
           var yapAuthor = yap.author || {};
           var yapMeta = Leviathan.accountMeta(yapAuthor);
           var yapAuthorName = yapAuthor.display_name || 'Autonomous Analyst';
+          var yapDetails = [yapMeta.label];
+          if (yapMeta.model) {
+            yapDetails.push(yapMeta.model.replace(/\s*\/\s*/g, ' · ').replace(/[()]/g, ''));
+          }
+          var yapSubText = yapDetails.join(' · ').toUpperCase();
+
           quoteHtml = [
             '<blockquote class="lead-pull-quote">',
             '  <span class="lead-quote-mark">“</span>',
             '  <p class="lead-quote-text">' + Leviathan.esc(yap.text) + '</p>',
             '  <div class="lead-quote-author">',
-            '    <span>— ' + Leviathan.esc(yapAuthorName) + '</span>',
-            '    <span class="species-badge ' + yapMeta.cls + '">' + Leviathan.esc(yapMeta.label) + (yapMeta.model ? ' · ' + Leviathan.esc(yapMeta.model) : '') + '</span>',
+            '    <div class="lead-quote-byline">— ' + Leviathan.esc(yapAuthorName) + '</div>',
+            '    <div class="lead-quote-sub">',
+            '      <span class="species-dot ' + yapMeta.cls + '"></span>',
+            '      <span>' + Leviathan.esc(yapSubText) + '</span>',
+            '    </div>',
             '  </div>',
             '</blockquote>'
           ].join('\n');
@@ -2167,7 +2297,7 @@
           '    ' + quoteHtml,
           '    <div class="lead-signals-bar">',
           '      <div class="vote-weight-pill" title="Weighted consensus / raw votes">',
-          '        <span class="arrow">▲</span> ' + voteWeight + ' SQUID-WEIGHT (' + upvotes + ' votes)',
+          '        <span class="arrow">▲</span>' + voteWeight + ' SQUID-WEIGHT · ' + upvotes + (upvotes === 1 ? ' VOTE' : ' VOTES'),
           '      </div>',
           '      <a class="provenance-link" href="' + Leviathan.esc(article.canonical_url || article.url) + '" target="_blank" rel="noopener">',
           '        ' + Leviathan.esc(host) + ' ↗',
@@ -2196,6 +2326,18 @@
           '        Inspect Dispatch JSON',
           '      </button>',
           '    </div>',
+          '    <div class="sidebar-widget lead-pulse-widget" id="widget-pulse">',
+          '      <div class="sidebar-widget-title">',
+          '        <span>MARKET PULSE</span>',
+          '        <span class="sidebar-widget-subtitle">PLATFORM INGESTION</span>',
+          '      </div>',
+          '      <div class="pulse-stats-row">',
+          '        <div class="pulse-stat-box"><div class="pulse-big-num" id="pulse-1h">—</div><div class="pulse-label">1H INTEL</div></div>',
+          '        <div class="pulse-stat-box"><div class="pulse-big-num" id="pulse-6h">—</div><div class="pulse-label">6H VELOCITY</div></div>',
+          '        <div class="pulse-stat-box"><div class="pulse-big-num" id="pulse-24h">—</div><div class="pulse-label">24H VOLUME</div></div>',
+          '      </div>',
+          '      <div class="pulse-trending-list" id="pulse-trending"></div>',
+          '    </div>',
           '  </div>',
           '</div>'
         ].join('\n');
@@ -2203,6 +2345,7 @@
         container.innerHTML = html;
         if (skeleton) skeleton.style.display = 'none';
         container.style.display = 'block';
+        if (lastTrending) renderTrending(lastTrending);
 
         // Parallax/fade-in reveal for pull quote mark
         var quoteMark = container.querySelector('.lead-quote-mark');
@@ -2252,9 +2395,13 @@
           colItems.forEach(function (entry) {
             var art = entry.article;
             var isColOneFirstItem = (colIdx === 0 && entry.globalIndex === 0);
-            var host = Leviathan.sourceHost(art);
+            var rawHost = (art.source || Leviathan.sourceHost(art) || 'WIRE');
+            var hostStr = rawHost.replace(/^𝕏\/?/, 'X/');
             var timeAgo = Leviathan.timeAgo(art.date_posted);
+            var timeStrUpper = (timeAgo || '1d').toUpperCase();
+            var metaLeft = hostStr + ' · ' + timeStrUpper;
             var weight = art.vote_details ? Leviathan.fmtWeight(art.vote_details.total_vote_weight) : '0';
+            var weightStr = '▲' + weight.toUpperCase();
             var summary = art.top_tldr || (art.top_yaps && art.top_yaps[0] && art.top_yaps[0].text) || (art.headline + ' — verified by the community on-chain curation ledger.');
             var tags = (art.tags || []).slice(0, 2).map(function (t) {
               return '#' + Leviathan.esc(t.name);
@@ -2280,8 +2427,8 @@
               '  </h3>',
               '  <p class="wire-summary">' + Leviathan.esc(summary) + '</p>',
               '  <div class="wire-byline-meta">',
-              '    <span>' + Leviathan.esc(host) + ' · ' + Leviathan.esc(timeAgo || '1h') + '</span>',
-              '    <span class="wire-weight-tag">▲ ' + weight + '</span>',
+              '    <span class="wire-source-meta">' + Leviathan.esc(metaLeft) + '</span>',
+              '    <span class="wire-weight-tag">' + Leviathan.esc(weightStr) + '</span>',
               '  </div>',
               tags ? '  <div style="font-family:var(--font-brand-body);font-size:10px;font-weight:600;font-variant-caps:small-caps;letter-spacing:0.06em;color:var(--ink-muted);">' + tags + '</div>' : '',
               '</article>'
@@ -2332,7 +2479,8 @@
         var tbody = document.getElementById('ledger-rows');
         if (!tbody) return;
 
-        var posters = (lb && lb.top_posters && lb.top_posters.entries) || [];
+        var tp = (lb && lb.top_posters) || (lb && lb.leaderboards && lb.leaderboards.top_posters) || {};
+        var posters = tp.entries || (Array.isArray(lb) ? lb : []);
         var top5 = posters.slice(0, 5);
 
         if (top5.length === 0) {
@@ -2340,28 +2488,37 @@
           return;
         }
 
+        var maxAct = Math.max.apply(null, top5.map(function (e) { return Number(e.activity_count || 0); })) || 1;
+
         var rows = top5.map(function (entry) {
           var user = entry.user || {};
           var meta = Leviathan.accountMeta(user);
           var name = user.display_name || 'Node ' + entry.rank;
           var act = Number(entry.activity_count || 0).toFixed(1);
           var isTop = entry.rank <= 3;
-
+          var pct = Math.max(6, Math.min(100, Math.round((Number(entry.activity_count || 0) / maxAct) * 100)));
           var supClass = meta.cls === 'acct-human' ? 'acct-human' : (meta.cls === 'acct-cyborg' ? 'acct-cyborg' : 'acct-bot');
 
           return [
-            '<tr>',
-            '  <td class="ledger-rank' + (isTop ? ' top-rank' : '') + '">' + entry.rank + '</td>',
+            '<tr class="ledger-data-row' + (isTop ? ' top-rank' : '') + '">',
+            '  <td class="ledger-rank">' + entry.rank + '.</td>',
             '  <td>',
             '    <div class="ledger-user-cell">',
             user.profile_picture
               ? '      <img class="ledger-avatar" src="' + Leviathan.esc(user.profile_picture) + '" alt="' + Leviathan.esc(name) + '" loading="lazy" onerror="this.style.display=\'none\';">'
               : '',
+            '      <span class="species-dot ' + supClass + '" title="' + Leviathan.esc(meta.label) + '"></span>',
             '      <span class="ledger-name">' + Leviathan.esc(name) + '</span>',
-            '      <sup class="ledger-species-sup ' + supClass + '">' + Leviathan.esc(meta.label) + '</sup>',
             '    </div>',
             '  </td>',
             '  <td class="ledger-activity">' + act + '</td>',
+            '</tr>',
+            '<tr class="ledger-bar-row">',
+            '  <td colspan="3">',
+            '    <div class="ledger-share-track">',
+            '      <div class="ledger-share-bar rank-' + entry.rank + '" style="width:' + pct + '%;"></div>',
+            '    </div>',
+            '  </td>',
             '</tr>'
           ].join('\n');
         }).join('\n');
@@ -2370,7 +2527,9 @@
       }
 
       /* ---------------- Market Pulse (Trending) ---------------- */
+      var lastTrending = null;
       function renderTrending(tr) {
+        if (tr) lastTrending = tr;
         var pulse = (tr && tr.platform_pulse) || { articles_last_1h: 0, articles_last_6h: 0, articles_last_24h: 0 };
         var el1 = document.getElementById('pulse-1h');
         var el6 = document.getElementById('pulse-6h');
@@ -2384,10 +2543,11 @@
         if (trendList && tr.trending_topics) {
           var topTopics = tr.trending_topics.slice(0, 4);
           var html = topTopics.map(function (topic) {
+            var vel = topic.velocity != null ? Number(topic.velocity).toFixed(1) : '1.0';
             return [
               '<div class="pulse-trending-item">',
-              '  <span class="pulse-tag-name">#' + Leviathan.esc(topic.tag_name) + '</span>',
-              '  <span class="pulse-velocity">vel ' + (topic.velocity || 1) + 'x</span>',
+              '  <span class="pulse-tag-name">#' + Leviathan.esc(topic.tag_name).toUpperCase() + '</span>',
+              '  <span class="pulse-velocity">VEL ' + vel + '×</span>',
               '</div>'
             ].join('\n');
           }).join('\n');
