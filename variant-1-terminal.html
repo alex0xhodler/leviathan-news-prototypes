@@ -1572,6 +1572,13 @@
     @media (max-width: 720px) {
       .ticker-strip {
         height: 40px;
+        justify-content: space-between;
+      }
+      /* Mobile: brand + live dot only — drop squeezed marquee text, pulse counters, stale chip */
+      .ticker-marquee-wrap,
+      .pulse-metrics-right,
+      .snapshot-badge {
+        display: none !important;
       }
       .ticker-cell-left {
         flex: 0 0 auto;
@@ -1635,13 +1642,33 @@
         white-space: nowrap;
         flex: none;
       }
+      /* Mobile: switcher only — drop feed name, count chip, key hints */
+      .feed-meta-title,
+      .key-hints {
+        display: none !important;
+      }
+      /* Tag rows: fade the right edge instead of clipping mid-chip */
+      .row-meta-chips {
+        -webkit-mask-image: linear-gradient(90deg, #000 86%, transparent 100%);
+        mask-image: linear-gradient(90deg, #000 86%, transparent 100%);
+      }
+      .center-header {
+        display: block;
+        padding: 6px 10px;
+      }
       .sort-tabs {
-        grid-column: 2;
         display: flex;
         flex-wrap: nowrap;
-        overflow-x: auto;
+        width: 100%;
+        max-width: none;
+        overflow-x: visible;
         scrollbar-width: none;
-        max-width: 46vw;
+        gap: 4px;
+      }
+      .sort-tab {
+        flex: 1;
+        justify-content: center;
+        min-height: 40px;
       }
       .sort-tabs::-webkit-scrollbar {
         display: none;
