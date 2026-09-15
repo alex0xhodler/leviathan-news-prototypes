@@ -1441,14 +1441,48 @@
               </div>
             </section>
 
-            <!-- ZONE 4: WHAT ELSE IS BEING REPORTED (Multi-source synthesis) -->
-            <section class="related-container" id="related-section" aria-labelledby="related-heading" style="display: none;">
-              <div class="section-ruled-header">
-                <h2 class="section-ruled-title" id="related-heading">WHAT ELSE IS BEING REPORTED</h2>
-                <span class="section-ruled-subtitle">MULTI-SOURCE SYNTHESIS · RELATED DISPATCHES</span>
+            <!-- ZONE 3: THE DESK SAYS (CONSENSUS / MARKETS BOX) -->
+            <!-- PROVIDER SEAM: replace consensusFromVotes with Kalshi/Polymarket odds when aggregator ships -->
+            <div class="markets-box" id="consensus-box" aria-labelledby="consensus-heading">
+              <div class="markets-box-header">
+                <h3 class="markets-box-title" id="consensus-heading">THE DESK SAYS</h3>
+                <div class="markets-box-subtitle">TOKEN-WEIGHTED SENTIMENT · VOTE AS POSITION</div>
               </div>
-              <div class="related-rows-list" id="related-rows-list"></div>
-            </section>
+
+              <div class="consensus-metric-row">
+                <span class="consensus-pct-val" id="consensus-pct-display">50%</span>
+                <span class="consensus-label-badge" id="consensus-label-display">UNPRICED</span>
+              </div>
+
+              <!-- Horizontal Odds Bar -->
+              <div class="odds-bar-track" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" id="odds-bar-track" aria-label="Market consensus odds">
+                <div class="odds-bar-fill" id="odds-bar-fill" style="width: 50%;"></div>
+              </div>
+
+              <div class="consensus-caption">
+                <span id="consensus-weight-caption">0 weighted votes</span>
+                <span id="consensus-counts-caption">0 UP · 0 DOWN</span>
+              </div>
+
+              <!-- 40px Trade Action Buttons -->
+              <div class="consensus-actions">
+                <button type="button" class="btn-broadsheet btn-long" id="btn-add-weight" aria-label="Add weight long">
+                  <span aria-hidden="true">▲</span>
+                  <span>ADD WEIGHT</span>
+                </button>
+                <button type="button" class="btn-broadsheet btn-counter" id="btn-counter-weight" aria-label="Counter position">
+                  <span aria-hidden="true">▼</span>
+                  <span>COUNTER</span>
+                </button>
+              </div>
+
+              <!-- Inline Wallet Nudge inside Consensus -->
+              <div class="wallet-nudge-card" id="consensus-wallet-nudge" style="display: none;">
+                <p class="wallet-nudge-text">Connect Web3 wallet to allocate vote weight and stake SQUID.</p>
+                <button type="button" class="wallet-nudge-btn" id="consensus-connect-wallet-btn">CONNECT WALLET</button>
+                <p class="wallet-nudge-note" id="consensus-wallet-err-note" style="display: none;"></p>
+              </div>
+            </div>
 
             <!-- ZONE 5: THE POD (LETTERS TO THE DESK) -->
             <section class="pod-container" id="pod-section" aria-labelledby="pod-heading">
@@ -1494,53 +1528,19 @@
                 Be the first voice in the pod. Submit an editorial letter above to earn initial SQUID.
               </div>
             </section>
+            <!-- ZONE 4: WHAT ELSE IS BEING REPORTED (Multi-source synthesis) -->
+            <section class="related-container" id="related-section" aria-labelledby="related-heading" style="display: none;">
+              <div class="section-ruled-header">
+                <h2 class="section-ruled-title" id="related-heading">WHAT ELSE IS BEING REPORTED</h2>
+                <span class="section-ruled-subtitle">MULTI-SOURCE SYNTHESIS · RELATED DISPATCHES</span>
+              </div>
+              <div class="related-rows-list" id="related-rows-list"></div>
+            </section>
+
           </div>
 
           <!-- RIGHT / EDITORIAL DESK SIDE COLUMN -->
           <aside class="broadsheet-side-col" role="complementary">
-            <!-- ZONE 3: CONSENSUS (MARKETS BOX) -->
-            <!-- PROVIDER SEAM: replace consensusFromVotes with Kalshi/Polymarket odds when aggregator ships -->
-            <div class="markets-box" id="consensus-box" aria-labelledby="consensus-heading">
-              <div class="markets-box-header">
-                <h3 class="markets-box-title" id="consensus-heading">THE DESK SAYS</h3>
-                <div class="markets-box-subtitle">TOKEN-WEIGHTED SENTIMENT · VOTE AS POSITION</div>
-              </div>
-
-              <div class="consensus-metric-row">
-                <span class="consensus-pct-val" id="consensus-pct-display">50%</span>
-                <span class="consensus-label-badge" id="consensus-label-display">UNPRICED</span>
-              </div>
-
-              <!-- Horizontal Odds Bar -->
-              <div class="odds-bar-track" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" id="odds-bar-track" aria-label="Market consensus odds">
-                <div class="odds-bar-fill" id="odds-bar-fill" style="width: 50%;"></div>
-              </div>
-
-              <div class="consensus-caption">
-                <span id="consensus-weight-caption">0 weighted votes</span>
-                <span id="consensus-counts-caption">0 UP · 0 DOWN</span>
-              </div>
-
-              <!-- 40px Trade Action Buttons -->
-              <div class="consensus-actions">
-                <button type="button" class="btn-broadsheet btn-long" id="btn-add-weight" aria-label="Add weight long">
-                  <span aria-hidden="true">▲</span>
-                  <span>ADD WEIGHT</span>
-                </button>
-                <button type="button" class="btn-broadsheet btn-counter" id="btn-counter-weight" aria-label="Counter position">
-                  <span aria-hidden="true">▼</span>
-                  <span>COUNTER</span>
-                </button>
-              </div>
-
-              <!-- Inline Wallet Nudge inside Consensus -->
-              <div class="wallet-nudge-card" id="consensus-wallet-nudge" style="display: none;">
-                <p class="wallet-nudge-text">Connect Web3 wallet to allocate vote weight and stake SQUID.</p>
-                <button type="button" class="wallet-nudge-btn" id="consensus-connect-wallet-btn">CONNECT WALLET</button>
-                <p class="wallet-nudge-note" id="consensus-wallet-err-note" style="display: none;"></p>
-              </div>
-            </div>
-
             <!-- ZONE 6: FIRST-SQUID JOURNEY PROGRESSIVE DISCLOSURE RAIL -->
             <div class="journey-box" id="journey-box" aria-labelledby="journey-heading">
               <div class="journey-box-header">
