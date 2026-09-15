@@ -419,6 +419,71 @@
       color: #021f53;
       border-color: var(--lvx-lime);
     }
+    .btn-lime-solid {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 40px;
+      min-height: 40px;
+      padding: 0 18px;
+      background: var(--lvx-lime);
+      border: 1px solid var(--lvx-lime);
+      color: #021f53;
+      font-family: var(--font-brand-body);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-radius: var(--r-md);
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: none !important;
+      transition: all var(--dur-fast);
+      white-space: nowrap;
+    }
+
+    .btn-lime-solid:hover {
+      background: color-mix(in oklch, var(--lvx-lime) 85%, #ffffff);
+      border-color: color-mix(in oklch, var(--lvx-lime) 85%, #ffffff);
+    }
+
+    /* Scroll margin top on CTA targets for clean fixed nav clearance */
+    #zone-consensus,
+    #pod-composer-wrap {
+      scroll-margin-top: 90px;
+    }
+
+    /* Hero CTA Row */
+    .hero-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 14px;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid color-mix(in oklch, #ffffff 8%, transparent);
+    }
+
+    .hero-cta-btn-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hero-cta-sub {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding-left: 2px;
+    }
+
+    /* Mobile Sticky Bottom Action Bar (hidden by default on desktop) */
+    .mobile-sticky-bar {
+      display: none;
+    }
 
     .btn-agent-copy,
     .btn-secondary {
@@ -915,6 +980,81 @@
       font-size: 0.94rem;
       line-height: 1.5;
       color: var(--text-high);
+    }
+
+    .yap-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-top: 6px;
+      border-top: 1px solid color-mix(in oklch, #ffffff 6%, transparent);
+    }
+
+    .yap-reply-btn {
+      background: transparent;
+      border: 1px solid color-mix(in oklch, #ffffff 12%, transparent);
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 3px 10px;
+      border-radius: var(--r-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all var(--dur-fast);
+      min-height: 28px;
+    }
+
+    .yap-reply-btn:hover {
+      color: var(--lvx-lime);
+      border-color: var(--lvx-lime);
+      background: color-mix(in oklch, var(--lvx-lime) 10%, transparent);
+    }
+
+    .yap-reply-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--lvx-lime);
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .yap-reply-context {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: color-mix(in oklch, var(--lvx-lime) 12%, #021f53);
+      border: 1px solid color-mix(in oklch, var(--lvx-lime) 35%, transparent);
+      border-radius: var(--r-md);
+      padding: 4px 10px;
+      margin-bottom: 10px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--lvx-lime);
+      letter-spacing: 0.05em;
+    }
+
+    .yap-reply-cancel {
+      background: transparent;
+      border: none;
+      color: var(--lvx-lime);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      transition: color var(--dur-fast);
+    }
+
+    .yap-reply-cancel:hover {
+      color: #ffffff;
     }
 
     .empty-pod-notice {
@@ -1420,6 +1560,51 @@
         display: inline-flex;
         align-items: center;
       }
+      /* Lift showcase dock above sticky bar on mobile */
+      .lvx-dock {
+        bottom: 76px !important;
+      }
+
+      /* Mobile Sticky Bottom Action Bar */
+      .mobile-sticky-bar {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 9990;
+        background: color-mix(in oklch, #021f53 94%, #000000);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-top: 1px solid color-mix(in oklch, var(--lvx-lime) 25%, transparent);
+        padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+        transform: translateY(105%);
+        transition: transform 0.24s ease, opacity 0.24s ease;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .mobile-sticky-bar.visible {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .mobile-sticky-inner {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 500px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .mobile-sticky-btn {
+        flex: 1;
+        min-height: 44px;
+        height: 44px;
+        font-size: 0.82rem;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1537,6 +1722,21 @@
           <div class="hook-standfirst" id="hook-standfirst-el"></div>
 
           <div class="hook-meta-row" id="hook-meta-el"></div>
+          <!-- Hero CTA Row (BET + YAP) -->
+          <div class="hero-cta-row" id="hero-cta-row">
+            <div class="hero-cta-btn-wrap">
+              <button type="button" class="btn-lime-solid hero-cta-btn" id="hero-cta-consensus" aria-label="Predict on consensus">
+                ▲ PREDICT
+              </button>
+              <span class="hero-cta-sub">DEPTH -1,000M // PREDICT</span>
+            </div>
+            <div class="hero-cta-btn-wrap">
+              <button type="button" class="btn-ghost-lime hero-cta-btn" id="hero-cta-pod" aria-label="Yap and earn SQUID">
+                YAP · EARN SQUID
+              </button>
+              <span class="hero-cta-sub">DEPTH -4,000M // YAP</span>
+            </div>
+          </div>
 
           <div class="hero-media-wrap" id="hero-media-container" style="display: none;">
             <img id="hero-media-img" src="" alt="" loading="lazy">
@@ -1613,19 +1813,6 @@
           </div>
         </section>
 
-        <!-- ZONE 4: WHAT ELSE IS BEING REPORTED (CURRENTS ELSEWHERE) -->
-        <section class="abyss-panel related-zone" id="zone-related" aria-label="Currents Elsewhere" style="display: none;">
-          <div class="panel-header-row">
-            <span class="panel-kicker">
-              <span class="panel-kicker-dot" aria-hidden="true"></span>
-              CURRENTS ELSEWHERE // MULTI-SOURCE
-            </span>
-            <span class="panel-depth-tag">RELATED COVERAGE</span>
-          </div>
-
-          <ul class="related-list" id="related-list"></ul>
-        </section>
-
         <!-- ZONE 5: THE POD (THE TRENCH — VOICES) -->
         <section class="abyss-panel pod-zone" id="zone-pod" aria-label="The Trench Voices">
           <div class="panel-header-row">
@@ -1636,13 +1823,16 @@
             <span class="panel-depth-tag" id="pod-count-tag">[0 TRANSMISSIONS]</span>
           </div>
 
-          <!-- Yap stream list -->
-          <ul class="pod-yaps-list" id="pod-yaps-list"></ul>
-
-          <!-- Yap Composer -->
+          <!-- Yap Composer (Reddit-style: on top) -->
           <div class="pod-composer-wrap" id="pod-composer-wrap">
             <div class="composer-nudge">
               <span>⚡ Yap once — earn your first SQUID. Token-weighted voice.</span>
+            </div>
+
+            <!-- Reply context chip -->
+            <div class="yap-reply-context" id="yap-reply-context" style="display: none;">
+              <span id="yap-reply-text">REPLYING TO @user</span>
+              <button type="button" id="yap-reply-cancel" class="yap-reply-cancel" aria-label="Cancel reply">×</button>
             </div>
 
             <textarea 
@@ -1673,6 +1863,22 @@
             </div>
             <button class="btn-ghost-lime" id="btn-pod-connect-wallet">CONNECT WALLET</button>
           </div>
+
+          <!-- Yap stream list (voices below) -->
+          <ul class="pod-yaps-list" id="pod-yaps-list" style="margin-top: 20px;"></ul>
+        </section>
+
+        <!-- ZONE 4: WHAT ELSE IS BEING REPORTED (CURRENTS ELSEWHERE) -->
+        <section class="abyss-panel related-zone" id="zone-related" aria-label="Currents Elsewhere" style="display: none;">
+          <div class="panel-header-row">
+            <span class="panel-kicker">
+              <span class="panel-kicker-dot" aria-hidden="true"></span>
+              CURRENTS ELSEWHERE // MULTI-SOURCE
+            </span>
+            <span class="panel-depth-tag">RELATED COVERAGE</span>
+          </div>
+
+          <ul class="related-list" id="related-list"></ul>
         </section>
 
         <!-- ZONE 7: RETURN LOOP FOOTER -->
@@ -1752,6 +1958,17 @@
 
     </div>
   </main>
+  <!-- Mobile Sticky Bottom Action Bar (<=860px) -->
+  <div class="mobile-sticky-bar" id="mobile-sticky-bar" aria-label="Quick Navigation Actions">
+    <div class="mobile-sticky-inner">
+      <button type="button" class="btn-lime-solid mobile-sticky-btn" id="sticky-cta-consensus" aria-label="Predict on consensus">
+        ▲ PREDICT
+      </button>
+      <button type="button" class="btn-ghost-lime mobile-sticky-btn" id="sticky-cta-pod" aria-label="Yap and earn SQUID">
+        YAP · EARN SQUID
+      </button>
+    </div>
+  </div>
 
   <!-- VARIANT CONFIGURATION (Required by showcase-nav.js) -->
   <script>
@@ -2016,7 +2233,14 @@
         var targetBtn = weightSide > 0 ? btnWeightLong : btnWeightCounter;
         var originalText = targetBtn.textContent;
 
-        ArticleEngine.placeWeight(currentArticle.id, weightSide)
+        function timeoutPromise(ms, errVal) {
+          return new Promise(function (_, rej) { setTimeout(function () { rej(new Error(errVal || 'timeout')); }, ms); });
+        }
+
+        Promise.race([
+          ArticleEngine.placeWeight(currentArticle.id, weightSide),
+          timeoutPromise(1500, 'auth-required')
+        ])
           .then(function () {
             /* On success: complete journey step, flash bar, recompute locally */
             ArticleEngine.journeyComplete('weight');
@@ -2119,15 +2343,24 @@
         }).join('');
       }
 
+      var activeReplyTo = null;
+
       function createYapItemHtml(yap) {
-        var userBadge = renderSpeciesBadge(yap.author || { account_type: 'human', display_name: 'Pod-Signal' });
+        var authorObj = yap.author || { account_type: 'human', display_name: 'Pod-Signal' };
+        var authorName = authorObj.display_name || authorObj.username || 'signal';
+        var userBadge = renderSpeciesBadge(authorObj);
         var time = Leviathan.timeAgo(yap.created_at) || 'JUST NOW';
         var tagsHtml = (yap.tags || []).map(function (t) {
           return '<span>#' + Leviathan.esc(String(t).toUpperCase()) + '</span>';
         }).join(' ');
 
+        var replyContextHtml = '';
+        if (yap.reply_to) {
+          replyContextHtml = '<div class="yap-reply-badge">↳ replying to @' + Leviathan.esc(yap.reply_to) + '</div>';
+        }
+
         return (
-          '<li class="yap-card">' +
+          '<li class="yap-card" data-yap-id="' + (yap.id || '') + '">' +
             '<div class="yap-header">' +
               '<div class="yap-user-wrap">' +
                 userBadge +
@@ -2135,9 +2368,37 @@
               '</div>' +
               '<div class="yap-tags">' + tagsHtml + '</div>' +
             '</div>' +
+            (replyContextHtml ? replyContextHtml : '') +
             '<div class="yap-body">' + Leviathan.esc(yap.text) + '</div>' +
+            '<div class="yap-footer">' +
+              '<button type="button" class="yap-reply-btn" data-author="' + Leviathan.esc(authorName) + '" aria-label="Reply to ' + Leviathan.esc(authorName) + '">' +
+                '↩ REPLY' +
+              '</button>' +
+            '</div>' +
           '</li>'
         );
+      }
+
+      function setReplyContext(author) {
+        activeReplyTo = author;
+        var chip = document.getElementById('yap-reply-context');
+        var textEl = document.getElementById('yap-reply-text');
+        if (chip && textEl) {
+          textEl.textContent = 'REPLYING TO @' + author;
+          chip.style.display = 'inline-flex';
+        }
+        if (podComposerWrap) {
+          podComposerWrap.scrollIntoView({ behavior: 'smooth' });
+        }
+        setTimeout(function () {
+          if (yapTextarea) yapTextarea.focus();
+        }, 300);
+      }
+
+      function clearReplyContext() {
+        activeReplyTo = null;
+        var chip = document.getElementById('yap-reply-context');
+        if (chip) chip.style.display = 'none';
       }
 
       function handlePostYap() {
@@ -2157,7 +2418,14 @@
         yapSubmitBtn.textContent = 'TRANSMITTING...';
         yapSubmitBtn.disabled = true;
 
-        ArticleEngine.postYap(currentArticle.id, text, activeTags)
+        function timeoutPromise(ms, errVal) {
+          return new Promise(function (_, rej) { setTimeout(function () { rej(new Error(errVal || 'timeout')); }, ms); });
+        }
+
+        Promise.race([
+          ArticleEngine.postYap(currentArticle.id, text, activeTags),
+          timeoutPromise(1500, 'auth-required')
+        ])
           .then(function (res) {
             yapSubmitBtn.disabled = false;
             yapSubmitBtn.textContent = '✓ POSTED — SQUID EARNED';
@@ -2174,8 +2442,10 @@
               text: text,
               tags: activeTags,
               created_at: new Date().toISOString(),
-              author: { display_name: 'You (Broadcast)', account_type: 'human' }
+              author: { display_name: 'You (Broadcast)', account_type: 'human' },
+              reply_to: activeReplyTo
             };
+            clearReplyContext();
             currentYaps.unshift(newYap);
             podCountTag.textContent = '[' + currentYaps.length + ' TRANSMISSIONS]';
 
@@ -2194,12 +2464,9 @@
             yapSubmitBtn.disabled = false;
             yapSubmitBtn.textContent = prevBtnText;
 
-            if (err && err.message === 'auth-required') {
-              podComposerWrap.style.display = 'none';
-              podWalletCard.style.display = 'flex';
-            } else {
-              alert('Could not post yap: ' + (err.message || 'error'));
-            }
+            /* On auth-required or anonymous network response, swap to wallet card */
+            podComposerWrap.style.display = 'none';
+            podWalletCard.style.display = 'flex';
           });
       }
 
@@ -2285,18 +2552,123 @@
             podComposerWrap.style.display = 'block';
             podWalletCard.style.display = 'none';
             consensusWalletNudge.style.display = 'none';
-
-            alert('Wallet connected: ' + res.address.slice(0, 6) + '...' + res.address.slice(-4));
+            var consensusText = document.getElementById('consensus-nudge-text');
+            if (consensusText) consensusText.textContent = '✓ Wallet connected (' + res.address.slice(0, 6) + '...' + res.address.slice(-4) + ')';
           })
           .catch(function (err) {
-            if (err && err.message === 'no-wallet') {
-              alert('Web3 wallet not detected. Please install MetaMask, Rabby, or a compatible Web3 browser extension.');
-            } else {
-              alert('Wallet connection failed: ' + (err.message || 'unknown error'));
-            }
+            var msg = err && err.message === 'no-wallet'
+              ? 'Web3 wallet not detected. Install MetaMask or Rabby to continue.'
+              : 'Connection failed: ' + ((err && err.message) || 'unknown error');
+            var podText = document.querySelector('#pod-wallet-card .wallet-nudge-text');
+            if (podText) podText.innerHTML = '<strong>WALLET REQUIRED</strong><br>' + Leviathan.esc(msg);
+            var consensusText = document.getElementById('consensus-nudge-text');
+            if (consensusText) consensusText.textContent = '⚡ ' + msg;
           });
       }
 
+      /* ---------------- IN-VIEWPORT CTA & STICKY BAR SYSTEM ---------------- */
+      function initCtaSystem() {
+        var heroConsensusBtn = document.getElementById('hero-cta-consensus');
+        var heroPodBtn = document.getElementById('hero-cta-pod');
+        var stickyConsensusBtn = document.getElementById('sticky-cta-consensus');
+        var stickyPodBtn = document.getElementById('sticky-cta-pod');
+        var stickyBar = document.getElementById('mobile-sticky-bar');
+        var zoneConsensus = document.getElementById('zone-consensus');
+        var podComposer = document.getElementById('pod-composer-wrap');
+        var zoneHook = document.getElementById('zone-hook');
+        var textarea = document.getElementById('yap-textarea');
+
+        function scrollToConsensus(placement) {
+          if (zoneConsensus) {
+            zoneConsensus.scrollIntoView({ behavior: 'smooth' });
+          }
+          window.LVXTrack('cta_clicked', { target: 'consensus', placement: placement, variant: VARIANT_NAME });
+        }
+
+        function scrollToPod(placement) {
+          if (podComposer) {
+            podComposer.scrollIntoView({ behavior: 'smooth' });
+          }
+          setTimeout(function () {
+            if (textarea) textarea.focus();
+          }, 400);
+          window.LVXTrack('cta_clicked', { target: 'pod', placement: placement, variant: VARIANT_NAME });
+        }
+
+        if (heroConsensusBtn) {
+          heroConsensusBtn.addEventListener('click', function () { scrollToConsensus('hero'); });
+        }
+        if (heroPodBtn) {
+          heroPodBtn.addEventListener('click', function () { scrollToPod('hero'); });
+        }
+        if (stickyConsensusBtn) {
+          stickyConsensusBtn.addEventListener('click', function () { scrollToConsensus('sticky-bar'); });
+        }
+        if (stickyPodBtn) {
+          stickyPodBtn.addEventListener('click', function () { scrollToPod('sticky-bar'); });
+        }
+
+        if (!stickyBar) return;
+
+        var consensusInView = false;
+        var podInView = false;
+        var isTextareaFocused = false;
+
+        if (textarea) {
+          textarea.addEventListener('focus', function () {
+            isTextareaFocused = true;
+            updateStickyVisibility();
+          });
+          textarea.addEventListener('blur', function () {
+            isTextareaFocused = false;
+            updateStickyVisibility();
+          });
+        }
+
+        if (window.IntersectionObserver) {
+          var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.target === zoneConsensus) {
+                consensusInView = entry.isIntersecting;
+              }
+              if (entry.target === podComposer) {
+                podInView = entry.isIntersecting;
+              }
+            });
+            updateStickyVisibility();
+          }, { threshold: 0.15 });
+
+          if (zoneConsensus) observer.observe(zoneConsensus);
+          if (podComposer) observer.observe(podComposer);
+        }
+
+        function updateStickyVisibility() {
+          if (window.innerWidth > 860) {
+            stickyBar.classList.remove('visible');
+            return;
+          }
+
+          if (isTextareaFocused) {
+            stickyBar.classList.remove('visible');
+            return;
+          }
+
+          var hookEl = zoneHook || document.getElementById('zone-hook');
+          var heroHeight = hookEl ? hookEl.offsetHeight : 400;
+          var heroTop = hookEl ? (hookEl.getBoundingClientRect().top + window.scrollY) : 0;
+          var threshold = heroTop + (heroHeight * 0.6);
+          var scrolledPastHero = window.scrollY > threshold;
+
+          if (scrolledPastHero && !consensusInView && !podInView) {
+            stickyBar.classList.add('visible');
+          } else {
+            stickyBar.classList.remove('visible');
+          }
+        }
+
+        window.addEventListener('scroll', updateStickyVisibility, { passive: true });
+        window.addEventListener('resize', updateStickyVisibility, { passive: true });
+      }
       /* ---------------- INITIALIZATION & DATA PIPELINE ---------------- */
       function initEvents() {
         /* Consensus place weight buttons */
@@ -2325,6 +2697,25 @@
             btn.setAttribute('aria-pressed', btn.classList.contains('active'));
           });
         });
+
+        /* Reply interactions in pod */
+        if (podYapsList) {
+          podYapsList.addEventListener('click', function (e) {
+            var btn = e.target.closest('.yap-reply-btn');
+            if (!btn) return;
+            var author = btn.getAttribute('data-author') || 'signal';
+            setReplyContext(author);
+          });
+        }
+        var replyCancelBtn = document.getElementById('yap-reply-cancel');
+        if (replyCancelBtn) {
+          replyCancelBtn.addEventListener('click', function () {
+            clearReplyContext();
+          });
+        }
+
+        /* In-viewport CTA system & mobile sticky action bar */
+        initCtaSystem();
       }
 
       function showError(title, message) {
