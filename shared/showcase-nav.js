@@ -10,10 +10,7 @@
   var VARIANTS = [
     { n: 1, file: 'variant-1-terminal.html', name: 'Terminal Intelligence', tag: 'Command Center' },
     { n: 2, file: 'variant-2-editorial.html', name: 'Prestige Broadsheet', tag: 'Editorial' },
-    { n: 3, file: 'variant-3-abyssal.html', name: 'Bioluminescent Abyssal', tag: 'Web3 Glow' },
-    { n: 4, file: 'variant-4-bento.html', name: 'Modular Bento', tag: 'Live Tiles' },
-    { n: 5, file: 'variant-5-wire.html', name: 'The Wire', tag: 'Speed Reading' },
-    { n: 6, file: 'variant-6-omarchy.html', name: 'Omarchy Wire', tag: 'Pixel Terminal' }
+    { n: 3, file: 'variant-3-abyssal.html', name: 'Bioluminescent Abyssal', tag: 'Web3 Glow' }
   ];
 
   var css = document.createElement('style');
