@@ -1197,6 +1197,26 @@
     }
 
     /* Action bar inside drawer */
+    .btn-open-dispatch {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      font-family: var(--font-brand-body);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--lvx-navy-950, #021f53);
+      background: var(--brand-lime);
+      border: 1px solid var(--brand-lime);
+      border-radius: 4px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all var(--dur-fast);
+    }
+    .btn-open-dispatch:hover {
+      box-shadow: 0 0 12px color-mix(in oklch, var(--lvx-lime) 40%, transparent);
+    }
     .drawer-actions-bar {
       display: flex;
       align-items: center;
@@ -2202,6 +2222,9 @@
                     '</button>',
                   '</div>',
                   '<div class="drawer-actions-bar">',
+                    '<a class="btn-open-dispatch" href="variant-1-terminal-article.html?id=' + encodeURIComponent(article.id) + '" data-track="open-dispatch">',
+                      '<span>OPEN FULL DISPATCH →</span>',
+                    '</a>',
                     '<button class="btn-upvote-action" data-article-id="' + article.id + '">',
                       '<span>▲ UPVOTE WEIGHT</span>',
                     '</button>',

@@ -1890,6 +1890,7 @@
         var sourceFormatted = fmtSource(article);
         var timeStr = Leviathan.timeAgo(article.date_posted).toUpperCase() + ' AGO';
         var targetUrl = article.canonical_url || article.url || '#';
+        var articleUrl = 'variant-3-abyssal-article.html?id=' + encodeURIComponent(article.id);
 
         heroContainer.innerHTML = [
           '<div class="hero-eyebrow">',
@@ -1897,7 +1898,7 @@
           '  SURFACE SIGNAL',
           '</div>',
           '<h1 class="hero-headline">',
-          '  <a href="' + Leviathan.esc(targetUrl) + '" target="_blank" rel="noopener noreferrer">',
+          '  <a href="' + articleUrl + '">',
           '    ' + Leviathan.esc(article.headline || 'Untitled Article'),
           '  </a>',
           '</h1>',
@@ -1925,6 +1926,7 @@
         var isAi = meta.type !== 'human';
         var speciesClass = 'species-' + meta.type;
         var targetUrl = article.canonical_url || article.url || '#';
+        var articleUrl = 'variant-3-abyssal-article.html?id=' + encodeURIComponent(article.id);
         var weight = article.vote_details ? Leviathan.fmtWeight(article.vote_details.total_vote_weight || 0) : '0';
         var rawUpvotes = (article.vote_details && article.vote_details.upvotes) || 0;
         var timeStr = Leviathan.timeAgo(article.date_posted);
@@ -1979,7 +1981,7 @@
           '    <span class="row-sep">·</span>',
           '    ' + renderSpeciesBadge(user),
           '  </div>',
-          '  <a href="' + Leviathan.esc(targetUrl) + '" target="_blank" rel="noopener noreferrer" class="row-headline">',
+          '  <a href="' + articleUrl + '" class="row-headline">',
           '    ' + Leviathan.esc(article.headline || 'Untitled'),
           '  </a>',
           '  ' + yapHtml,
