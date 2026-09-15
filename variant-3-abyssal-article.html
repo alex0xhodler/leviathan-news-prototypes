@@ -1336,7 +1336,7 @@
 
       .sidebar-rail {
         position: static;
-        order: -1; /* Place descent stepper right under hook or at top */
+        order: 1; /* Hook model: hero -> read -> engage first; journey recap after the article flow */
         width: 100%;
         max-width: 100%;
         min-width: 0;
@@ -1366,8 +1366,8 @@
 
       .descent-step {
         grid-template-columns: auto;
-        min-width: 155px;
-        padding: 8px 10px;
+        min-width: 210px;
+        padding: 10px 12px;
         background: color-mix(in oklch, #021f53 85%, #000000);
         border: 1px solid color-mix(in oklch, #ffffff 8%, transparent);
         border-radius: var(--r-md);
@@ -1402,6 +1402,23 @@
       .consensus-actions .btn-agent-copy {
         flex: 1;
         min-width: 130px;
+      }
+
+      /* clear the fixed variant dock */
+      body { padding-bottom: 96px; }
+
+      /* iOS zoom guard + tap targets */
+      .pod-composer-wrap textarea,
+      textarea { font-size: 16px !important; }
+      .tag-toggle, .yap-tag, button[class*="tag"] {
+        min-height: 40px;
+        padding: 8px 14px;
+      }
+      .step-reward { font-size: 11px; }
+      .back-wire-link, a[class*="back"], .source-out-link {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
       }
     }
 

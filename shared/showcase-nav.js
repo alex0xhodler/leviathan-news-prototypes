@@ -42,7 +42,8 @@
     'padding:10px 14px;color:#c9d6e8;font-family:"JetBrains Mono",monospace;font-size:11px;',
     'pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap;}',
     '.lvx-tip.show{opacity:1;}',
-    '@media(max-width:760px){.lvx-dock a span.lvx-name{display:none}.lvx-dock a{padding:5px 8px}}'
+    '@media(max-width:760px){.lvx-dock a span.lvx-name{display:none}.lvx-dock a{padding:5px 8px}}',
+    '@media(max-width:760px){.lvx-dock a,.lvx-dock button{min-width:32px;min-height:32px;justify-content:center}}'
   ].join('\n');
   document.head.appendChild(css);
 

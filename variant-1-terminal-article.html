@@ -1423,10 +1423,42 @@
        ============================================================ */
     @media (max-width: 860px) {
       .terminal-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         padding: 14px;
         gap: 20px;
       }
+
+      /* nowrap ledger children must wrap on narrow viewports */
+      .related-headline,
+      .sec-line {
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+      }
+
+      /* iOS: keep composer >=16px so focus doesn't auto-zoom */
+      .yap-composer,
+      .terminal-container textarea {
+        font-size: 16px !important;
+      }
+
+      /* tap targets >= 40px */
+      .tag-toggle-pill,
+      .yap-tag-pill,
+      button[class*="tag"] {
+        min-height: 40px;
+        padding: 8px 14px;
+      }
+      .terminal-header a,
+      .back-to-wire,
+      .wire-back-link,
+      .source-out-link {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      /* clear the fixed variant dock */
+      body { padding-bottom: 96px; }
 
       .terminal-side-rail {
         position: static;

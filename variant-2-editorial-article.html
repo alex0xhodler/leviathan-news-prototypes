@@ -1270,6 +1270,21 @@
 
     /* ================= RESPONSIVE DESIGN ================= */
     @media (max-width: 860px) {
+      body { padding-bottom: 96px; }
+
+      /* tap targets >= 40px on touch */
+      .theme-toggle, .wire-link, .back-link,
+      .tag-pill, .yap-tag, .composer-tag,
+      button[class*="tag"], a[class*="back"] {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+      }
+      /* iOS zoom guard */
+      textarea, .composer-textarea { font-size: 16px !important; }
+    }
+
+    @media (max-width: 860px) {
       .broadsheet-wrapper {
         padding: 0 16px;
       }
