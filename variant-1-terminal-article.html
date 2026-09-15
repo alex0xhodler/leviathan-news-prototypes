@@ -1,0 +1,2599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leviathan News // Terminal Dispatch [01]</title>
+  <link rel="stylesheet" href="shared/tokens.css">
+  <style>
+    /* ============================================================
+       VARIANT 1: TERMINAL INTELLIGENCE — ARTICLE DISPATCH
+       Bloomberg Terminal × Arkham Intelligence × Omarchy.org
+       Leviathan Dark Command Center (Deep Navy #021f53 × Neon Lime #c1ff72)
+       ============================================================ */
+
+    :root {
+      /* Leviathan dark neutral surfaces */
+      --bg-terminal: var(--lvx-navy-950);     /* near-black navy bg */
+      --bg-panel: var(--lvx-navy-900);        /* navy cards/panels */
+      --bg-rail: var(--lvx-navy-900);         /* recessed rail / side panels */
+      --bg-surface: var(--lvx-navy-800);      /* raised cards/popovers #021f53 */
+      --bg-surface-hover: var(--lvx-navy-700);/* subtle hover */
+      --bg-well: color-mix(in oklch, var(--lvx-navy) 20%, #000000); /* inset wells */
+
+      --border-hairline: color-mix(in oklch, #ffffff 10%, transparent); /* borders: white 10% alpha */
+      --border-subtle: color-mix(in oklch, #ffffff 6%, transparent);
+      --border-lime-dim: var(--lvx-lime-dim);  /* lime at 14% alpha */
+      --border-lime-bright: var(--lvx-lime);   /* brand primary lime #c1ff72 */
+
+      /* High-contrast accessible text */
+      --text-primary: #ffffff;
+      --text-secondary: #d9d9d9;
+      --text-dim: var(--lvx-gray-dim);
+      --text-mono-num: var(--lvx-lime);
+
+      /* OFFICIAL Leviathan Brand Palette */
+      --brand-lime: var(--lvx-lime);          /* #c1ff72 - brand primary */
+      --brand-lime-soft: var(--lvx-lime-soft);
+      --brand-lime-ink: #021f53;              /* #021f53 - text on lime */
+      --brand-lime-dim: var(--lvx-lime-dim);
+
+      /* Radii scale: <= 6px strictly */
+      --r-xs: 2px;
+      --r-sm: 4px;
+      --r-md: 6px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background-color: var(--bg-terminal);
+      color: var(--text-primary);
+      font-family: var(--font-brand-body);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      overflow-y: scroll;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg-terminal);
+      position: relative;
+    }
+
+    /* Restrained scanline overlay */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.14) 0px,
+        rgba(0, 0, 0, 0.14) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      opacity: 0.35;
+      z-index: 9999;
+    }
+
+    /* Tabular numbers across all mono surfaces */
+    .mono {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Custom thin scrollbars */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--lvx-navy-700) transparent;
+    }
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-rail);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--lvx-navy-700);
+      border-radius: var(--r-xs);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--brand-lime);
+    }
+
+    /* ============================================================
+       ZONE 0: READING PROGRESS BAR (2px fixed top)
+       ============================================================ */
+    .reading-progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2px;
+      width: 0%;
+      background: var(--brand-lime);
+      box-shadow: 0 0 8px color-mix(in oklch, var(--brand-lime) 50%, transparent);
+      z-index: 100000;
+      transition: width 0.08s ease-out;
+    }
+
+    /* ============================================================
+       ROW 0: 44px TICKER STRIP
+       ============================================================ */
+    .ticker-strip {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      background: var(--bg-rail);
+      border-bottom: 1px solid var(--border-lime-dim);
+      box-shadow: 0 1px 0 0 color-mix(in oklch, var(--lvx-lime) 10%, transparent);
+      position: sticky;
+      top: 0;
+      z-index: 900;
+      user-select: none;
+    }
+
+    .ticker-cell-left {
+      flex: 0 0 auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 18px;
+      border-right: 1px solid var(--border-hairline);
+      background: var(--bg-rail);
+    }
+
+    .brand-tag {
+      font-family: var(--font-brand-display);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--brand-lime);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+    }
+
+    .brand-tag-title {
+      font-family: var(--font-brand-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px color-mix(in oklch, var(--lvx-lime) 35%, transparent);
+    }
+
+    .brand-octopus-glyph {
+      flex-shrink: 0;
+      stroke: var(--brand-lime);
+      filter: drop-shadow(0 0 5px color-mix(in oklch, var(--lvx-lime) 45%, transparent));
+    }
+
+    .ticker-breadcrumbs {
+      flex: 1 1 auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      gap: 8px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .ticker-breadcrumbs a {
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .ticker-breadcrumbs a:hover {
+      color: var(--brand-lime);
+    }
+
+    .ticker-breadcrumbs .crumb-sep {
+      color: color-mix(in oklch, #ffffff 20%, transparent);
+    }
+
+    .ticker-breadcrumbs .crumb-current {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .ticker-cell-right {
+      flex: 0 0 auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 18px;
+      border-left: 1px solid var(--border-hairline);
+      background: var(--bg-rail);
+    }
+
+    .btn-wire-back {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--brand-lime);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border: 1px solid var(--border-lime-dim);
+      border-radius: var(--r-xs);
+      background: color-mix(in oklch, var(--lvx-lime) 6%, transparent);
+      transition: all 0.15s ease;
+    }
+    .btn-wire-back:hover {
+      background: var(--brand-lime);
+      color: var(--brand-lime-ink);
+      border-color: var(--brand-lime);
+    }
+
+    .ws-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10.5px;
+      color: var(--brand-lime);
+      letter-spacing: 0.05em;
+    }
+    .ws-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--brand-lime);
+      box-shadow: 0 0 6px var(--brand-lime);
+    }
+
+    /* ============================================================
+       KEYCAP HINTS ROW
+       ============================================================ */
+    .key-hints-strip {
+      height: 28px;
+      background: var(--bg-well);
+      border-bottom: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      user-select: none;
+    }
+
+    .key-hints-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .key-hints-group kbd {
+      background: var(--brand-lime-dim);
+      border: 1px solid color-mix(in oklch, var(--lvx-lime) 25%, transparent);
+      border-radius: var(--r-xs);
+      padding: 1px 5px;
+      color: var(--brand-lime);
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       MAIN LAYOUT: TWO COLUMNS (Article + Command Rail)
+       ============================================================ */
+    .terminal-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .terminal-article-stream {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      min-width: 0;
+    }
+
+    .terminal-side-rail {
+      position: sticky;
+      top: 68px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ============================================================
+       TERMINAL SECTION HEADERS (// SECTION [n])
+       ============================================================ */
+    .terminal-section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--brand-lime);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-hairline);
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .terminal-section-header .sec-num {
+      color: var(--text-dim);
+    }
+    .terminal-section-header .sec-title {
+      color: var(--brand-lime);
+    }
+    .terminal-section-header .sec-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, color-mix(in oklch, var(--lvx-lime) 30%, transparent), transparent);
+    }
+    .terminal-section-header .sec-badge {
+      color: var(--text-dim);
+      font-weight: 400;
+      font-size: 10px;
+    }
+
+    /* ============================================================
+       SPECIES DOTS (6px: gray human / lime cyborg / navy+lime-ring agent)
+       ============================================================ */
+    .species-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .species-dot-human {
+      background: #d9d9d9;
+    }
+    .species-dot-cyborg {
+      background: var(--brand-lime);
+      box-shadow: 0 0 4px color-mix(in oklch, var(--lvx-lime) 60%, transparent);
+    }
+    .species-dot-bot {
+      background: #021f53;
+      border: 1.5px solid var(--brand-lime);
+      box-sizing: border-box;
+      box-shadow: 0 0 4px color-mix(in oklch, var(--lvx-lime) 40%, transparent);
+    }
+
+    /* ============================================================
+       ZONE 1: HOOK (HERO)
+       ============================================================ */
+    .hook-hero {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    .hero-kicker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--brand-lime);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .hero-kicker-label {
+      color: var(--text-dim);
+    }
+    .hero-tag {
+      color: var(--brand-lime);
+    }
+
+    .hero-headline {
+      font-family: var(--font-brand-display);
+      font-size: clamp(22px, 3.2vw, 34px);
+      font-weight: 700;
+      line-height: 1.22;
+      letter-spacing: 0.02em;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      word-break: break-word;
+    }
+
+    .hero-standfirst {
+      font-family: var(--font-brand-body);
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--text-secondary);
+      border-left: 2px solid var(--brand-lime);
+      padding-left: 14px;
+      margin-top: 4px;
+    }
+
+    .hero-meta-line {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      padding-top: 10px;
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    .hero-meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hero-meta-item.source-host {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    .hero-meta-item.weight-item {
+      color: var(--brand-lime);
+      font-weight: 700;
+      background: color-mix(in oklch, var(--lvx-lime) 8%, transparent);
+      padding: 2px 8px;
+      border-radius: var(--r-xs);
+      border: 1px solid var(--border-lime-dim);
+    }
+
+    .hero-media-wrapper {
+      margin-top: 8px;
+      width: 100%;
+      max-height: 380px;
+      border-radius: var(--r-sm);
+      overflow: hidden;
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-well);
+      position: relative;
+    }
+    .hero-media-img {
+      width: 100%;
+      height: 100%;
+      max-height: 380px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ============================================================
+       ZONE 2: THE BRIEF (Perplexity-style AI Summary)
+       ============================================================ */
+    .brief-section {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .brief-ledger {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-sm);
+      background: var(--bg-well);
+      overflow: hidden;
+    }
+
+    .brief-ledger-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-hairline);
+      font-family: var(--font-brand-body);
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--text-primary);
+    }
+    .brief-ledger-row:last-child {
+      border-bottom: none;
+    }
+
+    .brief-ledger-idx {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--brand-lime);
+      flex-shrink: 0;
+      padding-top: 2px;
+      letter-spacing: 0.06em;
+    }
+
+    .key-numbers-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+    }
+
+    .key-number-card {
+      background: var(--bg-well);
+      border: 1px solid var(--border-hairline);
+      border-left: 3px solid var(--brand-lime);
+      border-radius: var(--r-xs);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .key-number-val {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--brand-lime);
+      letter-spacing: -0.02em;
+    }
+
+    .key-number-lbl {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .pull-quote-card {
+      background: color-mix(in oklch, var(--lvx-navy-800) 80%, #000000);
+      border: 1px solid var(--border-hairline);
+      border-left: 3px solid var(--brand-lime);
+      border-radius: var(--r-sm);
+      padding: 14px 18px;
+    }
+
+    .pull-quote-text {
+      font-family: var(--font-brand-body);
+      font-size: 14.5px;
+      line-height: 1.55;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .pull-quote-byline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .pull-quote-author {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       ZONE 3: CONSENSUS (THE DESK SAYS — Trade Wedge)
+       ============================================================ */
+    .consensus-section {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    .desk-odds-card {
+      background: var(--bg-well);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-sm);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .desk-header-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .desk-pct-cluster {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .desk-big-pct {
+      font-family: var(--font-mono);
+      font-size: clamp(32px, 4vw, 44px);
+      font-weight: 800;
+      color: var(--brand-lime);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      text-shadow: 0 0 16px color-mix(in oklch, var(--lvx-lime) 30%, transparent);
+    }
+
+    .desk-pct-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .desk-votes-caption {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    /* ASCII-ish block meter */
+    .desk-meter-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .desk-meter-grid {
+      display: grid;
+      grid-template-columns: repeat(20, 1fr);
+      gap: 3px;
+      height: 14px;
+      background: color-mix(in oklch, #000000 60%, var(--lvx-navy-950));
+      padding: 3px;
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-xs);
+    }
+
+    .meter-block {
+      height: 100%;
+      border-radius: 1px;
+      background: color-mix(in oklch, #ffffff 6%, transparent);
+      transition: all 0.25s ease;
+    }
+
+    .meter-block.filled {
+      background: var(--brand-lime);
+      box-shadow: 0 0 4px color-mix(in oklch, var(--lvx-lime) 50%, transparent);
+    }
+
+    .meter-ascii-text {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+
+    .meter-ascii-bar {
+      color: var(--brand-lime);
+    }
+
+    .desk-action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .btn-weight-action {
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: var(--r-xs);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .btn-weight-add {
+      background: var(--brand-lime);
+      color: var(--brand-lime-ink);
+      border: none;
+      box-shadow: 0 0 12px color-mix(in oklch, var(--lvx-lime) 25%, transparent);
+    }
+    .btn-weight-add:hover {
+      background: var(--brand-lime-soft);
+      box-shadow: 0 0 18px color-mix(in oklch, var(--lvx-lime) 50%, transparent);
+      transform: translateY(-1px);
+    }
+
+    .btn-weight-counter {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-hairline);
+    }
+    .btn-weight-counter:hover {
+      background: var(--bg-surface-hover);
+      color: var(--text-primary);
+      border-color: color-mix(in oklch, #ffffff 20%, transparent);
+      transform: translateY(-1px);
+    }
+
+    .btn-weight-action:active {
+      transform: translateY(0);
+    }
+
+    /* Flash animation for meter */
+    @keyframes barFlash {
+      0% { box-shadow: 0 0 24px var(--brand-lime); filter: brightness(1.4); }
+      100% { box-shadow: none; filter: brightness(1); }
+    }
+    .flash-active {
+      animation: barFlash 0.7s ease-out 1;
+    }
+
+    /* Inline wallet nudge for consensus */
+    .wallet-nudge-box {
+      margin-top: 10px;
+      padding: 12px 14px;
+      background: color-mix(in oklch, var(--lvx-navy-800) 80%, #000000);
+      border: 1px dashed var(--brand-lime);
+      border-radius: var(--r-xs);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .nudge-text {
+      color: var(--text-secondary);
+    }
+    .nudge-text strong {
+      color: var(--brand-lime);
+    }
+
+    .btn-nudge-connect {
+      height: 32px;
+      padding: 0 12px;
+      background: var(--brand-lime);
+      color: var(--brand-lime-ink);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--r-xs);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .btn-nudge-connect:hover {
+      background: var(--brand-lime-soft);
+    }
+
+    /* ============================================================
+       ZONE 4: WHAT ELSE IS BEING REPORTED (Multi-source Synthesis)
+       ============================================================ */
+    .related-section {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .related-ledger {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-sm);
+      background: var(--bg-well);
+      overflow: hidden;
+    }
+
+    .related-row {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-hairline);
+      text-decoration: none;
+      color: inherit;
+      transition: background-color 0.15s;
+    }
+    .related-row:last-child {
+      border-bottom: none;
+    }
+    .related-row:hover, .related-row.active-hotkey {
+      background: color-mix(in oklch, var(--lvx-lime) 6%, var(--bg-surface-hover));
+    }
+    .related-row.active-hotkey {
+      outline: 1px solid var(--brand-lime);
+    }
+
+    .related-index {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+    .related-row:hover .related-index, .related-row.active-hotkey .related-index {
+      color: var(--brand-lime);
+    }
+
+    .related-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .related-headline {
+      font-family: var(--font-brand-body);
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.35;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .related-row:hover .related-headline {
+      color: var(--brand-lime);
+    }
+
+    .related-meta {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .related-weight {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--brand-lime);
+      padding: 2px 8px;
+      background: color-mix(in oklch, var(--lvx-lime) 8%, transparent);
+      border: 1px solid var(--border-lime-dim);
+      border-radius: var(--r-xs);
+      white-space: nowrap;
+    }
+
+    /* ============================================================
+       ZONE 5: THE POD (Comments as Pods)
+       ============================================================ */
+    .pod-section {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pod-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .pod-item {
+      background: var(--bg-well);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pod-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .pod-author-cluster {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pod-author-name {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .pod-tags-cluster {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pod-tag-chip {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--brand-lime);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .pod-item-text {
+      font-family: var(--font-brand-body);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-secondary);
+      word-break: break-word;
+    }
+
+    .pod-empty-state {
+      padding: 24px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-dim);
+      border: 1px dashed var(--border-hairline);
+      border-radius: var(--r-sm);
+      background: var(--bg-well);
+    }
+
+    /* Composer */
+    .pod-composer-wrap {
+      margin-top: 6px;
+      background: var(--bg-well);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-sm);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .composer-nudge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--brand-lime);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .composer-textarea {
+      width: 100%;
+      height: 84px;
+      background: color-mix(in oklch, #000000 60%, var(--lvx-navy-950));
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-xs);
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-primary);
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .composer-textarea:focus {
+      border-color: var(--brand-lime);
+      box-shadow: 0 0 8px color-mix(in oklch, var(--lvx-lime) 20%, transparent);
+    }
+
+    .composer-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .composer-tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-tag-pill {
+      background: transparent;
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-xs);
+      padding: 3px 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-dim);
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.15s;
+    }
+    .btn-tag-pill.active {
+      background: color-mix(in oklch, var(--lvx-lime) 12%, transparent);
+      border-color: var(--brand-lime);
+      color: var(--brand-lime);
+    }
+
+    .btn-post-yap {
+      height: 36px;
+      padding: 0 16px;
+      background: var(--brand-lime);
+      color: var(--brand-lime-ink);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: var(--r-xs);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-post-yap:hover {
+      background: var(--brand-lime-soft);
+      box-shadow: 0 0 12px color-mix(in oklch, var(--lvx-lime) 35%, transparent);
+    }
+    .btn-post-yap.success-flash {
+      background: #ffffff !important;
+      color: #021f53 !important;
+    }
+
+    .composer-auth-swap {
+      padding: 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* ============================================================
+       ZONE 6: FIRST-SQUID JOURNEY RAIL (Command-pipeline style)
+       ============================================================ */
+    .journey-rail-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .journey-pipeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .pipeline-step {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .pipeline-step-node {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg-well);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-xs);
+      transition: all 0.2s;
+    }
+
+    .pipeline-step.done .pipeline-step-node {
+      border-color: color-mix(in oklch, var(--lvx-lime) 40%, transparent);
+      background: color-mix(in oklch, var(--lvx-lime) 4%, var(--bg-well));
+    }
+
+    .pipeline-step.current .pipeline-step-node {
+      border-color: var(--brand-lime);
+      box-shadow: 0 0 10px color-mix(in oklch, var(--lvx-lime) 25%, transparent);
+      background: color-mix(in oklch, var(--lvx-lime) 8%, var(--bg-well));
+    }
+
+    .pipeline-step.locked {
+      opacity: 0.35;
+    }
+
+    .step-marker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      width: 18px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--r-xs);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .pipeline-step.done .step-marker {
+      background: var(--brand-lime);
+      color: var(--brand-lime-ink);
+    }
+    .pipeline-step.current .step-marker {
+      border: 1px solid var(--brand-lime);
+      color: var(--brand-lime);
+    }
+    .pipeline-step.locked .step-marker {
+      border: 1px solid var(--text-dim);
+      color: var(--text-dim);
+    }
+
+    .step-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .step-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.04em;
+    }
+    .pipeline-step.done .step-label {
+      color: var(--brand-lime);
+    }
+
+    .step-reward {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+    .pipeline-step.current .step-reward {
+      color: var(--text-secondary);
+    }
+
+    .pipeline-connector {
+      width: 2px;
+      height: 14px;
+      margin-left: 20px;
+      background: var(--border-hairline);
+    }
+    .pipeline-step.done + .pipeline-connector,
+    .pipeline-connector.active {
+      background: var(--brand-lime);
+      box-shadow: 0 0 4px color-mix(in oklch, var(--lvx-lime) 50%, transparent);
+    }
+
+    /* Telemetry block in rail */
+    .rail-telemetry-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-dim);
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .telemetry-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .telemetry-val {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       ZONE 7: RETURN LOOP FOOTER
+       ============================================================ */
+    .return-loop-section {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .next-dispatch-card {
+      background: var(--bg-well);
+      border: 1px solid var(--border-hairline);
+      border-left: 3px solid var(--brand-lime);
+      border-radius: var(--r-sm);
+      padding: 16px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+    .next-dispatch-card:hover {
+      background: color-mix(in oklch, var(--lvx-lime) 6%, var(--bg-well));
+      border-color: var(--brand-lime);
+      transform: translateY(-1px);
+    }
+
+    .next-dispatch-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--brand-lime);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .next-dispatch-headline {
+      font-family: var(--font-brand-body);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.35;
+    }
+
+    .next-dispatch-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .return-nav-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 8px;
+    }
+
+    .btn-return-wire {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--brand-lime);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid var(--border-lime-dim);
+      border-radius: var(--r-xs);
+      background: color-mix(in oklch, var(--lvx-lime) 8%, transparent);
+      transition: all 0.15s;
+    }
+    .btn-return-wire:hover {
+      background: var(--brand-lime);
+      color: var(--brand-lime-ink);
+      border-color: var(--brand-lime);
+    }
+
+    .exit-source-link {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: color-mix(in oklch, #ffffff 28%, transparent);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .exit-source-link:hover {
+      color: var(--text-secondary);
+      text-decoration: underline;
+    }
+
+    /* ============================================================
+       LOADING SKELETON (Shimmer placeholders)
+       ============================================================ */
+    @keyframes shimmerAnim {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .shimmer-block {
+      background: linear-gradient(
+        90deg,
+        color-mix(in oklch, #ffffff 2%, transparent) 0%,
+        color-mix(in oklch, var(--lvx-lime) 8%, transparent) 50%,
+        color-mix(in oklch, #ffffff 2%, transparent) 100%
+      );
+      background-size: 200% 100%;
+      animation: shimmerAnim 1.6s ease-in-out infinite;
+      border-radius: var(--r-xs);
+    }
+
+    .skeleton-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 24px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--r-md);
+    }
+
+    /* ============================================================
+       ERROR STATE (Terminal 404/Err box)
+       ============================================================ */
+    .terminal-error-card {
+      max-width: 680px;
+      margin: 80px auto;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-lime-dim);
+      border-radius: var(--r-md);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+    }
+
+    .error-code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--brand-lime);
+      letter-spacing: 0.12em;
+    }
+
+    .error-title {
+      font-family: var(--font-brand-display);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-transform: uppercase;
+    }
+
+    .error-msg {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-dim);
+      max-width: 480px;
+      line-height: 1.5;
+    }
+
+    .error-back-btn {
+      margin-top: 12px;
+      padding: 10px 20px;
+      background: var(--brand-lime);
+      color: var(--brand-lime-ink);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: var(--r-xs);
+      transition: background 0.15s;
+    }
+    .error-back-btn:hover {
+      background: var(--brand-lime-soft);
+    }
+
+    /* ============================================================
+       RESPONSIVE BREAKPOINTS (<= 860px mobile / tablet)
+       ============================================================ */
+    @media (max-width: 860px) {
+      .terminal-container {
+        grid-template-columns: 1fr;
+        padding: 14px;
+        gap: 20px;
+      }
+
+      .terminal-side-rail {
+        position: static;
+      }
+
+      .journey-pipeline {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 6px;
+        gap: 8px;
+      }
+      .pipeline-step {
+        flex: 0 0 200px;
+      }
+      .pipeline-connector {
+        display: none;
+      }
+
+      .key-hints-strip {
+        display: none;
+      }
+
+      .hero-headline {
+        font-size: 22px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001s !important;
+        transition-duration: 0.001s !important;
+      }
+      body::after {
+        opacity: 0.15;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Zone 0: 2px lime reading progress bar fixed top -->
+  <div class="reading-progress-bar" id="reading-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+  <!-- Row 0: 44px Ticker Strip -->
+  <header class="ticker-strip" role="banner" aria-label="Terminal status banner">
+    <div class="ticker-cell-left">
+      <a href="variant-1-terminal.html" class="brand-tag" title="Return to wire">
+        <svg class="brand-octopus-glyph" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--brand-lime)" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="5"/><path d="M8 12c-1 3-2 5-4 7M11 13c-.3 3-.5 5-1 8M14 13c.5 3 1 5 2 8M16 12c1.2 2.8 2.2 4.8 4 6.5"/>
+        </svg>
+        <span class="brand-tag-title">LVX://TERM</span>
+      </a>
+    </div>
+
+    <div class="ticker-breadcrumbs" id="ticker-breadcrumbs" aria-label="Breadcrumb navigation">
+      <a href="variant-1-terminal.html">WIRE</a>
+      <span class="crumb-sep">//</span>
+      <span>DISPATCH</span>
+      <span class="crumb-sep">//</span>
+      <span class="crumb-current mono" id="crumb-id-display">ID: ...</span>
+    </div>
+
+    <div class="ticker-cell-right">
+      <a href="variant-1-terminal.html" class="btn-wire-back" id="btn-wire-back">
+        <span>← WIRE</span>
+        <kbd style="font-size:9px; opacity:0.8;">ESC</kbd>
+      </a>
+      <div class="ws-indicator" title="WebSocket telemetry feed">
+        <span class="ws-dot" id="ws-status-dot"></span>
+        <span class="mono" style="font-size:10px;">LIVE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Keycap hints row -->
+  <aside class="key-hints-strip" aria-label="Terminal keyboard shortcuts">
+    <div class="key-hints-group">
+      <span><kbd>J</kbd> / <kbd>K</kbd> NAVIGATE RELATED</span>
+      <span>·</span>
+      <span><kbd>U</kbd> ADD WEIGHT</span>
+      <span>·</span>
+      <span><kbd>C</kbd> FOCUS COMPOSER</span>
+    </div>
+    <div class="key-hints-group">
+      <span><kbd>ESC</kbd> BACK TO WIRE</span>
+    </div>
+  </aside>
+
+  <!-- Main Container -->
+  <main class="terminal-container" id="main-content" role="main">
+
+    <!-- Loading Skeleton Placeholder -->
+    <div class="terminal-article-stream" id="article-skeleton" aria-busy="true" aria-label="Loading dispatch content">
+      <div class="skeleton-wrap">
+        <div class="shimmer-block" style="height: 16px; width: 180px;"></div>
+        <div class="shimmer-block" style="height: 48px; width: 90%;"></div>
+        <div class="shimmer-block" style="height: 24px; width: 70%;"></div>
+        <div class="shimmer-block" style="height: 20px; width: 40%;"></div>
+        <div class="shimmer-block" style="height: 220px; width: 100%;"></div>
+      </div>
+      <div class="skeleton-wrap">
+        <div class="shimmer-block" style="height: 18px; width: 140px;"></div>
+        <div class="shimmer-block" style="height: 36px; width: 100%;"></div>
+        <div class="shimmer-block" style="height: 36px; width: 100%;"></div>
+        <div class="shimmer-block" style="height: 36px; width: 85%;"></div>
+      </div>
+    </div>
+
+    <!-- Error State (hidden by default) -->
+    <div class="terminal-error-card" id="article-error" style="display: none;" role="alert">
+      <span class="error-code mono">// ERR_INTEL_404</span>
+      <h1 class="error-title">DISPATCH NOT LOCATED</h1>
+      <p class="error-msg" id="error-msg-detail">The requested intel dispatch could not be resolved from local cache or the live feed.</p>
+      <a href="variant-1-terminal.html" class="error-back-btn">← RETURN TO TERMINAL WIRE [ESC]</a>
+    </div>
+
+    <!-- Live Article Content Stream -->
+    <div class="terminal-article-stream" id="article-content" style="display: none;">
+
+      <!-- ZONE 1: HOOK (HERO) -->
+      <article class="hook-hero" id="zone-hook" aria-labelledby="hero-headline">
+        <div class="hero-kicker" id="hero-kicker-tags">
+          <!-- Plain mono text tags (NOT boxed chips) -->
+          <span class="hero-kicker-label">// TAGS:</span>
+          <span id="hero-tags-list">#SIGNAL</span>
+        </div>
+
+        <h1 class="hero-headline" id="hero-headline">Loading Dispatch...</h1>
+
+        <div class="hero-standfirst" id="hero-standfirst" style="display: none;"></div>
+
+        <div class="hero-meta-line" id="hero-meta-line">
+          <span class="hero-meta-item source-host" id="meta-source-host">–</span>
+          <span>·</span>
+          <span class="hero-meta-item" id="meta-time-ago">–</span>
+          <span>·</span>
+          <span class="hero-meta-item" id="meta-species-item">
+            <span class="species-dot species-dot-human" id="meta-species-dot"></span>
+            <span id="meta-species-label">HUMAN</span>
+          </span>
+          <span>·</span>
+          <span class="hero-meta-item weight-item" id="meta-vote-weight">▲0</span>
+        </div>
+
+        <div class="hero-media-wrapper" id="hero-media-wrapper" style="display: none;">
+          <img class="hero-media-img" id="hero-media-img" alt="Dispatch telemetry graphic" loading="eager">
+        </div>
+      </article>
+
+      <!-- ZONE 2: THE BRIEF (Perplexity-style AI summary) -->
+      <section class="brief-section" id="section-brief" aria-labelledby="brief-header">
+        <div class="terminal-section-header" id="brief-header">
+          <span class="sec-num">// SECTION [01]</span>
+          <span class="sec-title">THE BRIEF</span>
+          <div class="sec-line"></div>
+          <span class="sec-badge mono">[SYNTHESIZED INTEL]</span>
+        </div>
+
+        <!-- Bullets ledger -->
+        <div class="brief-ledger" id="brief-bullets-ledger" role="list">
+          <!-- Dynamic bullets -->
+        </div>
+
+        <!-- Key Numbers Strip -->
+        <div class="key-numbers-strip" id="key-numbers-strip" style="display: none;" aria-label="Key quantitative metrics">
+          <!-- Dynamic number cards -->
+        </div>
+
+        <!-- Pull Quote -->
+        <div class="pull-quote-card" id="brief-quote-card" style="display: none;">
+          <p class="pull-quote-text" id="pull-quote-text"></p>
+          <div class="pull-quote-byline">
+            <span class="species-dot species-dot-cyborg" id="quote-species-dot"></span>
+            <span class="pull-quote-author" id="pull-quote-author">Analyst</span>
+            <span>·</span>
+            <span>DISPATCH POD CITATION</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ZONE 3: CONSENSUS (THE DESK SAYS — Trade Wedge) -->
+      <!-- PROVIDER SEAM: replace consensusFromVotes with Kalshi/Polymarket odds when aggregator ships -->
+      <section class="consensus-section" id="section-consensus" aria-labelledby="consensus-header">
+        <div class="terminal-section-header" id="consensus-header">
+          <span class="sec-num">// SECTION [02]</span>
+          <span class="sec-title">THE DESK SAYS</span>
+          <div class="sec-line"></div>
+          <span class="sec-badge mono">[SQUID POSITION CONSENSUS]</span>
+        </div>
+
+        <div class="desk-odds-card" id="desk-odds-card">
+          <div class="desk-header-row">
+            <div class="desk-pct-cluster">
+              <span class="desk-big-pct mono" id="desk-pct-num" aria-live="polite">50%</span>
+              <span class="desk-pct-label" id="desk-pct-label">UNPRICED</span>
+            </div>
+            <div class="desk-votes-caption mono" id="desk-votes-caption">0 WEIGHTED SQUID VOTES</div>
+          </div>
+
+          <!-- ASCII-ish block meter (divs) -->
+          <div class="desk-meter-wrap" id="desk-meter-wrap">
+            <div class="desk-meter-grid" id="desk-meter-grid" role="meter" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Consensus odds meter">
+              <!-- 20 segmented blocks -->
+            </div>
+            <div class="meter-ascii-text mono">
+              <span class="meter-ascii-bar" id="meter-ascii-bar">[░░░░░░░░░░░░░░░░░░░░]</span>
+              <span>CONFIDENCE RATIO</span>
+            </div>
+          </div>
+
+          <!-- Action buttons (40px) -->
+          <div class="desk-action-row">
+            <button class="btn-weight-action btn-weight-add" id="btn-add-weight" type="button" title="Add long position weight (Hotkey: U)">
+              <span>▲ ADD WEIGHT</span>
+              <kbd style="font-size:10px; background:rgba(2,31,83,0.3); color:#021f53; padding:1px 4px; border-radius:2px;">U</kbd>
+            </button>
+            <button class="btn-weight-action btn-weight-counter" id="btn-counter-weight" type="button" title="Counter position weight">
+              <span>▼ COUNTER</span>
+            </button>
+          </div>
+
+          <!-- Inline Wallet Nudge (shown on auth-required) -->
+          <div class="wallet-nudge-box" id="wallet-nudge-box" style="display: none;" role="alert">
+            <div class="nudge-text mono">
+              <strong>[!] AUTH REQUIRED</strong> // Connect Web3 wallet (EIP-191) to allocate position weight.
+            </div>
+            <button class="btn-nudge-connect" id="btn-nudge-connect" type="button">CONNECT WALLET</button>
+          </div>
+          <div class="mono" id="wallet-error-msg" style="display: none; font-size: 11px; color: var(--brand-lime); padding-top: 4px;"></div>
+        </div>
+      </section>
+
+      <!-- ZONE 4: WHAT ELSE IS BEING REPORTED (Multi-source Synthesis) -->
+      <section class="related-section" id="section-related" aria-labelledby="related-header">
+        <div class="terminal-section-header" id="related-header">
+          <span class="sec-num">// SECTION [03]</span>
+          <span class="sec-title">WHAT ELSE IS BEING REPORTED</span>
+          <div class="sec-line"></div>
+          <span class="sec-badge mono">[MULTI-SOURCE SYNTHESIS]</span>
+        </div>
+
+        <div class="related-ledger" id="related-ledger" role="list">
+          <!-- Dynamic related rows -->
+        </div>
+      </section>
+
+      <!-- ZONE 5: THE POD (Comments / Pod Feel) -->
+      <section class="pod-section" id="section-pod" aria-labelledby="pod-header">
+        <div class="terminal-section-header" id="pod-header">
+          <span class="sec-num">// SECTION [04]</span>
+          <span class="sec-title">THE POD</span>
+          <div class="sec-line"></div>
+          <span class="sec-badge mono" id="pod-count-badge">[0 YAPS]</span>
+        </div>
+
+        <div class="pod-list" id="pod-list">
+          <!-- Dynamic yap items -->
+        </div>
+
+        <div class="pod-empty-state" id="pod-empty-state" style="display: none;">
+          // NO DISPATCHES RECORDED IN POD YET. BE THE FIRST VOICE.
+        </div>
+
+        <!-- Composer -->
+        <div class="pod-composer-wrap" id="pod-composer-wrap">
+          <div class="composer-nudge mono" id="composer-nudge">
+            <span style="font-size:12px;">◇</span>
+            <span>Yap once — earn your first SQUID. Token-weighted voice.</span>
+          </div>
+
+          <div id="composer-active-view">
+            <textarea 
+              class="composer-textarea" 
+              id="yap-textarea" 
+              rows="3" 
+              placeholder="Transmit your intelligence into the pod... (Hotkey: C to focus)"
+              aria-label="Pod transmission composer"
+            ></textarea>
+
+            <div class="composer-controls">
+              <div class="composer-tags" role="group" aria-label="Yap classification tags">
+                <button type="button" class="btn-tag-pill active" data-tag="analysis">#ANALYSIS</button>
+                <button type="button" class="btn-tag-pill" data-tag="tldr">#TLDR</button>
+                <button type="button" class="btn-tag-pill" data-tag="question">#QUESTION</button>
+              </div>
+
+              <button class="btn-post-yap" id="btn-post-yap" type="button">
+                POST YAP — EARN SQUID
+              </button>
+            </div>
+          </div>
+
+          <!-- Auth-required swap card -->
+          <div class="composer-auth-swap" id="composer-auth-swap" style="display: none;">
+            <div style="font-size: 20px; color: var(--brand-lime);">⚡</div>
+            <div class="mono" style="font-size: 13px; font-weight: 700; color: var(--text-primary);">
+              CONNECT WALLET TO TRANSMIT YAP
+            </div>
+            <div class="mono" style="font-size: 11px; color: var(--text-dim); max-width: 340px;">
+              EIP-191 cryptographic signature verifies account weight and accrues SQUID yield.
+            </div>
+            <button class="btn-nudge-connect" id="btn-composer-connect" type="button" style="height: 36px; padding: 0 18px; margin-top: 6px;">
+              CONNECT WALLET [EIP-191]
+            </button>
+            <div class="mono" id="composer-wallet-error" style="display: none; font-size: 11px; color: var(--brand-lime); margin-top: 4px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ZONE 7: RETURN LOOP FOOTER -->
+      <footer class="return-loop-section" id="section-return-loop" role="contentinfo" aria-labelledby="return-header">
+        <div class="terminal-section-header" id="return-header">
+          <span class="sec-num">// SECTION [05]</span>
+          <span class="sec-title">RETURN LOOP</span>
+          <div class="sec-line"></div>
+          <span class="sec-badge mono">[CONTINUOUS WIRE]</span>
+        </div>
+
+        <!-- Next dispatch card -->
+        <a href="#" class="next-dispatch-card" id="next-dispatch-card" style="display: none;">
+          <div class="next-dispatch-badge mono">NEXT DISPATCH →</div>
+          <div class="next-dispatch-headline" id="next-dispatch-headline">Next Story Headline</div>
+          <div class="next-dispatch-meta mono" id="next-dispatch-meta">
+            <span id="next-meta-source">–</span>
+            <span>·</span>
+            <span id="next-meta-time">–</span>
+            <span>·</span>
+            <span id="next-meta-weight" style="color: var(--brand-lime);">▲0</span>
+          </div>
+        </a>
+
+        <div class="return-nav-row">
+          <a href="variant-1-terminal.html" class="btn-return-wire" id="btn-return-wire">
+            <span>← BACK TO THE WIRE</span>
+            <kbd style="font-size:9.5px; opacity:0.8;">ESC</kbd>
+          </a>
+
+          <!-- De-emphasized quiet exit -->
+          <a href="#" class="exit-source-link" id="exit-source-link" target="_blank" rel="noopener noreferrer" data-track="source-out">
+            Read at source ↗
+          </a>
+        </div>
+      </footer>
+
+    </div>
+
+    <!-- ZONE 6: FIRST-SQUID JOURNEY RAIL (Desktop Sticky Rail / Mobile Strip) -->
+    <aside class="terminal-side-rail" id="side-rail" aria-label="Terminal telemetry and progression pipeline">
+      
+      <div class="journey-rail-box" id="journey-rail-box">
+        <div class="terminal-section-header" style="border-bottom: none; padding-bottom: 0;">
+          <span class="sec-num">// PIPELINE</span>
+          <span class="sec-title">FIRST-SQUID</span>
+        </div>
+
+        <div class="journey-pipeline" id="journey-pipeline" role="list" aria-label="Onboarding reward steps">
+          <!-- Rendered dynamically from ArticleEngine.journeyState() -->
+        </div>
+      </div>
+
+      <!-- Quick Telemetry Box -->
+      <div class="rail-telemetry-box" id="rail-telemetry-box">
+        <div class="terminal-section-header" style="border-bottom: none; padding-bottom: 0;">
+          <span class="sec-num">// STATUS</span>
+          <span class="sec-title">TELEMETRY</span>
+        </div>
+
+        <div class="telemetry-row">
+          <span>PROTOCOL:</span>
+          <span class="telemetry-val" style="color: var(--brand-lime);">LEVIATHAN v1.4</span>
+        </div>
+        <div class="telemetry-row">
+          <span>AESTHETIC:</span>
+          <span class="telemetry-val">TERMINAL [01]</span>
+        </div>
+        <div class="telemetry-row">
+          <span>SOURCE WEIGHT:</span>
+          <span class="telemetry-val mono" id="rail-source-weight">▲0</span>
+        </div>
+        <div class="telemetry-row">
+          <span>DISPATCH STATUS:</span>
+          <span class="telemetry-val mono" style="color: var(--brand-lime);">VERIFIED</span>
+        </div>
+        <div class="telemetry-row">
+          <span>HOTKEYS:</span>
+          <span class="telemetry-val mono">[J/K/U/C/ESC]</span>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- Shared Library Scripts -->
+  <script>window.VARIANT = { n: 1, name: 'Terminal Intelligence' };</script>
+  <script src="shared/leviathan-api.js"></script>
+  <script src="shared/article-engine.js"></script>
+  <script src="shared/showcase-nav.js" defer></script>
+
+  <!-- Terminal Article Interactive Controller -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ============================================================
+         TRACKING SEAM (Production A/B Port)
+         ============================================================ */
+      window.LVXTrack = window.LVXTrack || function (event, props) {
+        try {
+          console.debug('[track]', event, Object.assign({ variant: 'terminal' }, props));
+        } catch (e) {}
+      };
+
+      var articleId = ArticleEngine.articleIdFromUrl();
+      var currentArticle = null;
+      var currentYaps = [];
+      var currentRelated = [];
+      var consensusData = { pct: 50, up: 0, down: 0, totalWeight: 0, label: 'UNPRICED' };
+      var activeRelatedIndex = -1;
+      var composerFirstFocus = false;
+      var trackedDepths = {};
+
+      /* DOM Elements */
+      var progressBar = document.getElementById('reading-progress-bar');
+      var skeletonEl = document.getElementById('article-skeleton');
+      var errorEl = document.getElementById('article-error');
+      var contentEl = document.getElementById('article-content');
+      var crumbIdDisplay = document.getElementById('crumb-id-display');
+
+      /* Hero DOM */
+      var heroTagsList = document.getElementById('hero-tags-list');
+      var heroHeadline = document.getElementById('hero-headline');
+      var heroStandfirst = document.getElementById('hero-standfirst');
+      var metaSourceHost = document.getElementById('meta-source-host');
+      var metaTimeAgo = document.getElementById('meta-time-ago');
+      var metaSpeciesDot = document.getElementById('meta-species-dot');
+      var metaSpeciesLabel = document.getElementById('meta-species-label');
+      var metaVoteWeight = document.getElementById('meta-vote-weight');
+      var heroMediaWrapper = document.getElementById('hero-media-wrapper');
+      var heroMediaImg = document.getElementById('hero-media-img');
+      var railSourceWeight = document.getElementById('rail-source-weight');
+
+      /* Brief DOM */
+      var sectionBrief = document.getElementById('section-brief');
+      var briefBulletsLedger = document.getElementById('brief-bullets-ledger');
+      var keyNumbersStrip = document.getElementById('key-numbers-strip');
+      var briefQuoteCard = document.getElementById('brief-quote-card');
+      var pullQuoteText = document.getElementById('pull-quote-text');
+      var pullQuoteAuthor = document.getElementById('pull-quote-author');
+      var quoteSpeciesDot = document.getElementById('quote-species-dot');
+
+      /* Consensus DOM */
+      var sectionConsensus = document.getElementById('section-consensus');
+      var deskPctNum = document.getElementById('desk-pct-num');
+      var deskPctLabel = document.getElementById('desk-pct-label');
+      var deskVotesCaption = document.getElementById('desk-votes-caption');
+      var deskMeterGrid = document.getElementById('desk-meter-grid');
+      var meterAsciiBar = document.getElementById('meter-ascii-bar');
+      var btnAddWeight = document.getElementById('btn-add-weight');
+      var btnCounterWeight = document.getElementById('btn-counter-weight');
+      var walletNudgeBox = document.getElementById('wallet-nudge-box');
+      var btnNudgeConnect = document.getElementById('btn-nudge-connect');
+      var walletErrorMsg = document.getElementById('wallet-error-msg');
+      var deskOddsCard = document.getElementById('desk-odds-card');
+
+      /* Related DOM */
+      var sectionRelated = document.getElementById('section-related');
+      var relatedLedger = document.getElementById('related-ledger');
+
+      /* Pod DOM */
+      var podCountBadge = document.getElementById('pod-count-badge');
+      var podList = document.getElementById('pod-list');
+      var podEmptyState = document.getElementById('pod-empty-state');
+      var yapTextarea = document.getElementById('yap-textarea');
+      var btnPostYap = document.getElementById('btn-post-yap');
+      var composerActiveView = document.getElementById('composer-active-view');
+      var composerAuthSwap = document.getElementById('composer-auth-swap');
+      var btnComposerConnect = document.getElementById('btn-composer-connect');
+
+      /* Journey DOM */
+      var journeyPipeline = document.getElementById('journey-pipeline');
+
+      /* Return loop DOM */
+      var nextDispatchCard = document.getElementById('next-dispatch-card');
+      var nextDispatchHeadline = document.getElementById('next-dispatch-headline');
+      var nextMetaSource = document.getElementById('next-meta-source');
+      var nextMetaTime = document.getElementById('next-meta-time');
+      var nextMetaWeight = document.getElementById('next-meta-weight');
+      var exitSourceLink = document.getElementById('exit-source-link');
+
+      /* ============================================================
+         SAFE FETCH WITH FIXTURE FALLBACK
+         ============================================================ */
+      function loadArticleData(id) {
+        if (!id) {
+          return fetch('shared/fixtures/news.json')
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              var items = Array.isArray(d) ? d : (d.results || []);
+              if (items.length) {
+                articleId = String(items[0].id);
+                return items[0];
+              }
+              throw new Error('No articles available');
+            });
+        }
+
+        return ArticleEngine.fetchArticle(id).catch(function (err) {
+          return fetch('shared/fixtures/news.json')
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              var items = Array.isArray(d) ? d : (d.results || []);
+              var match = items.find(function (a) { return String(a.id) === String(id); });
+              if (match) return match;
+              if (items.length) return items[0];
+              throw err;
+            });
+        });
+      }
+
+      function loadYapsData(id) {
+        return ArticleEngine.fetchYaps(id).catch(function () {
+          return (currentArticle && currentArticle.top_yaps) || [];
+        });
+      }
+
+      function loadRelatedData(article) {
+        return ArticleEngine.fetchRelated(article, 5).catch(function () {
+          return fetch('shared/fixtures/news.json')
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              var items = Array.isArray(d) ? d : (d.results || []);
+              var tags = (article.tags || []).map(function (t) {
+                return (typeof t === 'string' ? t : (t.name || '')).toLowerCase();
+              });
+              return items
+                .filter(function (a) { return String(a.id) !== String(article.id); })
+                .map(function (a) {
+                  var overlap = (a.tags || []).filter(function (t) {
+                    var tn = (typeof t === 'string' ? t : (t.name || '')).toLowerCase();
+                    return tags.indexOf(tn) !== -1;
+                  }).length;
+                  return { article: a, overlap: overlap };
+                })
+                .filter(function (x) { return x.overlap > 0; })
+                .sort(function (a, b) { return b.overlap - a.overlap; })
+                .slice(0, 5)
+                .map(function (x) { return x.article; });
+            })
+            .catch(function () { return []; });
+        });
+      }
+
+      /* ============================================================
+         RENDER 8 HOOK ZONES
+         ============================================================ */
+
+      /* 0. READING PROGRESS & DEPTH TRACKING */
+      ArticleEngine.trackReadingProgress(document.documentElement, function (pct) {
+        var pct100 = Math.round(pct * 100);
+        progressBar.style.width = pct100 + '%';
+        progressBar.setAttribute('aria-valuenow', pct100);
+
+        [25, 50, 75, 100].forEach(function (depth) {
+          if (pct100 >= depth && !trackedDepths[depth]) {
+            trackedDepths[depth] = true;
+            LVXTrack('scroll_depth', { depth: depth });
+          }
+        });
+      });
+
+      /* 1. HOOK (HERO) */
+      function renderHook(article) {
+        crumbIdDisplay.textContent = 'ID: #' + article.id;
+
+        // Tags kicker: plain mono text, NOT boxed chips
+        var tags = article.tags || [];
+        if (tags.length > 0) {
+          var tagNames = tags.map(function (t) {
+            var n = (typeof t === 'string' ? t : (t.name || t.slug || '')).toUpperCase();
+            return '#' + Leviathan.esc(n.replace(/^#/, ''));
+          });
+          heroTagsList.innerHTML = tagNames.join(' <span style="opacity:0.4;">·</span> ');
+        } else {
+          heroTagsList.textContent = '#INTEL';
+        }
+
+        // Headline: no link out
+        heroHeadline.textContent = article.headline || 'Untitled Dispatch';
+
+        // Standfirst from top_tldr or lede
+        var standfirst = (article.top_tldr && (article.top_tldr.text || article.top_tldr)) || '';
+        if (standfirst) {
+          heroStandfirst.textContent = standfirst;
+          heroStandfirst.style.display = 'block';
+        } else {
+          heroStandfirst.style.display = 'none';
+        }
+
+        // Meta status line
+        metaSourceHost.textContent = Leviathan.sourceHost(article) || 'leviathannews.xyz';
+        metaTimeAgo.textContent = Leviathan.timeAgo(article.date_posted) || 'recently';
+
+        // Species dot (6px)
+        var user = article.post_user || {};
+        var meta = Leviathan.accountMeta(user);
+        metaSpeciesDot.className = 'species-dot species-dot-' + (meta.cls === 'acct-cyborg' ? 'cyborg' : meta.cls === 'acct-bot' ? 'bot' : 'human');
+        metaSpeciesLabel.textContent = meta.label || 'HUMAN';
+
+        // Vote weight
+        var weight = (article.vote_details && article.vote_details.total_vote_weight) || 0;
+        metaVoteWeight.textContent = '▲' + Leviathan.fmtWeight(weight);
+        railSourceWeight.textContent = '▲' + Leviathan.fmtWeight(weight);
+
+        // Hero media
+        if (article.media) {
+          heroMediaImg.src = article.media;
+          heroMediaImg.onerror = function () {
+            heroMediaWrapper.style.display = 'none';
+          };
+          heroMediaWrapper.style.display = 'block';
+        } else {
+          heroMediaWrapper.style.display = 'none';
+        }
+      }
+
+      /* 2. THE BRIEF (Perplexity-style AI Summary) */
+      function renderBrief(article, yaps) {
+        var brief = ArticleEngine.buildBrief(article, yaps);
+
+        if (!brief.hasSummary && (!brief.numbers || brief.numbers.length === 0)) {
+          sectionBrief.style.display = 'none';
+          return;
+        }
+        sectionBrief.style.display = 'flex';
+
+        // Bullets ledger
+        briefBulletsLedger.innerHTML = '';
+        (brief.bullets || []).forEach(function (bulletText, idx) {
+          var row = document.createElement('div');
+          row.className = 'brief-ledger-row';
+          row.setAttribute('role', 'listitem');
+          row.innerHTML = 
+            '<span class="brief-ledger-idx">[' + String(idx + 1).padStart(2, '0') + ']</span>' +
+            '<span class="brief-ledger-text">' + Leviathan.esc(bulletText) + '</span>';
+          briefBulletsLedger.appendChild(row);
+        });
+
+        // Key Numbers Strip
+        if (brief.numbers && brief.numbers.length > 0) {
+          keyNumbersStrip.innerHTML = '';
+          brief.numbers.forEach(function (num) {
+            var card = document.createElement('div');
+            card.className = 'key-number-card';
+            card.innerHTML = 
+              '<span class="key-number-val">' + Leviathan.esc(num) + '</span>' +
+              '<span class="key-number-lbl">METRIC QUANT</span>';
+            keyNumbersStrip.appendChild(card);
+          });
+          keyNumbersStrip.style.display = 'grid';
+        } else {
+          keyNumbersStrip.style.display = 'none';
+        }
+
+        // Pull quote
+        if (brief.quote && brief.quote.text) {
+          pullQuoteText.textContent = '“' + brief.quote.text + '”';
+          pullQuoteAuthor.textContent = brief.quote.author || 'Analyst';
+          var quoteUser = brief.quote.user || {};
+          var qMeta = Leviathan.accountMeta(quoteUser);
+          quoteSpeciesDot.className = 'species-dot species-dot-' + (qMeta.cls === 'acct-cyborg' ? 'cyborg' : qMeta.cls === 'acct-bot' ? 'bot' : 'human');
+          briefQuoteCard.style.display = 'block';
+        } else {
+          briefQuoteCard.style.display = 'none';
+        }
+      }
+
+      /* 3. CONSENSUS (THE DESK SAYS) */
+      function renderConsensus(article) {
+        consensusData = ArticleEngine.consensusFromVotes(article);
+        updateConsensusDisplay();
+      }
+
+      function updateConsensusDisplay() {
+        deskPctNum.textContent = consensusData.pct + '%';
+        deskPctLabel.textContent = consensusData.label;
+        deskVotesCaption.textContent = Leviathan.fmtWeight(consensusData.totalWeight) + ' WEIGHTED SQUID VOTES (' + (consensusData.up + consensusData.down) + ' VOTES)';
+
+        // 20-block ASCII-ish meter
+        var totalBlocks = 20;
+        var filledBlocks = Math.round((consensusData.pct / 100) * totalBlocks);
+        deskMeterGrid.innerHTML = '';
+        var asciiStr = '[';
+        for (var i = 0; i < totalBlocks; i++) {
+          var block = document.createElement('span');
+          block.className = 'meter-block' + (i < filledBlocks ? ' filled' : '');
+          deskMeterGrid.appendChild(block);
+          asciiStr += (i < filledBlocks ? '█' : '░');
+        }
+        asciiStr += ']';
+        meterAsciiBar.textContent = asciiStr;
+        deskMeterGrid.setAttribute('aria-valuenow', consensusData.pct);
+      }
+
+      function flashOddsBar() {
+        deskOddsCard.classList.remove('flash-active');
+        void deskOddsCard.offsetWidth;
+        deskOddsCard.classList.add('flash-active');
+      }
+
+      function applyWeightSuccess(side) {
+        if (side === 1) {
+          consensusData.up += 1;
+        } else {
+          consensusData.down += 1;
+        }
+        var newTotal = consensusData.up + consensusData.down;
+        consensusData.pct = Math.round((consensusData.up / newTotal) * 100);
+        consensusData.totalWeight += (side === 1 ? 50 : 25);
+        consensusData.label = consensusData.pct >= 67 ? 'CONSENSUS LONG' : consensusData.pct >= 50 ? 'LEAN LONG' : 'CONTESTED';
+
+        updateConsensusDisplay();
+        flashOddsBar();
+
+        ArticleEngine.journeyComplete('weight');
+        LVXTrack('journey_step_completed', { step: 'weight' });
+        renderJourney();
+
+        walletNudgeBox.style.display = 'none';
+        walletErrorMsg.style.display = 'none';
+      }
+
+      function handleWeightAction(side) {
+        LVXTrack('weight_clicked', { side: side });
+
+        if (!ArticleEngine.isAuthed()) {
+          walletNudgeBox.style.display = 'flex';
+          walletErrorMsg.style.display = 'none';
+          return;
+        }
+
+        ArticleEngine.placeWeight(articleId, side)
+          .then(function () {
+            applyWeightSuccess(side);
+          })
+          .catch(function (err) {
+            if (err.message === 'auth-required') {
+              walletNudgeBox.style.display = 'flex';
+              walletErrorMsg.style.display = 'none';
+            } else {
+              walletErrorMsg.textContent = '[!] VOTE FAILED: ' + err.message;
+              walletErrorMsg.style.display = 'block';
+            }
+          });
+      }
+
+      /* 4. WHAT ELSE IS BEING REPORTED */
+      function renderRelated(relatedItems) {
+        currentRelated = relatedItems || [];
+        if (currentRelated.length === 0) {
+          sectionRelated.style.display = 'none';
+          return;
+        }
+        sectionRelated.style.display = 'flex';
+
+        relatedLedger.innerHTML = '';
+        currentRelated.forEach(function (rel, idx) {
+          var row = document.createElement('a');
+          row.className = 'related-row';
+          row.href = ArticleEngine.articleUrl('variant-1-terminal-article.html', rel.id);
+          row.setAttribute('role', 'listitem');
+          row.setAttribute('data-id', rel.id);
+          row.setAttribute('data-index', idx);
+
+          var w = (rel.vote_details && rel.vote_details.total_vote_weight) || 0;
+          var host = Leviathan.sourceHost(rel);
+          var time = Leviathan.timeAgo(rel.date_posted);
+
+          row.innerHTML = 
+            '<span class="related-index">[' + String(idx + 1).padStart(2, '0') + ']</span>' +
+            '<div class="related-body">' +
+              '<div class="related-headline">' + Leviathan.esc(rel.headline || 'Untitled Related') + '</div>' +
+              '<div class="related-meta">' +
+                '<span>' + Leviathan.esc(host) + '</span>' +
+                '<span>·</span>' +
+                '<span>' + Leviathan.esc(time) + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<span class="related-weight">▲' + Leviathan.fmtWeight(w) + '</span>';
+
+          row.addEventListener('click', function () {
+            LVXTrack('related_clicked', { to_id: rel.id });
+          });
+
+          relatedLedger.appendChild(row);
+        });
+      }
+
+      /* 5. THE POD */
+      function renderPod(yaps) {
+        currentYaps = yaps || [];
+        podCountBadge.textContent = '[' + currentYaps.length + (currentYaps.length === 1 ? ' YAP' : ' YAPS') + ']';
+
+        if (currentYaps.length === 0) {
+          podList.innerHTML = '';
+          podEmptyState.style.display = 'block';
+          return;
+        }
+        podEmptyState.style.display = 'none';
+        podList.innerHTML = '';
+
+        currentYaps.forEach(function (y) {
+          appendYapItem(y, false);
+        });
+      }
+
+      function appendYapItem(y, prepend) {
+        var card = document.createElement('div');
+        card.className = 'pod-item';
+
+        var author = y.author || {};
+        var name = author.display_name || 'Anonymous Analyst';
+        var meta = Leviathan.accountMeta(author);
+        var dotClass = 'species-dot-' + (meta.cls === 'acct-cyborg' ? 'cyborg' : meta.cls === 'acct-bot' ? 'bot' : 'human');
+        var timeStr = y.created_at ? Leviathan.timeAgo(y.created_at) : 'just now';
+
+        var tags = y.tags || [];
+        var tagsHtml = tags.map(function (t) {
+          var name = typeof t === 'string' ? t : (t.name || t.slug || '');
+          return '<span class="pod-tag-chip">#' + Leviathan.esc(String(name).toUpperCase()) + '</span>';
+        }).join(' ');
+
+        card.innerHTML = 
+          '<div class="pod-item-header">' +
+            '<div class="pod-author-cluster">' +
+              '<span class="species-dot ' + dotClass + '"></span>' +
+              '<span class="pod-author-name">' + Leviathan.esc(name) + '</span>' +
+              '<span style="color:var(--text-dim);">·</span>' +
+              '<span>' + Leviathan.esc(timeStr) + '</span>' +
+            '</div>' +
+            '<div class="pod-tags-cluster">' + tagsHtml + '</div>' +
+          '</div>' +
+          '<div class="pod-item-text">' + Leviathan.esc(y.text || '') + '</div>';
+
+        if (prepend && podList.firstChild) {
+          podList.insertBefore(card, podList.firstChild);
+        } else {
+          podList.appendChild(card);
+        }
+      }
+
+      function applyYapSuccess(text, tags) {
+        LVXTrack('yap_submitted', { id: articleId });
+        ArticleEngine.journeyComplete('yap');
+        LVXTrack('journey_step_completed', { step: 'yap' });
+
+        var newYap = {
+          text: text,
+          tags: tags,
+          author: { display_name: 'You (Local Session)', account_type: 'human' },
+          created_at: new Date().toISOString()
+        };
+        podEmptyState.style.display = 'none';
+        appendYapItem(newYap, true);
+        currentYaps.unshift(newYap);
+        podCountBadge.textContent = '[' + currentYaps.length + (currentYaps.length === 1 ? ' YAP' : ' YAPS') + ']';
+
+        yapTextarea.value = '';
+        btnPostYap.textContent = '✓ POSTED — SQUID EARNED';
+        btnPostYap.classList.add('success-flash');
+        setTimeout(function () {
+          btnPostYap.textContent = 'POST YAP — EARN SQUID';
+          btnPostYap.classList.remove('success-flash');
+        }, 2200);
+
+        renderJourney();
+      }
+
+      function handlePostYap() {
+        var text = yapTextarea.value.trim();
+        if (!text) {
+          yapTextarea.focus();
+          return;
+        }
+
+        var activePills = document.querySelectorAll('.btn-tag-pill.active');
+        var selectedTags = Array.from(activePills).map(function (p) {
+          return p.getAttribute('data-tag');
+        });
+
+        if (!ArticleEngine.isAuthed()) {
+          composerActiveView.style.display = 'none';
+          composerAuthSwap.style.display = 'flex';
+          return;
+        }
+
+        ArticleEngine.postYap(articleId, text, selectedTags)
+          .then(function () {
+            applyYapSuccess(text, selectedTags);
+          })
+          .catch(function (err) {
+            if (err.message === 'auth-required') {
+              composerActiveView.style.display = 'none';
+              composerAuthSwap.style.display = 'flex';
+            } else {
+              var composerErr = document.getElementById('composer-wallet-error');
+              if (composerErr) {
+                composerErr.textContent = '[!] ' + err.message;
+                composerErr.style.display = 'block';
+              }
+            }
+          });
+      }
+
+      /* 6. FIRST-SQUID JOURNEY (Progressive Disclosure Pipeline) */
+      function renderJourney() {
+        var steps = ArticleEngine.journeyState();
+        journeyPipeline.innerHTML = '';
+
+        steps.forEach(function (step, idx) {
+          var stepEl = document.createElement('div');
+          var stepStateCls = step.done ? 'done' : (step.current ? 'current' : 'locked');
+          stepEl.className = 'pipeline-step ' + stepStateCls;
+
+          var markerChar = step.done ? '✓' : (step.current ? '▶' : '·');
+          var numStr = '[' + String(idx + 1).padStart(2, '0') + ']';
+
+          stepEl.innerHTML = 
+            '<div class="pipeline-step-node">' +
+              '<span class="step-marker">' + markerChar + '</span>' +
+              '<div class="step-content">' +
+                '<span class="step-label">' + numStr + ' ' + Leviathan.esc(step.label.toUpperCase()) + '</span>' +
+                '<span class="step-reward">' + Leviathan.esc(step.reward) + '</span>' +
+              '</div>' +
+            '</div>';
+
+          journeyPipeline.appendChild(stepEl);
+
+          if (idx < steps.length - 1) {
+            var conn = document.createElement('div');
+            conn.className = 'pipeline-connector' + (step.done ? ' active' : '');
+            journeyPipeline.appendChild(conn);
+          }
+        });
+      }
+
+      /* 7. RETURN LOOP FOOTER */
+      function renderReturnLoop(relatedItems, article) {
+        if (relatedItems && relatedItems.length > 0) {
+          var nextArt = relatedItems[0];
+          nextDispatchHeadline.textContent = nextArt.headline || 'Next Dispatch';
+          nextMetaSource.textContent = Leviathan.sourceHost(nextArt);
+          nextMetaTime.textContent = Leviathan.timeAgo(nextArt.date_posted);
+          var nextWeight = (nextArt.vote_details && nextArt.vote_details.total_vote_weight) || 0;
+          nextMetaWeight.textContent = '▲' + Leviathan.fmtWeight(nextWeight);
+          nextDispatchCard.href = ArticleEngine.articleUrl('variant-1-terminal-article.html', nextArt.id);
+          nextDispatchCard.style.display = 'flex';
+
+          nextDispatchCard.onclick = function () {
+            LVXTrack('next_dispatch_clicked', { to_id: nextArt.id });
+          };
+        } else {
+          nextDispatchCard.style.display = 'none';
+        }
+
+        // De-emphasized exit at source
+        if (article.url) {
+          exitSourceLink.href = article.url;
+          exitSourceLink.onclick = function () {
+            LVXTrack('source_out_clicked', { url: article.url });
+          };
+        } else {
+          exitSourceLink.style.display = 'none';
+        }
+      }
+
+      /* ============================================================
+         WALLET AUTH FLOW
+         ============================================================ */
+      function triggerWalletConnect() {
+        LVXTrack('wallet_connect_started');
+        ArticleEngine.connectWallet()
+          .then(function (res) {
+            LVXTrack('wallet_connected', { address: res.address });
+            ArticleEngine.journeyComplete('wallet');
+            LVXTrack('journey_step_completed', { step: 'wallet' });
+            renderJourney();
+
+            walletNudgeBox.style.display = 'none';
+            composerAuthSwap.style.display = 'none';
+            composerActiveView.style.display = 'block';
+          })
+          .catch(function (err) {
+            var note = err.message === 'no-wallet'
+              ? 'Install a Web3 wallet (e.g. MetaMask, Rabby, Rainbow) to sign.'
+              : 'Wallet authentication failed: ' + err.message;
+
+            if (walletErrorMsg) {
+              walletErrorMsg.textContent = '[!] ' + note;
+              walletErrorMsg.style.display = 'block';
+            }
+            var composerErr = document.getElementById('composer-wallet-error');
+            if (composerErr) {
+              composerErr.textContent = '[!] ' + note;
+              composerErr.style.display = 'block';
+            }
+          });
+      }
+
+      /* ============================================================
+         INTERSECTION OBSERVERS FOR VIEW TRACKING
+         ============================================================ */
+      var viewObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            if (entry.target.id === 'section-brief' && !entry.target.dataset.viewed) {
+              entry.target.dataset.viewed = '1';
+              LVXTrack('brief_viewed', { id: articleId });
+            }
+            if (entry.target.id === 'section-consensus' && !entry.target.dataset.viewed) {
+              entry.target.dataset.viewed = '1';
+              LVXTrack('consensus_viewed', { id: articleId });
+            }
+          }
+        });
+      }, { threshold: 0.2 });
+
+      viewObserver.observe(sectionBrief);
+      viewObserver.observe(sectionConsensus);
+
+      /* ============================================================
+         KEYBOARD SHORTCUTS (Hotkeys)
+         ============================================================ */
+      window.addEventListener('keydown', function (e) {
+        var activeTag = (document.activeElement && document.activeElement.tagName) || '';
+        if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || (document.activeElement && document.activeElement.isContentEditable)) {
+          return;
+        }
+
+        var key = e.key.toLowerCase();
+
+        // [U] Add weight
+        if (key === 'u') {
+          e.preventDefault();
+          handleWeightAction(1);
+          return;
+        }
+
+        // [C] Focus composer
+        if (key === 'c') {
+          e.preventDefault();
+          yapTextarea.focus();
+          yapTextarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+
+        // [ESC] Back to wire
+        if (e.key === 'Escape') {
+          window.location.href = 'variant-1-terminal.html';
+          return;
+        }
+
+        // [J] / [K] Navigate related list
+        var relatedRows = document.querySelectorAll('.related-row');
+        if (relatedRows.length > 0) {
+          if (key === 'j') {
+            e.preventDefault();
+            activeRelatedIndex = Math.min(activeRelatedIndex + 1, relatedRows.length - 1);
+            highlightRelatedRow(relatedRows, activeRelatedIndex);
+            return;
+          } else if (key === 'k') {
+            e.preventDefault();
+            activeRelatedIndex = Math.max(activeRelatedIndex - 1, 0);
+            highlightRelatedRow(relatedRows, activeRelatedIndex);
+            return;
+          } else if (e.key === 'Enter' && activeRelatedIndex >= 0 && activeRelatedIndex < relatedRows.length) {
+            e.preventDefault();
+            relatedRows[activeRelatedIndex].click();
+            return;
+          }
+        }
+      });
+
+      function highlightRelatedRow(rows, idx) {
+        rows.forEach(function (r, i) {
+          if (i === idx) {
+            r.classList.add('active-hotkey');
+            r.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } else {
+            r.classList.remove('active-hotkey');
+          }
+        });
+      }
+
+      /* ============================================================
+         EVENT LISTENERS & BINDINGS
+         ============================================================ */
+      btnAddWeight.addEventListener('click', function () { handleWeightAction(1); });
+      btnCounterWeight.addEventListener('click', function () { handleWeightAction(-1); });
+      btnNudgeConnect.addEventListener('click', triggerWalletConnect);
+      btnComposerConnect.addEventListener('click', triggerWalletConnect);
+      btnPostYap.addEventListener('click', handlePostYap);
+
+      yapTextarea.addEventListener('focus', function () {
+        if (!composerFirstFocus) {
+          composerFirstFocus = true;
+          LVXTrack('yap_started');
+        }
+      });
+
+      // Tag pill toggles
+      document.querySelectorAll('.btn-tag-pill').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          btn.classList.toggle('active');
+        });
+      });
+
+      /* Expose test helper methods on window for automated verification */
+      window.__testSimulateWeightSuccess = applyWeightSuccess;
+      window.__testSimulateYapSuccess = applyYapSuccess;
+
+      /* ============================================================
+         PAGE BOOT SEQUENCE
+         ============================================================ */
+      renderJourney(); // Initial static render from persisted localStorage
+
+      loadArticleData(articleId)
+        .then(function (article) {
+          currentArticle = article;
+          articleId = String(article.id);
+
+          document.title = (article.headline || 'Dispatch') + ' // Leviathan Terminal [01]';
+
+          renderHook(article);
+          renderConsensus(article);
+
+          LVXTrack('article_viewed', { id: article.id });
+
+          Promise.all([
+            loadYapsData(article.id),
+            loadRelatedData(article)
+          ]).then(function (results) {
+            var yaps = results[0] || [];
+            var related = results[1] || [];
+
+            renderBrief(article, yaps);
+            renderPod(yaps);
+            renderRelated(related);
+            renderReturnLoop(related, article);
+
+            skeletonEl.style.display = 'none';
+            contentEl.style.display = 'flex';
+          }).catch(function (err) {
+            console.error('Secondary intel error:', err);
+            skeletonEl.style.display = 'none';
+            contentEl.style.display = 'flex';
+          });
+        })
+        .catch(function (err) {
+          console.error('Failed to load article:', err);
+          skeletonEl.style.display = 'none';
+          errorEl.style.display = 'flex';
+          document.getElementById('error-msg-detail').textContent = 
+            'DISPATCH ID [' + Leviathan.esc(articleId || 'NULL') + '] COULD NOT BE FOUND: ' + err.message;
+        });
+
+    })();
+  </script>
+</body>
+</html>

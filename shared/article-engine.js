@@ -27,30 +27,65 @@
     return q.get('id') || q.get('article') || null;
   }
 
-  /* ---------------- Fetchers ---------------- */
+  /* ---------------- Fetchers (Live API with Fixture fallback) ---------------- */
+  var FIX = 'shared/fixtures/news.json';
+
+  function timeout(ms) {
+    return new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, ms); });
+  }
+  function fetchTimeout(url, opts, ms) {
+    return Promise.race([fetch(url, opts), timeout(ms || 2400)]);
+  }
+
   function fetchArticle(id) {
-    return fetch(API + '/news/' + encodeURIComponent(id) + '/')
-      .then(function (r) { if (!r.ok) throw new Error('article ' + r.status); return r.json(); });
+    return fetchTimeout(API + '/news/' + encodeURIComponent(id) + '/')
+      .then(function (r) { if (!r.ok) throw new Error('article ' + r.status); return r.json(); })
+      .catch(function () {
+        return fetch(FIX)
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            var items = Array.isArray(d) ? d : (d.results || []);
+            var found = items.find(function (a) { return String(a.id) === String(id); });
+            if (found) return found;
+            throw new Error('article not found: ' + id);
+          });
+      });
   }
 
   function fetchYaps(id) {
-    return fetch(API + '/news/' + encodeURIComponent(id) + '/list_yaps')
+    return fetchTimeout(API + '/news/' + encodeURIComponent(id) + '/list_yaps')
       .then(function (r) { if (!r.ok) throw new Error('yaps ' + r.status); return r.json(); })
-      .then(function (d) { return Array.isArray(d) ? d : (d.results || d.yaps || []); });
+      .then(function (d) { return Array.isArray(d) ? d : (d.results || d.yaps || []); })
+      .catch(function () {
+        return fetch(FIX)
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            var items = Array.isArray(d) ? d : (d.results || []);
+            var found = items.find(function (a) { return String(a.id) === String(id); });
+            return (found && found.top_yaps) || [];
+          })
+          .catch(function () { return []; });
+      });
   }
 
   /* Related coverage: same-tag articles from the current feed */
   function fetchRelated(article, limit) {
-    var tags = (article.tags || []).map(function (t) { return (t.name || '').toLowerCase(); });
-    return fetch(API + '/news/?status=approved&sort_type=hot&per_page=40')
-      .then(function (r) { return r.json(); })
+    var tags = (article.tags || []).map(function (t) {
+      return (typeof t === 'string' ? t : (t.name || '')).toLowerCase();
+    });
+    return fetchTimeout(API + '/news/?status=approved&sort_type=hot&per_page=40')
+      .then(function (r) { if (!r.ok) throw new Error('news ' + r.status); return r.json(); })
+      .catch(function () {
+        return fetch(FIX).then(function (r) { return r.json(); });
+      })
       .then(function (d) {
         var items = Array.isArray(d) ? d : (d.results || []);
         return items
           .filter(function (a) { return String(a.id) !== String(article.id); })
           .map(function (a) {
             var overlap = (a.tags || []).filter(function (t) {
-              return tags.indexOf((t.name || '').toLowerCase()) !== -1;
+              var tn = (typeof t === 'string' ? t : (t.name || '')).toLowerCase();
+              return tags.indexOf(tn) !== -1;
             }).length;
             return { article: a, overlap: overlap };
           })
@@ -71,7 +106,9 @@
 
     var analysisYap = null;
     (yaps || []).forEach(function (y) {
-      var tags = y.tags || [];
+      var tags = (y.tags || []).map(function (t) {
+        return (typeof t === 'string' ? t : (t.name || '')).toLowerCase();
+      });
       if (!analysisYap && (tags.indexOf('analysis') !== -1 || tags.indexOf('tldr') !== -1)) analysisYap = y;
     });
     if (!analysisYap && article.top_yaps && article.top_yaps.length) analysisYap = article.top_yaps[0];

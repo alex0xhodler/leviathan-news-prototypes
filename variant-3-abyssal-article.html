@@ -1,0 +1,2418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leviathan News — Surface Signal | Bioluminescent Abyssal</title>
+  <link rel="stylesheet" href="shared/tokens.css">
+  <style>
+    /* ============================================================
+       VARIANT 3: BIOLUMINESCENT ABYSSAL — ARTICLE DISPATCH
+       Archetype: Deep-sea bioluminescence — modern Web3 done with RESTRAINT
+       (Raycast/Linear-grade polish, NOT gradient spam).
+       Base --lvx-navy-950 -> layered navy surfaces, hairlines,
+       glow ONLY as state signal (live, unread, AI-authored). Dark-only.
+       ============================================================ */
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Abyssal trench base — LEVIATHAN DEEP NAVY + black mixes */
+      --bg-depth: color-mix(in oklch, #021f53 30%, #000000);   /* deep navy-black */
+      --surface-abyss: color-mix(in oklch, #021f53 50%, transparent);
+      --surface-card: color-mix(in oklch, #021f53 95%, #ffffff);
+      --surface-card-hover: color-mix(in oklch, #021f53 90%, #ffffff);
+      --surface-glass-nav: color-mix(in oklch, #021f53 75%, transparent);
+      --surface-panel: color-mix(in oklch, #021f53 85%, #000000);
+      --surface-rail: color-mix(in oklch, #021f53 55%, transparent);
+      
+      /* Radius scale: 2px micro, 4px controls/chips, 6px panels, 50% circles ONLY */
+      --r-sm: 2px;
+      --r-md: 4px;
+      --r-lg: 6px;
+      --r-xl: 6px;
+      
+      /* Brand hairlines for abyss glass (white 8% or lime 14-25%) */
+      --hairline-lime: 1px solid color-mix(in oklch, var(--lvx-lime) 14%, transparent);
+      --hairline-lime-bright: 1px solid color-mix(in oklch, var(--lvx-lime) 30%, transparent);
+      --hairline-dark: 1px solid color-mix(in oklch, #ffffff 8%, transparent);
+      --hairline-mid: 1px solid color-mix(in oklch, #ffffff 16%, transparent);
+      
+      /* High-contrast WCAG AAA/AA compliant typography on abyss surfaces */
+      --text-high: #ffffff;                                    /* contrast > 14:1 */
+      --text-mid: #d9d9d9;                                     /* contrast > 10:1 */
+      --text-dim: color-mix(in oklch, #d9d9d9 65%, #021f53);  /* contrast > 5.5:1 */
+      --text-mono-lime: var(--lvx-lime-soft);
+      
+      /* Brand signals & restrained glows (hairlines/dots/subtle, max 8px 10-15% alpha) */
+      --glow-species-lime: 0 0 8px color-mix(in oklch, var(--lvx-lime) 15%, transparent);
+      --glow-species-human: 0 0 8px color-mix(in oklch, #d9d9d9 15%, transparent);
+      --glow-species-bot: var(--glow-species-lime);
+      --glow-lime: 0 0 8px color-mix(in oklch, var(--lvx-lime) 12%, transparent);
+      --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.4);
+      --shadow-2: 0 4px 16px rgba(0, 0, 0, 0.4);
+      --dur-fast: 0.18s ease;
+      --dur-norm: 0.28s ease;
+    }
+
+    body {
+      background-color: var(--bg-depth);
+      color: var(--text-high);
+      font-family: var(--font-brand-body);
+      font-size: var(--fs-body, 1rem);
+      line-height: 1.55;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Reading Progress Bar (Zone 0: 2px lime bar fixed top) */
+    .reading-progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--lvx-lime);
+      z-index: 10001;
+      pointer-events: none;
+      transition: width 0.08s linear;
+    }
+
+    /* Depth Backdrop with Subtle Light Rays */
+    .abyss-ambient {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .abyss-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle 880px at 50% 12%, color-mix(in oklch, #021f53 50%, #000000) 0%, color-mix(in oklch, #021f53 25%, #000000) 75%, var(--bg-depth) 100%);
+    }
+
+    .abyss-ray {
+      position: absolute;
+      top: -20%;
+      left: 10%;
+      width: 44vw;
+      height: 140vh;
+      transform: rotate(-24deg);
+      background: linear-gradient(180deg, color-mix(in oklch, var(--lvx-lime) 5.5%, transparent) 0%, color-mix(in oklch, var(--lvx-lime) 1%, transparent) 60%, transparent 100%);
+      filter: blur(48px);
+      opacity: 0.05;
+      animation: rayDriftA 26s ease-in-out infinite alternate;
+    }
+
+    .abyss-ray-2 {
+      position: absolute;
+      top: -15%;
+      right: 5%;
+      width: 36vw;
+      height: 130vh;
+      transform: rotate(-18deg);
+      background: linear-gradient(180deg, color-mix(in oklch, var(--lvx-lime) 4%, transparent) 0%, color-mix(in oklch, var(--lvx-lime) 1%, transparent) 50%, transparent 100%);
+      filter: blur(56px);
+      opacity: 0.035;
+      animation: rayDriftB 32s ease-in-out infinite alternate;
+    }
+
+    @keyframes rayDriftA {
+      0% { transform: rotate(-24deg) translateX(-40px); opacity: 0.03; }
+      100% { transform: rotate(-21deg) translateX(50px); opacity: 0.058; }
+    }
+
+    @keyframes rayDriftB {
+      0% { transform: rotate(-18deg) translateX(30px); opacity: 0.025; }
+      100% { transform: rotate(-22deg) translateX(-40px); opacity: 0.05; }
+    }
+
+    /* FLOATING NAV */
+    .nav-wrapper {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      z-index: 1000;
+      max-width: 1320px;
+      margin: 0 auto;
+      pointer-events: none;
+    }
+
+    .nav-bar {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 8px 18px;
+      background: var(--surface-glass-nav);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: var(--hairline-lime);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-1);
+      transition: border-color var(--dur-fast);
+    }
+
+    .nav-bar:hover {
+      border-color: color-mix(in oklch, var(--lvx-lime) 28%, transparent);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-high);
+      flex-shrink: 0;
+      min-height: 40px;
+    }
+
+    .squid-emblem {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: color-mix(in oklch, var(--lvx-lime) 10%, #021f53);
+      border: 1px solid color-mix(in oklch, var(--lvx-lime) 35%, transparent);
+      animation: squidBreathe 4s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    .squid-emblem svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: var(--lvx-lime);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @keyframes squidBreathe {
+      0%, 100% {
+        box-shadow: 0 0 6px color-mix(in oklch, var(--lvx-lime) 15%, transparent);
+        opacity: 0.88;
+        border-color: color-mix(in oklch, var(--lvx-lime) 35%, transparent);
+      }
+      50% {
+        box-shadow: 0 0 10px color-mix(in oklch, var(--lvx-lime) 25%, transparent);
+        opacity: 1;
+        border-color: color-mix(in oklch, var(--lvx-lime) 70%, transparent);
+      }
+    }
+
+    .brand-title {
+      font-family: var(--font-brand-display);
+      font-weight: 700;
+      font-size: 1.02rem;
+      letter-spacing: 0.12em;
+      color: var(--text-high);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-cursor {
+      color: var(--lvx-lime);
+      font-size: 0.85em;
+      animation: brandCursorBlink 1.2s steps(2) infinite;
+      user-select: none;
+    }
+
+    @keyframes brandCursorBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .brand-sub {
+      font-family: var(--font-brand-body);
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--lvx-lime);
+      background: color-mix(in oklch, var(--lvx-lime) 12%, transparent);
+      border: 1px solid color-mix(in oklch, var(--lvx-lime) 32%, transparent);
+      padding: 2px 7px;
+      border-radius: var(--r-md);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .nav-wire-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-mid);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border: 1px solid color-mix(in oklch, #ffffff 14%, transparent);
+      border-radius: var(--r-md);
+      background: color-mix(in oklch, #021f53 60%, transparent);
+      transition: all var(--dur-fast);
+      min-height: 40px;
+    }
+
+    .nav-wire-link:hover {
+      color: var(--lvx-lime);
+      border-color: var(--lvx-lime);
+      background: color-mix(in oklch, #021f53 85%, transparent);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .pulse-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 12px;
+      border-radius: var(--r-md);
+      background: color-mix(in oklch, #021f53 65%, #000000);
+      border: 1px solid color-mix(in oklch, var(--lvx-lime) 25%, transparent);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--text-mid);
+      min-height: 40px;
+      white-space: nowrap;
+      cursor: default;
+    }
+
+    .kelp-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--lvx-lime);
+      animation: kelpPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes kelpPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+
+    /* Page Container */
+    .page-container {
+      position: relative;
+      z-index: 1;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 104px 20px 80px;
+    }
+
+    /* Content Grid: Article Column + Descent Rail */
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 840px) 320px;
+      gap: 28px;
+      justify-content: center;
+      align-items: start;
+    }
+
+    /* Single column layout for article flow */
+    .article-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      min-width: 0;
+    }
+
+    /* ABYSSAL PANEL AESTHETIC (Agent protocol hairline box) */
+    .abyss-panel {
+      position: relative;
+      background: var(--surface-panel);
+      border: 1px solid color-mix(in oklch, var(--lvx-lime) 22%, transparent);
+      border-radius: var(--r-lg);
+      padding: 24px 26px;
+      box-shadow: none !important;
+      overflow: hidden;
+    }
+
+    .panel-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid color-mix(in oklch, #ffffff 8%, transparent);
+    }
+
+    .panel-kicker {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--lvx-lime);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-kicker-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--lvx-lime);
+      display: inline-block;
+      animation: kelpPulse 2s infinite;
+    }
+
+    .panel-depth-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* BUTTON ANATOMY (40px, no radius > 6px, no heavy glows) */
+    .btn-ghost-lime,
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 40px;
+      min-height: 40px;
+      padding: 0 18px;
+      background: transparent;
+      border: 1px solid var(--lvx-lime);
+      color: var(--lvx-lime);
+      font-family: var(--font-brand-body);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-radius: var(--r-md);
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: none !important;
+      transition: all var(--dur-fast);
+      white-space: nowrap;
+    }
+
+    .btn-ghost-lime:hover,
+    .btn-primary:hover {
+      background: var(--lvx-lime);
+      color: #021f53;
+      border-color: var(--lvx-lime);
+    }
+
+    .btn-agent-copy,
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 40px;
+      min-height: 40px;
+      padding: 0 18px;
+      background: transparent;
+      border: 1px solid color-mix(in oklch, #ffffff 20%, transparent);
+      color: #ffffff;
+      font-family: var(--font-brand-body);
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-radius: var(--r-md);
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: none !important;
+      transition: all var(--dur-fast);
+      white-space: nowrap;
+    }
+
+    .btn-agent-copy:hover,
+    .btn-secondary:hover {
+      border-color: var(--lvx-lime);
+      color: var(--lvx-lime);
+      background: transparent;
+    }
+
+    /* ZONE 1: HOOK (SURFACE SIGNAL) */
+    .hook-zone {
+      padding: 30px 32px;
+    }
+
+    .hook-tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--lvx-lime);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .hook-headline {
+      font-family: var(--font-brand-body);
+      font-size: clamp(1.6rem, 3.2vw, 2.3rem);
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      color: var(--text-high);
+      margin-bottom: 20px;
+      text-wrap: balance;
+    }
+
+    .hook-standfirst {
+      font-family: var(--font-brand-body);
+      font-size: 1.08rem;
+      line-height: 1.62;
+      color: var(--text-mid);
+      margin-bottom: 24px;
+      padding-left: 14px;
+      border-left: 2px solid color-mix(in oklch, var(--lvx-lime) 40%, transparent);
+    }
+
+    .hook-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1;
+      color: var(--text-dim);
+      padding: 12px 0 0;
+      border-top: 1px solid color-mix(in oklch, #ffffff 8%, transparent);
+    }
+
+    .hook-meta-row .meta-item {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 12px;
+    }
+
+    .hook-meta-row .meta-item:first-child {
+      padding-left: 0;
+    }
+
+    .hook-meta-row .meta-item:not(:first-child) {
+      border-left: 1px solid color-mix(in oklch, #ffffff 16%, transparent);
+    }
+
+    .meta-source {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .meta-time {
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .meta-weight {
+      color: var(--lvx-lime);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Species Identity (6px dot, NO boxed chips) */
+    .species-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      white-space: nowrap;
+    }
+
+    .species-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .species-dot.human {
+      background: #d9d9d9;
+    }
+
+    .species-dot.cyborg {
+      background: var(--lvx-lime);
+    }
+
+    .species-dot.bot {
+      background: #021f53;
+      border: 1.5px solid var(--lvx-lime);
+      box-sizing: border-box;
+    }
+
+    .species-model {
+      font-size: 9.5px;
+      color: var(--text-dim);
+      font-weight: 400;
+      margin-left: 2px;
+    }
+
+    /* Hero Media */
+    .hero-media-wrap {
+      margin-top: 24px;
+      border-radius: var(--r-lg);
+      border: var(--hairline-dark);
+      overflow: hidden;
+      background: color-mix(in oklch, #021f53 90%, #000000);
+      max-height: 420px;
+    }
+
+    .hero-media-wrap img {
+      width: 100%;
+      height: auto;
+      max-height: 420px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ZONE 2: THE BRIEF (SONAR READING) */
+    .brief-bullets-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+      list-style: none;
+    }
+
+    .brief-bullet-row {
+      background: color-mix(in oklch, #021f53 95%, #ffffff);
+      border: 1px solid color-mix(in oklch, #ffffff 8%, transparent);
+      border-radius: var(--r-md);
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .brief-bullet-idx {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--lvx-lime);
+      line-height: 1.5;
+    }
+
+    .brief-bullet-text {
+      font-family: var(--font-brand-body);
+      font-size: 0.96rem;
+      line-height: 1.55;
+      color: var(--text-high);
+    }
+
+    /* Key Numbers Strip */
+    .numbers-strip {
+      margin-bottom: 22px;
+    }
+
+    .numbers-strip-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
+    .number-card {
+      background: color-mix(in oklch, #021f53 75%, #000000);
+      border: 1px solid color-mix(in oklch, var(--lvx-lime) 18%, transparent);
+      border-radius: var(--r-md);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .number-val {
+      font-family: var(--font-mono);
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--lvx-lime);
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+
+    .number-sub {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Brief Pull Quote */
+    .brief-pullquote {
+      background: color-mix(in oklch, #021f53 92%, #ffffff);
+      border: 1px solid color-mix(in oklch, #ffffff 10%, transparent);
+      border-left: 3px solid var(--lvx-lime);
+      border-radius: var(--r-md);
+      padding: 14px 18px;
+      margin-top: 10px;
+    }
+
+    .pullquote-body {
+      font-family: var(--font-brand-body);
+      font-size: 0.98rem;
+      line-height: 1.55;
+      color: var(--text-high);
+      font-style: italic;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .pullquote-byline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--text-dim);
+    }
+
+    /* ZONE 3: CONSENSUS (PRESSURE GAUGE) */
+    .consensus-metric-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .consensus-primary {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+    }
+
+    .consensus-pct {
+      font-family: var(--font-mono);
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--lvx-lime);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .consensus-label {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-high);
+    }
+
+    .consensus-caption {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Odds Bar: thin lime fill on dark track */
+    .odds-bar-track {
+      width: 100%;
+      height: 8px;
+      background: color-mix(in oklch, #ffffff 10%, transparent);
+      border: 1px solid color-mix(in oklch, #ffffff 12%, transparent);
+      border-radius: var(--r-sm);
+      overflow: hidden;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .odds-bar-fill {
+      height: 100%;
+      width: 50%;
+      background: var(--lvx-lime);
+      border-radius: var(--r-sm);
+      transition: width 0.4s ease, background-color 0.2s ease;
+    }
+
+    .odds-bar-fill.odds-flash {
+      background: #ffffff !important;
+    }
+
+    .consensus-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .wallet-nudge-box {
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: color-mix(in oklch, #021f53 70%, #000000);
+      border: 1px solid color-mix(in oklch, var(--lvx-lime) 30%, transparent);
+      border-radius: var(--r-md);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .wallet-nudge-text {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-mid);
+    }
+
+    /* ZONE 4: WHAT ELSE IS BEING REPORTED (CURRENTS ELSEWHERE) */
+    .related-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      list-style: none;
+    }
+
+    .related-item {
+      background: color-mix(in oklch, #021f53 95%, #ffffff);
+      border: 1px solid color-mix(in oklch, #ffffff 8%, transparent);
+      border-radius: var(--r-lg);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: background-color var(--dur-fast), border-color var(--dur-fast);
+      position: relative;
+    }
+
+    .related-item:hover {
+      background: color-mix(in oklch, #021f53 90%, #ffffff);
+      border-color: color-mix(in oklch, #ffffff 18%, transparent);
+    }
+
+    .related-headline-link {
+      font-family: var(--font-brand-body);
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--text-high);
+      text-decoration: none;
+      line-height: 1.35;
+      transition: color var(--dur-fast);
+    }
+
+    .related-headline-link:hover {
+      color: var(--lvx-lime);
+    }
+
+    .related-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--text-dim);
+    }
+
+    .related-source {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .related-weight {
+      color: var(--lvx-lime);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ZONE 5: THE POD (THE TRENCH — VOICES) */
+    .pod-yaps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+      list-style: none;
+    }
+
+    .yap-card {
+      background: color-mix(in oklch, #021f53 95%, #ffffff);
+      border: 1px solid color-mix(in oklch, #ffffff 8%, transparent);
+      border-radius: var(--r-md);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .yap-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .yap-user-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .yap-time {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .yap-tags {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--lvx-lime);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .yap-body {
+      font-family: var(--font-brand-body);
+      font-size: 0.94rem;
+      line-height: 1.5;
+      color: var(--text-high);
+    }
+
+    .empty-pod-notice {
+      padding: 24px 16px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      color: var(--text-dim);
+      border: 1px dashed color-mix(in oklch, #ffffff 14%, transparent);
+      border-radius: var(--r-md);
+      margin-bottom: 20px;
+    }
+
+    /* Composer */
+    .pod-composer-wrap {
+      background: color-mix(in oklch, #021f53 70%, #000000);
+      border: 1px solid color-mix(in oklch, var(--lvx-lime) 20%, transparent);
+      border-radius: var(--r-lg);
+      padding: 18px 20px;
+    }
+
+    .composer-nudge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--lvx-lime);
+      margin-bottom: 12px;
+      letter-spacing: 0.04em;
+    }
+
+    .composer-textarea {
+      width: 100%;
+      background: color-mix(in oklch, #021f53 90%, #000000);
+      border: 1px solid color-mix(in oklch, #ffffff 14%, transparent);
+      border-radius: var(--r-md);
+      padding: 12px 14px;
+      font-family: var(--font-brand-body);
+      font-size: 0.95rem;
+      color: var(--text-high);
+      resize: vertical;
+      min-height: 76px;
+      margin-bottom: 12px;
+      outline: none;
+      transition: border-color var(--dur-fast);
+    }
+
+    .composer-textarea:focus {
+      border-color: var(--lvx-lime);
+    }
+
+    .composer-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .tag-toggle-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag-pill-btn {
+      background: transparent;
+      border: 1px solid color-mix(in oklch, #ffffff 16%, transparent);
+      border-radius: var(--r-md);
+      padding: 4px 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all var(--dur-fast);
+    }
+
+    .tag-pill-btn:hover {
+      border-color: color-mix(in oklch, var(--lvx-lime) 50%, transparent);
+      color: var(--text-mid);
+    }
+
+    .tag-pill-btn.active {
+      border-color: var(--lvx-lime);
+      color: var(--lvx-lime);
+      background: color-mix(in oklch, var(--lvx-lime) 12%, transparent);
+    }
+
+    /* ZONE 6: FIRST-SQUID JOURNEY (Vertical Descent Gauge) */
+    .sidebar-rail {
+      position: sticky;
+      top: 96px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .journey-panel {
+      padding: 22px 20px;
+    }
+
+    .descent-stepper {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      list-style: none;
+      position: relative;
+    }
+
+    /* Vertical connector line */
+    .descent-stepper::before {
+      content: '';
+      position: absolute;
+      left: 17px;
+      top: 14px;
+      bottom: 24px;
+      width: 1px;
+      background: color-mix(in oklch, #ffffff 12%, transparent);
+      z-index: 0;
+    }
+
+    .descent-step {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 12px;
+      align-items: start;
+      transition: opacity var(--dur-fast);
+    }
+
+    .step-depth-gauge {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--r-md);
+      background: color-mix(in oklch, #021f53 90%, #000000);
+      border: 1px solid color-mix(in oklch, #ffffff 14%, transparent);
+      display: grid;
+      place-items: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      flex-shrink: 0;
+      transition: all var(--dur-fast);
+    }
+
+    .descent-step.done .step-depth-gauge {
+      border-color: var(--lvx-lime);
+      background: color-mix(in oklch, var(--lvx-lime) 15%, transparent);
+      color: var(--lvx-lime);
+    }
+
+    .descent-step.current .step-depth-gauge {
+      border-color: var(--lvx-lime);
+      color: var(--lvx-lime);
+      box-shadow: 0 0 8px color-mix(in oklch, var(--lvx-lime) 20%, transparent);
+      animation: currentPulse 2s infinite;
+    }
+
+    @keyframes currentPulse {
+      0%, 100% { border-color: var(--lvx-lime); }
+      50% { border-color: color-mix(in oklch, var(--lvx-lime) 40%, transparent); }
+    }
+
+    .descent-step.locked {
+      opacity: 0.35;
+    }
+
+    .step-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-top: 2px;
+    }
+
+    .step-depth-name {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .step-label {
+      font-family: var(--font-brand-body);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-high);
+      line-height: 1.25;
+    }
+
+    .step-reward {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--lvx-lime);
+      letter-spacing: 0.02em;
+    }
+
+    /* Quick Telemetry Module in Rail */
+    .telemetry-module {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .telemetry-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 6px;
+      border-bottom: 1px solid color-mix(in oklch, #ffffff 6%, transparent);
+    }
+
+    .telemetry-label {
+      color: var(--text-dim);
+    }
+
+    .telemetry-val {
+      color: var(--text-high);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ZONE 7: RETURN LOOP FOOTER */
+    .return-loop-zone {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 26px 28px;
+    }
+
+    .next-dispatch-card {
+      background: color-mix(in oklch, #021f53 75%, #000000);
+      border: 1px solid color-mix(in oklch, var(--lvx-lime) 25%, transparent);
+      border-radius: var(--r-md);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-decoration: none;
+      transition: all var(--dur-fast);
+    }
+
+    .next-dispatch-card:hover {
+      border-color: var(--lvx-lime);
+      background: color-mix(in oklch, #021f53 65%, #000000);
+    }
+
+    .next-dispatch-tag {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--lvx-lime);
+      font-weight: 700;
+    }
+
+    .next-dispatch-title {
+      font-family: var(--font-brand-body);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-high);
+      line-height: 1.35;
+    }
+
+    .next-dispatch-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--text-dim);
+    }
+
+    .return-links-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 10px;
+      border-top: 1px solid color-mix(in oklch, #ffffff 8%, transparent);
+    }
+
+    .back-wire-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--lvx-lime);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color var(--dur-fast);
+    }
+
+    .back-wire-btn:hover {
+      color: #ffffff;
+    }
+
+    /* De-emphasized quiet source exit link */
+    .source-exit-link {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      text-decoration: none;
+      opacity: 0.55;
+      transition: opacity var(--dur-fast);
+    }
+
+    .source-exit-link:hover {
+      opacity: 0.9;
+      color: var(--text-mid);
+    }
+
+    /* SKELETON LOADING SHIMMER */
+    .skeleton-shimmer {
+      background: linear-gradient(
+        90deg,
+        color-mix(in oklch, #021f53 35%, transparent) 0%,
+        color-mix(in oklch, #021f53 60%, transparent) 50%,
+        color-mix(in oklch, #021f53 35%, transparent) 100%
+      );
+      background-size: 200% 100%;
+      animation: skeletonShimmer 1.8s infinite;
+      border-radius: var(--r-md);
+    }
+
+    @keyframes skeletonShimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ERROR STATE */
+    .error-card {
+      padding: 40px 32px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .error-title {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      color: var(--lvx-lime);
+      text-transform: uppercase;
+    }
+
+    .error-desc {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      max-width: 480px;
+    }
+
+    /* RESPONSIVE BREAKPOINT (<= 860px: collapses to single column) */
+    @media (max-width: 860px) {
+      .nav-wrapper {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+      }
+
+      .nav-bar {
+        padding: 6px 12px;
+        gap: 8px;
+      }
+
+      .brand-sub {
+        display: none;
+      }
+
+      .nav-wire-link {
+        padding: 4px 10px;
+        font-size: 0.74rem;
+        min-height: 34px;
+      }
+
+      .nav-wire-link span.wire-text-full {
+        display: none;
+      }
+
+      .pulse-badge {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        min-height: 34px;
+      }
+
+      .page-container {
+        padding: 78px 12px 60px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      .content-grid {
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+        max-width: 100%;
+        gap: 16px;
+      }
+
+      .article-flow {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .sidebar-rail {
+        position: static;
+        order: -1; /* Place descent stepper right under hook or at top */
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .journey-panel {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        padding: 14px 12px;
+      }
+
+      .descent-stepper {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        scrollbar-width: thin;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .descent-stepper::before {
+        display: none;
+      }
+
+      .descent-step {
+        grid-template-columns: auto;
+        min-width: 155px;
+        padding: 8px 10px;
+        background: color-mix(in oklch, #021f53 85%, #000000);
+        border: 1px solid color-mix(in oklch, #ffffff 8%, transparent);
+        border-radius: var(--r-md);
+        flex-shrink: 0;
+      }
+
+      .hook-headline {
+        font-size: 1.35rem;
+      }
+
+      .hook-zone {
+        padding: 18px 14px;
+      }
+
+      .abyss-panel {
+        padding: 16px 14px;
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .pod-composer-wrap {
+        width: 100%;
+        padding: 14px 12px;
+      }
+
+      .consensus-actions {
+        width: 100%;
+      }
+
+      .consensus-actions .btn-ghost-lime,
+      .consensus-actions .btn-agent-copy {
+        flex: 1;
+        min-width: 130px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Zone 0: 2px Lime Reading Progress Bar fixed top -->
+  <div class="reading-progress-bar" id="reading-progress-bar" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+
+  <!-- Deep-sea Ambient Light Rays Backdrop -->
+  <div class="abyss-ambient" aria-hidden="true">
+    <div class="abyss-vignette"></div>
+    <div class="abyss-ray"></div>
+    <div class="abyss-ray-2"></div>
+  </div>
+
+  <!-- Floating Nav Header -->
+  <header class="nav-wrapper">
+    <nav class="nav-bar" aria-label="Main Navigation">
+      <a href="variant-3-abyssal.html" class="nav-brand" aria-label="Leviathan News Abyssal Home">
+        <div class="squid-emblem" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--lvx-lime)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5.5 11 C5.5 6.5 8.4 3 12 3 C15.6 3 18.5 6.5 18.5 11 C18.5 14 17 15.8 15.5 16.8"/>
+            <path d="M8.5 16.8 C7 15.8 5.5 14 5.5 11"/>
+            <circle cx="9.5" cy="10" r="1.25" fill="var(--lvx-lime)"/>
+            <circle cx="14.5" cy="10" r="1.25" fill="var(--lvx-lime)"/>
+            <path d="M6 18c-.8 1.4-.4 2.8 1 3 1.2.2 2-1 2-2.5 0-1.2-.5-2.2-.5-3"/>
+            <path d="M10 17.5c0 1.5.3 2.5 1 3 .8.5 1.8.2 1.8-1 0-1.2-.6-2-.6-3"/>
+            <path d="M14 16.5c0 1-.6 1.8-.6 3 0 1.2 1 1.5 1.8 1 .7-.5 1-1.5 1-3"/>
+            <path d="M15.5 15.5c0 .8-.5 1.8-.5 3 0 1.5.8 2.7 2 2.5 1.4-.2 1.8-1.6 1-3"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          LEVIATHAN<span class="brand-cursor" aria-hidden="true">█</span>
+          <span class="brand-sub">ABYSSAL</span>
+        </div>
+      </a>
+
+      <a href="variant-3-abyssal.html" class="nav-wire-link" aria-label="Back to the wire">
+        <span aria-hidden="true">←</span> <span class="wire-text-full">BACK TO THE WIRE</span>
+      </a>
+
+      <div class="nav-right">
+        <div class="pulse-badge" id="platform-pulse-chip" title="Current depth telemetry">
+          <span class="kelp-dot" aria-hidden="true"></span>
+          <span id="pulse-text">DEPTH -4,200M</span>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <main class="page-container" id="main-content">
+    
+    <!-- Skeleton Loading State (initial) -->
+    <div id="article-skeleton" class="article-skeleton-wrap">
+      <div class="content-grid">
+        <div class="article-flow">
+          <div class="abyss-panel hook-zone">
+            <div class="skeleton-shimmer" style="height: 16px; width: 25%; margin-bottom: 18px;"></div>
+            <div class="skeleton-shimmer" style="height: 52px; width: 90%; margin-bottom: 20px;"></div>
+            <div class="skeleton-shimmer" style="height: 28px; width: 70%; margin-bottom: 24px;"></div>
+            <div class="skeleton-shimmer" style="height: 18px; width: 45%;"></div>
+          </div>
+          <div class="abyss-panel">
+            <div class="skeleton-shimmer" style="height: 22px; width: 35%; margin-bottom: 16px;"></div>
+            <div class="skeleton-shimmer" style="height: 48px; margin-bottom: 12px;"></div>
+            <div class="skeleton-shimmer" style="height: 48px; margin-bottom: 12px;"></div>
+            <div class="skeleton-shimmer" style="height: 48px;"></div>
+          </div>
+        </div>
+        <div class="sidebar-rail">
+          <div class="abyss-panel">
+            <div class="skeleton-shimmer" style="height: 20px; width: 50%; margin-bottom: 16px;"></div>
+            <div class="skeleton-shimmer" style="height: 180px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error State (hidden by default) -->
+    <div id="article-error" class="abyss-panel error-card" style="display: none;" role="alert">
+      <div class="error-title" id="error-title">SIGNAL LOST IN THE TRENCH</div>
+      <p class="error-desc" id="error-desc">The requested dispatch could not be retrieved from the abyssal relay network. The link may have expired or the signal was interrupted.</p>
+      <a href="variant-3-abyssal.html" class="btn-ghost-lime">← RETURN TO THE WIRE</a>
+    </div>
+
+    <!-- Main Live Content Grid (populated by JS) -->
+    <div id="article-content" class="content-grid" style="display: none;">
+
+      <!-- Left / Center Article Column -->
+      <article class="article-flow" aria-labelledby="hook-headline-el">
+        
+        <!-- ZONE 1: HOOK (SURFACE SIGNAL panel) -->
+        <section class="abyss-panel hook-zone" id="zone-hook" aria-label="Surface Signal">
+          <div class="panel-header-row">
+            <span class="panel-kicker">
+              <span class="panel-kicker-dot" aria-hidden="true"></span>
+              SURFACE SIGNAL // HOOK
+            </span>
+            <span class="panel-depth-tag">DEPTH: 0M (SURFACE)</span>
+          </div>
+
+          <div class="hook-tags-row" id="hook-tags"></div>
+
+          <!-- Kills exit reflex: headline links to NOTHING external -->
+          <h1 class="hook-headline" id="hook-headline-el"></h1>
+
+          <div class="hook-standfirst" id="hook-standfirst-el"></div>
+
+          <div class="hook-meta-row" id="hook-meta-el"></div>
+
+          <div class="hero-media-wrap" id="hero-media-container" style="display: none;">
+            <img id="hero-media-img" src="" alt="" loading="lazy">
+          </div>
+        </section>
+
+        <!-- ZONE 2: THE BRIEF (SONAR READING — Perplexity-style AI Summary) -->
+        <section class="abyss-panel brief-zone" id="zone-brief" aria-label="Sonar Reading AI Summary">
+          <div class="panel-header-row">
+            <span class="panel-kicker">
+              <span class="panel-kicker-dot" aria-hidden="true"></span>
+              SONAR READING // AI SYNTHESIS
+            </span>
+            <span class="panel-depth-tag">RESOLUTION: HIGH</span>
+          </div>
+
+          <!-- Key Numbers Strip -->
+          <div class="numbers-strip" id="brief-numbers-strip" style="display: none;">
+            <div class="numbers-strip-label">DEPTH METRICS // KEY NUMBERS</div>
+            <div class="numbers-grid" id="brief-numbers-grid"></div>
+          </div>
+
+          <!-- Ledger Bullets List -->
+          <ul class="brief-bullets-list" id="brief-bullets-list"></ul>
+
+          <!-- Pull Quote -->
+          <div class="brief-pullquote" id="brief-pullquote-wrap" style="display: none;">
+            <div class="pullquote-body" id="brief-quote-text"></div>
+            <div class="pullquote-byline" id="brief-quote-byline"></div>
+          </div>
+        </section>
+
+        <!-- ZONE 3: CONSENSUS (THE DESK SAYS // PRESSURE GAUGE) -->
+        <!-- PROVIDER SEAM: replace consensusFromVotes with Kalshi/Polymarket odds when aggregator ships -->
+        <section class="abyss-panel consensus-zone" id="zone-consensus" aria-label="The Desk Consensus Pressure Gauge">
+          <div class="panel-header-row">
+            <span class="panel-kicker">
+              <span class="panel-kicker-dot" aria-hidden="true"></span>
+              THE DESK SAYS // PRESSURE GAUGE
+            </span>
+            <span class="panel-depth-tag">TOKEN-WEIGHTED POSITION</span>
+          </div>
+
+          <div class="consensus-metric-row">
+            <div class="consensus-primary">
+              <span class="consensus-pct" id="consensus-pct-val" aria-live="polite">50%</span>
+              <span class="consensus-label" id="consensus-label-val">UNPRICED</span>
+            </div>
+            <div class="consensus-caption" id="consensus-caption-val">0 weighted votes</div>
+          </div>
+
+          <!-- Horizontal odds bar: thin lime fill on dark track -->
+          <div class="odds-bar-track" aria-hidden="true">
+            <div class="odds-bar-fill" id="odds-bar-fill" style="width: 50%;"></div>
+          </div>
+
+          <!-- Vote-as-position Action Buttons -->
+          <div class="consensus-actions">
+            <button class="btn-ghost-lime" id="btn-weight-long" aria-label="Add long vote weight">
+              ▲ ADD WEIGHT
+            </button>
+            <button class="btn-agent-copy" id="btn-weight-counter" aria-label="Add counter vote weight">
+              ▼ COUNTER
+            </button>
+          </div>
+
+          <!-- Live aria status announcer -->
+          <div id="consensus-aria-status" class="sr-only" aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0);"></div>
+
+          <!-- Inline Wallet Nudge (shown on auth-required) -->
+          <div class="wallet-nudge-box" id="consensus-wallet-nudge" style="display: none;">
+            <span class="wallet-nudge-text" id="consensus-nudge-text">⚡ Wallet required to add weight. SQUID token-weighted voice.</span>
+            <button class="btn-ghost-lime" id="btn-consensus-connect-wallet">CONNECT WALLET</button>
+          </div>
+        </section>
+
+        <!-- ZONE 4: WHAT ELSE IS BEING REPORTED (CURRENTS ELSEWHERE) -->
+        <section class="abyss-panel related-zone" id="zone-related" aria-label="Currents Elsewhere" style="display: none;">
+          <div class="panel-header-row">
+            <span class="panel-kicker">
+              <span class="panel-kicker-dot" aria-hidden="true"></span>
+              CURRENTS ELSEWHERE // MULTI-SOURCE
+            </span>
+            <span class="panel-depth-tag">RELATED COVERAGE</span>
+          </div>
+
+          <ul class="related-list" id="related-list"></ul>
+        </section>
+
+        <!-- ZONE 5: THE POD (THE TRENCH — VOICES) -->
+        <section class="abyss-panel pod-zone" id="zone-pod" aria-label="The Trench Voices">
+          <div class="panel-header-row">
+            <span class="panel-kicker">
+              <span class="panel-kicker-dot" aria-hidden="true"></span>
+              THE TRENCH // VOICES
+            </span>
+            <span class="panel-depth-tag" id="pod-count-tag">[0 TRANSMISSIONS]</span>
+          </div>
+
+          <!-- Yap stream list -->
+          <ul class="pod-yaps-list" id="pod-yaps-list"></ul>
+
+          <!-- Yap Composer -->
+          <div class="pod-composer-wrap" id="pod-composer-wrap">
+            <div class="composer-nudge">
+              <span>⚡ Yap once — earn your first SQUID. Token-weighted voice.</span>
+            </div>
+
+            <textarea 
+              id="yap-textarea" 
+              class="composer-textarea" 
+              rows="3" 
+              placeholder="Broadcast your signal to the pod..." 
+              aria-label="Broadcast your signal to the pod"></textarea>
+
+            <div class="composer-controls">
+              <div class="tag-toggle-pills" role="group" aria-label="Select yap tags">
+                <button type="button" class="tag-pill-btn active" data-tag="tldr" aria-pressed="true">#TLDR</button>
+                <button type="button" class="tag-pill-btn" data-tag="analysis" aria-pressed="false">#ANALYSIS</button>
+                <button type="button" class="tag-pill-btn" data-tag="question" aria-pressed="false">#QUESTION</button>
+              </div>
+
+              <button type="button" class="btn-ghost-lime" id="yap-submit-btn">
+                POST YAP — EARN SQUID
+              </button>
+            </div>
+          </div>
+
+          <!-- Pod Wallet Connect Card (shown when composer requires auth) -->
+          <div class="wallet-nudge-box" id="pod-wallet-card" style="display: none;">
+            <div class="wallet-nudge-text">
+              <strong>AUTHENTICATION REQUIRED</strong><br>
+              Connect your Web3 wallet to broadcast your yap and earn SQUID.
+            </div>
+            <button class="btn-ghost-lime" id="btn-pod-connect-wallet">CONNECT WALLET</button>
+          </div>
+        </section>
+
+        <!-- ZONE 7: RETURN LOOP FOOTER -->
+        <footer class="abyss-panel return-loop-zone" id="zone-return" aria-label="Return Loop">
+          <div class="panel-header-row">
+            <span class="panel-kicker">
+              <span class="panel-kicker-dot" aria-hidden="true"></span>
+              SIGNAL PROPAGATION // RETURN LOOP
+            </span>
+            <span class="panel-depth-tag">NEXT HORIZON</span>
+          </div>
+
+          <!-- Next Dispatch Card -->
+          <a href="#" class="next-dispatch-card" id="next-dispatch-card" style="display: none;">
+            <span class="next-dispatch-tag">NEXT DISPATCH →</span>
+            <div class="next-dispatch-title" id="next-dispatch-title">Loading next dispatch...</div>
+            <div class="next-dispatch-meta" id="next-dispatch-meta"></div>
+          </a>
+
+          <div class="return-links-row">
+            <a href="variant-3-abyssal.html" class="back-wire-btn" id="btn-back-to-wire">
+              ← BACK TO THE WIRE
+            </a>
+
+            <!-- De-emphasized quiet exit link at very bottom -->
+            <a href="#" target="_blank" rel="noopener noreferrer" class="source-exit-link" id="source-out-link" data-track="source-out">
+              Read at source ↗
+            </a>
+          </div>
+        </footer>
+
+      </article>
+
+      <!-- ZONE 6: FIRST-SQUID JOURNEY (Vertical Descent Gauge) Right Sidebar Rail -->
+      <aside class="sidebar-rail" aria-label="Telemetry and First-Squid Descent Gauge">
+        <div class="abyss-panel journey-panel" id="zone-journey">
+          <div class="panel-header-row">
+            <span class="panel-kicker">
+              <span class="panel-kicker-dot" aria-hidden="true"></span>
+              FIRST SQUID // DESCENT
+            </span>
+            <span class="panel-depth-tag">PROGRESSION</span>
+          </div>
+
+          <ol class="descent-stepper" id="descent-stepper"></ol>
+        </div>
+
+        <!-- Telemetry & Depth Stats Card -->
+        <div class="abyss-panel telemetry-panel">
+          <div class="panel-header-row">
+            <span class="panel-kicker">
+              <span class="panel-kicker-dot" aria-hidden="true"></span>
+              BATHYMETRY TELEMETRY
+            </span>
+            <span class="panel-depth-tag">LIVE</span>
+          </div>
+          <div class="telemetry-module">
+            <div class="telemetry-row">
+              <span class="telemetry-label">TRENCH ZONE</span>
+              <span class="telemetry-val" id="telem-zone">HADAL -4,200M</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">SIGNAL INTEGRITY</span>
+              <span class="telemetry-val" id="telem-integrity">99.8% VERIFIED</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">CONSENSUS STATE</span>
+              <span class="telemetry-val" id="telem-consensus">ACTIVE</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">PROTOCOL LINK</span>
+              <span class="telemetry-val" style="color: var(--lvx-lime);">REST + WSS</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- VARIANT CONFIGURATION (Required by showcase-nav.js) -->
+  <script>
+    window.VARIANT = { n: 3, name: 'Bioluminescent Abyssal' };
+  </script>
+
+  <!-- SHARED CLIENTS -->
+  <script src="shared/leviathan-api.js"></script>
+  <script src="shared/article-engine.js"></script>
+  <script src="shared/showcase-nav.js" defer></script>
+
+  <!-- VARIANT 3 ABYSSAL ARTICLE CONTROLLER -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ---------------- TRACKING SEAM (Production A/B port) ---------------- */
+      window.LVXTrack = window.LVXTrack || function (event, props) {
+        console.debug('[track]', event, props);
+      };
+
+      var VARIANT_NAME = 'abyssal';
+      var currentArticle = null;
+      var currentYaps = [];
+      var currentRelated = [];
+      var trackedScrollDepths = { 25: false, 50: false, 75: false, 100: false };
+      var yapFocusTracked = false;
+      var briefViewTracked = false;
+      var consensusViewTracked = false;
+
+      /* ---------------- DOM REFERENCES ---------------- */
+      var progressBar = document.getElementById('reading-progress-bar');
+      var skeletonWrap = document.getElementById('article-skeleton');
+      var errorWrap = document.getElementById('article-error');
+      var contentGrid = document.getElementById('article-content');
+
+      /* Zone 1 (Hook) */
+      var hookTagsEl = document.getElementById('hook-tags');
+      var hookHeadlineEl = document.getElementById('hook-headline-el');
+      var hookStandfirstEl = document.getElementById('hook-standfirst-el');
+      var hookMetaEl = document.getElementById('hook-meta-el');
+      var heroMediaContainer = document.getElementById('hero-media-container');
+      var heroMediaImg = document.getElementById('hero-media-img');
+
+      /* Zone 2 (Brief) */
+      var zoneBrief = document.getElementById('zone-brief');
+      var briefNumbersStrip = document.getElementById('brief-numbers-strip');
+      var briefNumbersGrid = document.getElementById('brief-numbers-grid');
+      var briefBulletsList = document.getElementById('brief-bullets-list');
+      var briefPullquoteWrap = document.getElementById('brief-pullquote-wrap');
+      var briefQuoteText = document.getElementById('brief-quote-text');
+      var briefQuoteByline = document.getElementById('brief-quote-byline');
+
+      /* Zone 3 (Consensus) */
+      var zoneConsensus = document.getElementById('zone-consensus');
+      var consensusPctVal = document.getElementById('consensus-pct-val');
+      var consensusLabelVal = document.getElementById('consensus-label-val');
+      var consensusCaptionVal = document.getElementById('consensus-caption-val');
+      var oddsBarFill = document.getElementById('odds-bar-fill');
+      var btnWeightLong = document.getElementById('btn-weight-long');
+      var btnWeightCounter = document.getElementById('btn-weight-counter');
+      var consensusWalletNudge = document.getElementById('consensus-wallet-nudge');
+      var consensusNudgeText = document.getElementById('consensus-nudge-text');
+      var btnConsensusConnectWallet = document.getElementById('btn-consensus-connect-wallet');
+      var consensusAriaStatus = document.getElementById('consensus-aria-status');
+
+      /* Zone 4 (Related) */
+      var zoneRelated = document.getElementById('zone-related');
+      var relatedList = document.getElementById('related-list');
+
+      /* Zone 5 (Pod) */
+      var podCountTag = document.getElementById('pod-count-tag');
+      var podYapsList = document.getElementById('pod-yaps-list');
+      var podComposerWrap = document.getElementById('pod-composer-wrap');
+      var yapTextarea = document.getElementById('yap-textarea');
+      var yapSubmitBtn = document.getElementById('yap-submit-btn');
+      var podWalletCard = document.getElementById('pod-wallet-card');
+      var btnPodConnectWallet = document.getElementById('btn-pod-connect-wallet');
+      var tagPillButtons = document.querySelectorAll('.tag-pill-btn');
+
+      /* Zone 6 (Journey Stepper) */
+      var descentStepper = document.getElementById('descent-stepper');
+
+      /* Zone 7 (Return Loop) */
+      var nextDispatchCard = document.getElementById('next-dispatch-card');
+      var nextDispatchTitle = document.getElementById('next-dispatch-title');
+      var nextDispatchMeta = document.getElementById('next-dispatch-meta');
+      var sourceOutLink = document.getElementById('source-out-link');
+
+      /* ---------------- READING PROGRESS & SCROLL DEPTH TRACKING ---------------- */
+      ArticleEngine.trackReadingProgress(document.body, function (pct) {
+        var h = document.documentElement;
+        var max = h.scrollHeight - h.clientHeight;
+        var actualPct = max > 0 ? Math.min(1, Math.max(0, (window.scrollY || h.scrollTop || 0) / max)) : 0;
+
+        if (progressBar) {
+          progressBar.style.width = Math.round(actualPct * 100) + '%';
+          progressBar.setAttribute('aria-valuenow', Math.round(actualPct * 100));
+        }
+
+        /* Check scroll depth thresholds */
+        var pctInt = Math.floor(actualPct * 100);
+        if (pctInt > 0) {
+          [25, 50, 75, 100].forEach(function (d) {
+            if (pctInt >= d && !trackedScrollDepths[d]) {
+              trackedScrollDepths[d] = true;
+              window.LVXTrack('scroll_depth', { depth: d, variant: VARIANT_NAME });
+            }
+          });
+        }
+        /* Viewport tracking for Brief and Consensus */
+        if (!briefViewTracked && zoneBrief && isElementInViewport(zoneBrief)) {
+          briefViewTracked = true;
+          window.LVXTrack('brief_viewed', { id: currentArticle ? currentArticle.id : null, variant: VARIANT_NAME });
+        }
+        if (!consensusViewTracked && zoneConsensus && isElementInViewport(zoneConsensus)) {
+          consensusViewTracked = true;
+          window.LVXTrack('consensus_viewed', { id: currentArticle ? currentArticle.id : null, variant: VARIANT_NAME });
+        }
+      });
+
+      function isElementInViewport(el) {
+        var rect = el.getBoundingClientRect();
+        return (
+          rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.85 &&
+          rect.bottom >= 0
+        );
+      }
+
+      /* ---------------- SPECIES BADGE BUILDER ---------------- */
+      function renderSpeciesBadge(user) {
+        var meta = Leviathan.accountMeta(user);
+        var dotCls = meta.type === 'cyborg' ? 'cyborg' : (meta.type === 'bot' ? 'bot' : 'human');
+        var modelHtml = meta.model ? '<span class="species-model">(' + Leviathan.esc(meta.model) + ')</span>' : '';
+        return (
+          '<span class="species-badge ' + meta.cls + '">' +
+            '<span class="species-dot ' + dotCls + '" aria-hidden="true"></span>' +
+            '<span class="species-label">' + Leviathan.esc(meta.label) + '</span>' +
+            modelHtml +
+          '</span>'
+        );
+      }
+
+      /* ---------------- RENDER ZONE 1: HOOK (SURFACE SIGNAL) ---------------- */
+      function renderHook(article) {
+        /* Kicker tags as plain mono text (NOT boxed chips) */
+        var tags = article.tags || [];
+        var tagString = tags.length > 0
+          ? tags.map(function (t) { return '#' + Leviathan.esc((t.name || t).toUpperCase()); }).join(' &nbsp; ')
+          : '#ABYSSAL &nbsp; #WIRE';
+        hookTagsEl.innerHTML = tagString;
+
+        /* Headline: links to NOTHING external */
+        hookHeadlineEl.textContent = article.headline || 'Surface Signal Transmission';
+
+        /* Standfirst: top_tldr text */
+        var standfirstText = (article.top_tldr && (article.top_tldr.text || article.top_tldr)) ||
+                             (article.top_yaps && article.top_yaps.length > 0 && article.top_yaps[0].text) ||
+                             'Live consensus verification underway on the Leviathan decentralized news wire.';
+        hookStandfirstEl.textContent = standfirstText;
+
+        /* Meta line: source host · timeAgo · species dot · ▲fmtWeight */
+        var srcHost = Leviathan.sourceHost(article);
+        var time = Leviathan.timeAgo(article.date_posted) || 'RECENT';
+        var weight = article.vote_details ? article.vote_details.total_vote_weight : 0;
+        var authorMetaHtml = renderSpeciesBadge(article.post_user);
+
+        hookMetaEl.innerHTML = [
+          '<span class="meta-item meta-source">' + Leviathan.esc(srcHost) + '</span>',
+          '<span class="meta-item meta-time">' + Leviathan.esc(time) + '</span>',
+          '<span class="meta-item">' + authorMetaHtml + '</span>',
+          '<span class="meta-item meta-weight">▲ ' + Leviathan.fmtWeight(weight) + '</span>'
+        ].join('');
+
+        /* Hero media */
+        if (article.media) {
+          heroMediaImg.src = article.media;
+          heroMediaImg.alt = article.headline || 'Signal media';
+          heroMediaContainer.style.display = 'block';
+          heroMediaImg.onerror = function () {
+            heroMediaContainer.style.display = 'none';
+          };
+        } else {
+          heroMediaContainer.style.display = 'none';
+        }
+      }
+
+      /* ---------------- RENDER ZONE 2: THE BRIEF (SONAR READING) ---------------- */
+      function renderBrief(article, yaps) {
+        var brief = ArticleEngine.buildBrief(article, yaps);
+
+        /* If no summary bullets exist, hide section gracefully (no empty chrome) */
+        if (!brief.hasSummary || brief.bullets.length === 0) {
+          zoneBrief.style.display = 'none';
+          return;
+        }
+        zoneBrief.style.display = 'block';
+
+        /* Ledger bullets */
+        briefBulletsList.innerHTML = brief.bullets.map(function (b, idx) {
+          var numStr = (idx + 1) < 10 ? '0' + (idx + 1) : String(idx + 1);
+          return (
+            '<li class="brief-bullet-row">' +
+              '<span class="brief-bullet-idx">[' + numStr + ']</span>' +
+              '<span class="brief-bullet-text">' + Leviathan.esc(b) + '</span>' +
+            '</li>'
+          );
+        }).join('');
+
+        /* Key Numbers Strip */
+        if (brief.numbers && brief.numbers.length > 0) {
+          briefNumbersStrip.style.display = 'block';
+          briefNumbersGrid.innerHTML = brief.numbers.map(function (num, i) {
+            return (
+              '<div class="number-card">' +
+                '<span class="number-val">' + Leviathan.esc(num) + '</span>' +
+                '<span class="number-sub">METRIC ' + (i + 1) + '</span>' +
+              '</div>'
+            );
+          }).join('');
+        } else {
+          briefNumbersStrip.style.display = 'none';
+        }
+
+        /* Pull quote */
+        if (brief.quote && brief.quote.text) {
+          briefPullquoteWrap.style.display = 'block';
+          briefQuoteText.textContent = '“' + brief.quote.text + '”';
+          var bylineSpecies = renderSpeciesBadge(brief.quote.user || { account_type: 'human' });
+          briefQuoteByline.innerHTML = '— ' + Leviathan.esc(brief.quote.author) + ' &nbsp; ' + bylineSpecies;
+        } else {
+          briefPullquoteWrap.style.display = 'none';
+        }
+      }
+
+      /* ---------------- RENDER ZONE 3: CONSENSUS (PRESSURE GAUGE) ---------------- */
+      var localConsensus = null;
+
+      function renderConsensus(article) {
+        localConsensus = ArticleEngine.consensusFromVotes(article);
+        updateConsensusDisplay(localConsensus);
+      }
+
+      function updateConsensusDisplay(c) {
+        if (!c.isLive) {
+          consensusPctVal.textContent = '--%';
+          consensusLabelVal.textContent = 'UNPRICED — BE THE FIRST WEIGHT';
+          consensusCaptionVal.textContent = '0 weighted votes · Awaiting initial position';
+          oddsBarFill.style.width = '50%';
+        } else {
+          consensusPctVal.textContent = c.pct + '%';
+          consensusLabelVal.textContent = c.label;
+          consensusCaptionVal.textContent = '▲ ' + Leviathan.fmtWeight(c.totalWeight) + ' weighted votes · ' + c.up + ' long / ' + c.down + ' counter';
+          oddsBarFill.style.width = Math.min(100, Math.max(0, c.pct)) + '%';
+        }
+      }
+
+      function handlePlaceWeight(weightSide) {
+        if (!currentArticle) return;
+        window.LVXTrack('weight_clicked', { side: weightSide > 0 ? 'up' : 'down', id: currentArticle.id, variant: VARIANT_NAME });
+
+        var targetBtn = weightSide > 0 ? btnWeightLong : btnWeightCounter;
+        var originalText = targetBtn.textContent;
+
+        ArticleEngine.placeWeight(currentArticle.id, weightSide)
+          .then(function () {
+            /* On success: complete journey step, flash bar, recompute locally */
+            ArticleEngine.journeyComplete('weight');
+            window.LVXTrack('journey_step_completed', { step: 'weight', variant: VARIANT_NAME });
+            renderJourneyRail();
+
+            /* Recompute locally */
+            if (localConsensus) {
+              if (weightSide > 0) {
+                localConsensus.up += 1;
+              } else {
+                localConsensus.down += 1;
+              }
+              localConsensus.totalWeight += 100;
+              var total = localConsensus.up + localConsensus.down;
+              localConsensus.pct = Math.round((localConsensus.up / total) * 100);
+              localConsensus.label = localConsensus.pct >= 67 ? 'CONSENSUS LONG' : (localConsensus.pct >= 50 ? 'LEAN LONG' : 'CONTESTED');
+              localConsensus.isLive = true;
+              updateConsensusDisplay(localConsensus);
+            }
+
+            /* Flash odds bar */
+            oddsBarFill.classList.add('odds-flash');
+            setTimeout(function () { oddsBarFill.classList.remove('odds-flash'); }, 600);
+
+            /* Announce via aria-live */
+            consensusAriaStatus.textContent = 'Weight placed successfully. Consensus is now ' + (localConsensus ? localConsensus.pct : 50) + ' percent.';
+
+            /* Button feedback */
+            targetBtn.textContent = '✓ WEIGHT ADDED';
+            setTimeout(function () { targetBtn.textContent = originalText; }, 2200);
+          })
+          .catch(function (err) {
+            if (err && err.message === 'auth-required') {
+              showConsensusWalletNudge('Authentication required to place weight. SQUID token-weighted voice.');
+            } else {
+              showConsensusWalletNudge('Could not place weight: ' + (err.message || 'network error') + '. Connect wallet below.');
+            }
+          });
+      }
+
+      function showConsensusWalletNudge(msg) {
+        consensusNudgeText.textContent = '⚡ ' + msg;
+        consensusWalletNudge.style.display = 'flex';
+      }
+
+      /* ---------------- RENDER ZONE 4: WHAT ELSE IS BEING REPORTED ---------------- */
+      function renderRelated(relatedArticles) {
+        currentRelated = relatedArticles || [];
+        if (currentRelated.length === 0) {
+          zoneRelated.style.display = 'none';
+          return;
+        }
+
+        zoneRelated.style.display = 'block';
+        relatedList.innerHTML = currentRelated.slice(0, 5).map(function (rel) {
+          var internalUrl = ArticleEngine.articleUrl('variant-3-abyssal-article.html', rel.id);
+          var src = Leviathan.sourceHost(rel);
+          var time = Leviathan.timeAgo(rel.date_posted);
+          var weight = rel.vote_details ? rel.vote_details.total_vote_weight : 0;
+
+          return (
+            '<li class="related-item">' +
+              '<a href="' + internalUrl + '" class="related-headline-link" data-id="' + rel.id + '">' +
+                Leviathan.esc(rel.headline) +
+              '</a>' +
+              '<div class="related-meta">' +
+                '<span class="related-source">' + Leviathan.esc(src) + '</span>' +
+                '<span>·</span>' +
+                '<span class="related-weight">▲ ' + Leviathan.fmtWeight(weight) + '</span>' +
+                '<span>·</span>' +
+                '<span>' + Leviathan.esc(time) + '</span>' +
+              '</div>' +
+            '</li>'
+          );
+        }).join('');
+
+        /* Instrument internal related links */
+        var links = relatedList.querySelectorAll('.related-headline-link');
+        links.forEach(function (link) {
+          link.addEventListener('click', function () {
+            var toId = link.getAttribute('data-id');
+            window.LVXTrack('related_clicked', { from_id: currentArticle ? currentArticle.id : null, to_id: toId, variant: VARIANT_NAME });
+          });
+        });
+      }
+
+      /* ---------------- RENDER ZONE 5: THE POD (THE TRENCH — VOICES) ---------------- */
+      function renderYaps(yaps) {
+        currentYaps = yaps || [];
+        podCountTag.textContent = '[' + currentYaps.length + ' TRANSMISSIONS]';
+
+        if (currentYaps.length === 0) {
+          podYapsList.innerHTML = '<li class="empty-pod-notice">Be the first voice in the pod. Broadcast your signal below to earn SQUID.</li>';
+          return;
+        }
+
+        podYapsList.innerHTML = currentYaps.map(function (yap) {
+          return createYapItemHtml(yap);
+        }).join('');
+      }
+
+      function createYapItemHtml(yap) {
+        var userBadge = renderSpeciesBadge(yap.author || { account_type: 'human', display_name: 'Pod-Signal' });
+        var time = Leviathan.timeAgo(yap.created_at) || 'JUST NOW';
+        var tagsHtml = (yap.tags || []).map(function (t) {
+          return '<span>#' + Leviathan.esc(String(t).toUpperCase()) + '</span>';
+        }).join(' ');
+
+        return (
+          '<li class="yap-card">' +
+            '<div class="yap-header">' +
+              '<div class="yap-user-wrap">' +
+                userBadge +
+                '<span class="yap-time">' + Leviathan.esc(time) + '</span>' +
+              '</div>' +
+              '<div class="yap-tags">' + tagsHtml + '</div>' +
+            '</div>' +
+            '<div class="yap-body">' + Leviathan.esc(yap.text) + '</div>' +
+          '</li>'
+        );
+      }
+
+      function handlePostYap() {
+        if (!currentArticle) return;
+        var text = (yapTextarea.value || '').trim();
+        if (!text) {
+          yapTextarea.focus();
+          return;
+        }
+
+        var activeTags = [];
+        document.querySelectorAll('.tag-pill-btn.active').forEach(function (btn) {
+          activeTags.push(btn.getAttribute('data-tag'));
+        });
+
+        var prevBtnText = yapSubmitBtn.textContent;
+        yapSubmitBtn.textContent = 'TRANSMITTING...';
+        yapSubmitBtn.disabled = true;
+
+        ArticleEngine.postYap(currentArticle.id, text, activeTags)
+          .then(function (res) {
+            yapSubmitBtn.disabled = false;
+            yapSubmitBtn.textContent = '✓ POSTED — SQUID EARNED';
+            yapTextarea.value = '';
+
+            /* Complete Journey step */
+            ArticleEngine.journeyComplete('yap');
+            window.LVXTrack('journey_step_completed', { step: 'yap', variant: VARIANT_NAME });
+            window.LVXTrack('yap_submitted', { id: currentArticle.id, variant: VARIANT_NAME });
+            renderJourneyRail();
+
+            /* Prepend new yap */
+            var newYap = {
+              text: text,
+              tags: activeTags,
+              created_at: new Date().toISOString(),
+              author: { display_name: 'You (Broadcast)', account_type: 'human' }
+            };
+            currentYaps.unshift(newYap);
+            podCountTag.textContent = '[' + currentYaps.length + ' TRANSMISSIONS]';
+
+            var emptyNotice = podYapsList.querySelector('.empty-pod-notice');
+            if (emptyNotice) emptyNotice.remove();
+
+            var tempContainer = document.createElement('div');
+            tempContainer.innerHTML = createYapItemHtml(newYap);
+            podYapsList.insertBefore(tempContainer.firstChild, podYapsList.firstChild);
+
+            setTimeout(function () {
+              yapSubmitBtn.textContent = prevBtnText;
+            }, 2500);
+          })
+          .catch(function (err) {
+            yapSubmitBtn.disabled = false;
+            yapSubmitBtn.textContent = prevBtnText;
+
+            if (err && err.message === 'auth-required') {
+              podComposerWrap.style.display = 'none';
+              podWalletCard.style.display = 'flex';
+            } else {
+              alert('Could not post yap: ' + (err.message || 'error'));
+            }
+          });
+      }
+
+      /* ---------------- RENDER ZONE 6: FIRST-SQUID JOURNEY (DESCENT GAUGE) ---------------- */
+      var DEPTH_TITLES = [
+        '-200M // TWILIGHT',
+        '-1,000M // MIDNIGHT',
+        '-4,000M // ABYSSAL',
+        '-11,000M // HADAL'
+      ];
+
+      function renderJourneyRail() {
+        var steps = ArticleEngine.journeyState();
+        descentStepper.innerHTML = steps.map(function (s, idx) {
+          var cls = s.done ? 'done' : (s.current ? 'current' : 'locked');
+          var depthName = DEPTH_TITLES[idx] || ('DEPTH ' + (idx + 1));
+          var iconHtml = s.done
+            ? '✓'
+            : (s.current ? '▼' : '🔒');
+
+          return (
+            '<li class="descent-step ' + cls + '">' +
+              '<div class="step-depth-gauge" aria-hidden="true">' + iconHtml + '</div>' +
+              '<div class="step-info">' +
+                '<span class="step-depth-name">' + depthName + '</span>' +
+                '<span class="step-label">' + Leviathan.esc(s.label) + '</span>' +
+                '<span class="step-reward">' + Leviathan.esc(s.reward) + '</span>' +
+              '</div>' +
+            '</li>'
+          );
+        }).join('');
+      }
+
+      /* ---------------- RENDER ZONE 7: RETURN LOOP FOOTER ---------------- */
+      function renderReturnLoop(article, relatedArticles) {
+        /* Back to wire link */
+        document.getElementById('btn-back-to-wire').href = 'variant-3-abyssal.html';
+
+        /* Source-out quiet link */
+        var sourceUrl = article.canonical_url || article.url || '#';
+        sourceOutLink.href = sourceUrl;
+        sourceOutLink.addEventListener('click', function () {
+          window.LVXTrack('source_out_clicked', { id: article.id, url: sourceUrl, variant: VARIANT_NAME });
+        });
+
+        /* Next Dispatch Card */
+        var nextArticle = (relatedArticles && relatedArticles.length > 0) ? relatedArticles[0] : null;
+        if (nextArticle) {
+          var nextUrl = ArticleEngine.articleUrl('variant-3-abyssal-article.html', nextArticle.id);
+          nextDispatchCard.href = nextUrl;
+          nextDispatchTitle.textContent = nextArticle.headline || 'Next Transmission';
+          var src = Leviathan.sourceHost(nextArticle);
+          var weight = nextArticle.vote_details ? nextArticle.vote_details.total_vote_weight : 0;
+          nextDispatchMeta.innerHTML = [
+            '<span>' + Leviathan.esc(src) + '</span>',
+            '<span>·</span>',
+            '<span style="color: var(--lvx-lime);">▲ ' + Leviathan.fmtWeight(weight) + '</span>',
+            '<span>·</span>',
+            '<span>' + Leviathan.timeAgo(nextArticle.date_posted) + '</span>'
+          ].join('');
+
+          nextDispatchCard.style.display = 'flex';
+          nextDispatchCard.addEventListener('click', function () {
+            window.LVXTrack('next_dispatch_clicked', { from_id: article.id, to_id: nextArticle.id, variant: VARIANT_NAME });
+          });
+        } else {
+          nextDispatchCard.style.display = 'none';
+        }
+      }
+
+      /* ---------------- WALLET CONNECT FLOW ---------------- */
+      function performWalletConnect(sourceZone) {
+        window.LVXTrack('wallet_connect_started', { variant: VARIANT_NAME, source: sourceZone });
+
+        ArticleEngine.connectWallet()
+          .then(function (res) {
+            ArticleEngine.journeyComplete('wallet');
+            window.LVXTrack('journey_step_completed', { step: 'wallet', variant: VARIANT_NAME });
+            window.LVXTrack('wallet_connected', { address: res.address, variant: VARIANT_NAME });
+            renderJourneyRail();
+
+            /* Restore composer if needed */
+            podComposerWrap.style.display = 'block';
+            podWalletCard.style.display = 'none';
+            consensusWalletNudge.style.display = 'none';
+
+            alert('Wallet connected: ' + res.address.slice(0, 6) + '...' + res.address.slice(-4));
+          })
+          .catch(function (err) {
+            if (err && err.message === 'no-wallet') {
+              alert('Web3 wallet not detected. Please install MetaMask, Rabby, or a compatible Web3 browser extension.');
+            } else {
+              alert('Wallet connection failed: ' + (err.message || 'unknown error'));
+            }
+          });
+      }
+
+      /* ---------------- INITIALIZATION & DATA PIPELINE ---------------- */
+      function initEvents() {
+        /* Consensus place weight buttons */
+        btnWeightLong.addEventListener('click', function () { handlePlaceWeight(1); });
+        btnWeightCounter.addEventListener('click', function () { handlePlaceWeight(-1); });
+
+        /* Wallet buttons */
+        btnConsensusConnectWallet.addEventListener('click', function () { performWalletConnect('consensus'); });
+        btnPodConnectWallet.addEventListener('click', function () { performWalletConnect('pod'); });
+
+        /* Composer yap focus tracking */
+        yapTextarea.addEventListener('focus', function () {
+          if (!yapFocusTracked && currentArticle) {
+            yapFocusTracked = true;
+            window.LVXTrack('yap_started', { id: currentArticle.id, variant: VARIANT_NAME });
+          }
+        });
+
+        /* Yap submit button */
+        yapSubmitBtn.addEventListener('click', handlePostYap);
+
+        /* Tag pill toggles */
+        tagPillButtons.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            btn.classList.toggle('active');
+            btn.setAttribute('aria-pressed', btn.classList.contains('active'));
+          });
+        });
+      }
+
+      function showError(title, message) {
+        skeletonWrap.style.display = 'none';
+        contentGrid.style.display = 'none';
+        errorWrap.style.display = 'flex';
+        document.getElementById('error-title').textContent = title;
+        document.getElementById('error-desc').textContent = message;
+      }
+
+      function loadArticleData(articleId) {
+        ArticleEngine.fetchArticle(articleId)
+          .then(function (article) {
+            currentArticle = article;
+
+            /* Track view */
+            window.LVXTrack('article_viewed', { id: article.id, variant: VARIANT_NAME });
+
+            /* Render Hook, Consensus, and Journey immediately */
+            renderHook(article);
+            renderConsensus(article);
+            renderJourneyRail();
+
+            /* Instant initial render for Brief & Pod if article has top_yaps */
+            var initialYaps = article.top_yaps || [];
+            renderBrief(article, initialYaps);
+            renderYaps(initialYaps);
+            renderReturnLoop(article, []);
+
+            /* Unhide content grid immediately — no waiting for secondary fetches */
+            skeletonWrap.style.display = 'none';
+            contentGrid.style.display = 'grid';
+
+            /* Parallel background fetches for full live Yaps and Related coverage */
+            Promise.all([
+              ArticleEngine.fetchYaps(article.id).catch(function () { return initialYaps; }),
+              ArticleEngine.fetchRelated(article, 5).catch(function () { return []; })
+            ]).then(function (results) {
+              var yaps = results[0] && results[0].length > 0 ? results[0] : initialYaps;
+              var related = results[1] || [];
+
+              renderBrief(article, yaps);
+              renderRelated(related);
+              renderYaps(yaps);
+              renderReturnLoop(article, related);
+            });
+          })
+          .catch(function (err) {
+            /* If ID lookup failed, attempt to find article in news fixtures / feed */
+            Leviathan.fetchNews({ limit: 30 })
+              .then(function (news) {
+                var match = (news || []).find(function (n) { return String(n.id) === String(articleId); });
+                if (match) {
+                  currentArticle = match;
+                  window.LVXTrack('article_viewed', { id: match.id, variant: VARIANT_NAME });
+                  renderHook(match);
+                  renderConsensus(match);
+                  renderJourneyRail();
+                  renderBrief(match, match.top_yaps || []);
+                  renderYaps(match.top_yaps || []);
+                  var fallbackRelated = (news || []).filter(function (n) { return String(n.id) !== String(match.id); }).slice(0, 5);
+                  renderRelated(fallbackRelated);
+                  renderReturnLoop(match, fallbackRelated);
+                  skeletonWrap.style.display = 'none';
+                  contentGrid.style.display = 'grid';
+                } else {
+                  showError('SIGNAL NOT FOUND [404]', 'The article relay with ID "' + Leviathan.esc(articleId) + '" could not be resolved from the depth feed.');
+                }
+              })
+              .catch(function () {
+                showError('TRENCH RELAY TIMEOUT', 'Unable to reach Leviathan network relay nodes. Verify network connectivity.');
+              });
+          });
+      }
+
+      function init() {
+        initEvents();
+
+        var articleId = ArticleEngine.articleIdFromUrl();
+
+        if (articleId) {
+          loadArticleData(articleId);
+        } else {
+          /* Fallback for direct page opening without ?id= : load the latest hot article */
+          Leviathan.fetchNews({ limit: 1 })
+            .then(function (news) {
+              if (news && news.length > 0) {
+                var firstArticle = news[0];
+                /* Cleanly update URL to maintain canonical reference */
+                try {
+                  history.replaceState(null, '', ArticleEngine.articleUrl('variant-3-abyssal-article.html', firstArticle.id));
+                } catch (e) {}
+                loadArticleData(firstArticle.id);
+              } else {
+                showError('NO ACTIVE SIGNALS', 'No active dispatches currently present on the wire.');
+              }
+            })
+            .catch(function (e) {
+              showError('OFFLINE CACHE EXHAUSTED', 'Could not retrieve recent signals from the wire.');
+            });
+        }
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
